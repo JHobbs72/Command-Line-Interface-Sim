@@ -1,0 +1,21 @@
+﻿<Properties StartupConfiguration="{F06A4C96-765E-42CB-E9FA-A7890B61E205}|">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/home.cs">
+    <Files>
+      <File FileName="Assets/Scripts/home.cs" Line="12" Column="4" />
+    </Files>
+    <Pads>
+      <Pad Id="ClassPad">
+        <State name="__root__">
+          <Node name="TeachingGit" expanded="True" selected="True" />
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="2a3d2249-6888-4773-9718-ca4e28414147" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
