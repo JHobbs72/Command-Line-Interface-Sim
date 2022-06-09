@@ -1,12 +1,13 @@
 ﻿<Properties StartupConfiguration="{F06A4C96-765E-42CB-E9FA-A7890B61E205}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/home.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/CMD.cs">
     <Files>
-      <File FileName="Assets/Scripts/home.cs" Line="12" Column="4" />
+      <File FileName="Assets/Scripts/CMD.cs" Line="32" Column="1" />
+      <File FileName="Assets/Scripts/Commands.cs" Line="12" Column="33" />
     </Files>
     <Pads>
       <Pad Id="ClassPad">
         <State name="__root__">
-          <Node name="TeachingGit" expanded="True" selected="True" />
+          <Node />
         </State>
       </Pad>
     </Pads>

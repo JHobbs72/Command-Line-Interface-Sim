@@ -4,15 +4,10 @@ using UnityEngine;
 
 public class pwd : MonoBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     {
-        
+        CMD go = new CMD();
+        go.AddListener(gameObject);
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
 }

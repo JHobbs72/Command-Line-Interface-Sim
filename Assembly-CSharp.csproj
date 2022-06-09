@@ -57,7 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets/Scripts/section2.cs" />
-    <Compile Include="Assets/Scripts/commands.cs" />
+    <Compile Include="Assets/Scripts/Commands.cs" />
     <Compile Include="Assets/Scripts/section3.cs" />
     <Compile Include="Assets/Scripts/pwd.cs" />
     <Compile Include="Assets/Scripts/CMD.cs" />
@@ -65,7 +65,6 @@
     <Compile Include="Assets/Scripts/section5.cs" />
     <Compile Include="Assets/Scripts/ls.cs" />
     <Compile Include="Assets/Scripts/section1.cs" />
-    <Compile Include="Assets/Scripts/NewBehaviourScript.cs" />
     <Compile Include="Assets/Scripts/home.cs" />
     <Compile Include="Assets/TextMesh Pro/Examples &amp; Extras/Scripts/Benchmark01.cs" />
     <Compile Include="Assets/TextMesh Pro/Examples &amp; Extras/Scripts/VertexShakeB.cs" />
@@ -101,6 +100,10 @@
     <Compile Include="Assets/TextMesh Pro/Examples &amp; Extras/Scripts/ObjectSpin.cs" />
     <Compile Include="Assets/TextMesh Pro/Examples &amp; Extras/Scripts/VertexZoom.cs" />
     <Compile Include="Assets/TextMesh Pro/Examples &amp; Extras/Scripts/SimpleScript.cs" />
+    <Compile Include="Assets/Scripts/mkdir.cs" />
+    <Compile Include="Assets/Scripts/rmdir.cs" />
+    <Compile Include="Assets/Scripts/mv.cs" />
+    <Compile Include="Assets/Scripts/touch.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets/TextMesh Pro/Shaders/TMPro.cginc" />
