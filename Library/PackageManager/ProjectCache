@@ -5,7 +5,7 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 637903637900000000
+      ticks: 637903651100000000
     m_Hash: 738830550
   m_LockFileStatus:
     m_FilePath: /Users/jakehobbs/Documents/Unity-Projects/TeachingGit/Packages/packages-lock.json
@@ -13,7 +13,7 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 637903637930000000
+      ticks: 637903651100000000
     m_Hash: 2134303225
 m_EmbeddedPackageManifests:
   m_ManifestsStatus: {}
