@@ -8,5 +8,9 @@ public class CD : MonoBehaviour
     {
         Debug.Log("Changing directory");
         Debug.Log(options);
+
+        // Get current node
+        // Path or directory?
+        // Change current node
     }
 }

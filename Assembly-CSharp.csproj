@@ -88,7 +88,6 @@
     <Compile Include="Assets/TextMesh Pro/Examples &amp; Extras/Scripts/TextMeshSpawner.cs" />
     <Compile Include="Assets/Scripts/RootCommands/MKDIR.cs" />
     <Compile Include="Assets/TextMesh Pro/Examples &amp; Extras/Scripts/Benchmark03.cs" />
-    <Compile Include="Assets/Scripts/Commands.cs" />
     <Compile Include="Assets/TextMesh Pro/Examples &amp; Extras/Scripts/TMP_FrameRateCounter.cs" />
     <Compile Include="Assets/Scripts/CMD.cs" />
     <Compile Include="Assets/TextMesh Pro/Examples &amp; Extras/Scripts/VertexJitter.cs" />
@@ -106,6 +105,11 @@
     <Compile Include="Assets/TextMesh Pro/Examples &amp; Extras/Scripts/Benchmark01.cs" />
     <Compile Include="Assets/Scripts/RootCommands/GIT.cs" />
     <Compile Include="Assets/Scripts/RootCommands/CD.cs" />
+    <Compile Include="Assets/Scripts/GraphFileSystem/Graph.cs" />
+    <Compile Include="Assets/Scripts/GraphFileSystem/Node.cs" />
+    <Compile Include="Assets/Scripts/GraphFileSystem/DirectoryNode.cs" />
+    <Compile Include="Assets/Scripts/GraphFileSystem/FileNode.cs" />
+    <Compile Include="Assets/Scripts/GraphFileSystem/GraphManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets/TextMesh Pro/Shaders/TMPro.cginc" />

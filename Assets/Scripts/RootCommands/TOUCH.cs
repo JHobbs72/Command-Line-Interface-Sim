@@ -8,5 +8,9 @@ public class TOUCH : MonoBehaviour
     {
         Debug.Log("New thing");
         Debug.Log(options);
+
+        // Get current node (directory node)
+        // Create new node (file or directory)
+        // Add new node to neighbours of current node
     }
 }

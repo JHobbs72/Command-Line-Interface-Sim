@@ -19,7 +19,6 @@ public class CMD : MonoBehaviour
         if (!listeners.Contains(listener))
         {
             listeners.Add(listener);
-            Debug.Log("Listener: " + listener.name);
         }
     }
 
@@ -29,8 +28,6 @@ public class CMD : MonoBehaviour
         GameObject go = listeners.Where(obj => obj.name == commands[0]).SingleOrDefault();
         string[] options = commands.Skip(1).ToArray();
         string optionsString = string.Join(" ", options);
-
-        Debug.Log("GO: " + go);
 
         if (go != null)
         {

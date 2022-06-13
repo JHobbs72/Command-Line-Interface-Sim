@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8700839039771984374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
+  m_Name: file1.txt
+  m_EditorClassIdentifier: 
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 948fae966f0f54b6cb256479c0b59749, type: 3}
+  m_Name: FileSystemGraph
+  m_EditorClassIdentifier: 
+  nodes:
+  - {fileID: 5120822853774299705}
+  - {fileID: 5773923037332957300}
+  - {fileID: -8700839039771984374}
+  - {fileID: 3188934074304066737}
+--- !u!114 &3188934074304066737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
+  m_Name: file2.txt
+  m_EditorClassIdentifier: 
+--- !u!114 &5120822853774299705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
+  m_Name: UserA
+  m_EditorClassIdentifier: 
+  neighbours:
+  - {fileID: 5773923037332957300}
+--- !u!114 &5773923037332957300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
+  m_Name: Documents
+  m_EditorClassIdentifier: 
+  neighbours:
+  - {fileID: -8700839039771984374}
+  - {fileID: 3188934074304066737}
