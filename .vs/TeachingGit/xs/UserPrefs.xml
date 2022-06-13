@@ -1,20 +1,28 @@
 ﻿<Properties StartupConfiguration="{F06A4C96-765E-42CB-E9FA-A7890B61E205}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/CMD.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/RootCommands/TOUCH.cs">
     <Files>
-      <File FileName="Assets/Scripts/CMD.cs" Line="32" Column="1" />
-      <File FileName="Assets/Scripts/Commands.cs" Line="12" Column="33" />
+      <File FileName="Assets/Scripts/CMD.cs" Line="58" Column="25" />
+      <File FileName="Assets/Scripts/Commands.cs" Line="13" Column="5" />
+      <File FileName="Assets/Scripts/pwd.cs" Line="5" Column="17" />
+      <File FileName="Assets/Scripts/RootCommands/LS.cs" Line="11" Column="6" />
+      <File FileName="Assets/Scripts/RootCommands/CD.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/RootCommands/GIT.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/RootCommands/MKDIR.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/RootCommands/MV.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/RootCommands/RMDIR.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/RootCommands/TOUCH.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ClassPad">
         <State name="__root__">
-          <Node />
+          <Node name="TeachingGit" selected="True" />
         </State>
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="2a3d2249-6888-4773-9718-ca4e28414147" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="0fe8c415-f1e0-4a04-a6af-82e1f3599f17" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

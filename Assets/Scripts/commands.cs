@@ -7,9 +7,7 @@ public class Commands : MonoBehaviour
     public void pwd(string options)
     {
         Debug.Log("You're in a directory");
-        //Debug.Log(options[0]);
-        //Debug.Log(options[1]);
-        //Debug.Log(options[2]);
+        Debug.Log(options);
     }
 
     public void ls(string options)
@@ -18,23 +16,27 @@ public class Commands : MonoBehaviour
         Debug.Log(options);
     }
 
-    public void mkdir()
+    public void mkdir(string options)
     {
         Debug.Log("New directory");
+        Debug.Log(options);
     }
 
-    public void rmdir()
+    public void rmdir(string options)
     {
         Debug.Log("Dead directory");
+        Debug.Log(options);
     }
 
-    public void mv()
+    public void mv(string options)
     {
         Debug.Log("Moving");
+        Debug.Log(options);
     }
 
-    public void touch()
+    public void touch(string options)
     {
         Debug.Log("New thing");
+        Debug.Log(options);
     }
 }
