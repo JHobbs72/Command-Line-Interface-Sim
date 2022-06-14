@@ -13,8 +13,9 @@ public class Node : ScriptableObject
         return node;
     }
 
-    public virtual Node[] getNeighbours()
+    public virtual List<Node> getNeighbours()
     {
         return null;
     }
+
 }

@@ -18,8 +18,8 @@ public class DirectoryNode : Node
         }
     }
 
-    public override Node[] getNeighbours()
+    public override List<Node> getNeighbours()
     {
-        return Neighbours.ToArray();
+        return Neighbours;
     }
 }

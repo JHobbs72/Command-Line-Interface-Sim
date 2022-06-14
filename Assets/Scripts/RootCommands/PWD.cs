@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class PWD : MonoBehaviour
 {
+    public GraphManager fileSystem;
+
     public void pwd(string options)
     {
-        Debug.Log("You're in a directory");
-        Debug.Log(options);
+        DirectoryNode currentNode = (DirectoryNode)fileSystem.getCurrentNode();
+        Debug.Log(">> " + currentNode.name);
     }
-
 }

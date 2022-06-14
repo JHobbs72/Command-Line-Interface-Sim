@@ -6,6 +6,7 @@ public class GraphManager : MonoBehaviour
 {
     private Graph graph;
     private Node currentNode;
+    private List<Node> currentPath;
 
     // Start is called before the first frame update
     void Start()
@@ -17,7 +18,7 @@ public class GraphManager : MonoBehaviour
         FileNode file1 = FileNode.Create<FileNode>("file1.txt");
         FileNode file2 = FileNode.Create<FileNode>("file2.txt");
         rootNode.Neighbours.Add(Documents);
-        Documents.Neighbours.Add(file1);
+        rootNode.Neighbours.Add(file1);
         Documents.Neighbours.Add(file2);
 
         graph.AddNode(rootNode);
@@ -26,6 +27,8 @@ public class GraphManager : MonoBehaviour
         graph.AddNode(file2);
 
         currentNode = rootNode;
+        currentPath = new List<Node>();
+        currentPath.Add(rootNode);
     }
 
     public Node getRootNode()
@@ -38,17 +41,31 @@ public class GraphManager : MonoBehaviour
         return currentNode;
     }
 
-    public Node[] getNeighbours()
+    public void setCurrentNode(DirectoryNode node)
     {
-        if (currentNode.GetType().ToString().Equals("DiretoryNode"))
+        currentNode = node;
+    }
+
+    public List<Node> getCurrentPath()
+    {
+        return currentPath;
+    }
+
+    public void addToCurrentPath(DirectoryNode directory)
+    {
+        currentPath.Add(directory);
+    }
+
+    public DirectoryNode stepBackInPath()
+    {
+        if (currentPath.Count > 1)
         {
-            Debug.Log("Directory Node");
-            // May return null as using method from 'Node' instead of 'Directory Node'
-            return currentNode.getNeighbours();
+            currentPath.RemoveAt(currentPath.Count - 1);
+            return (DirectoryNode)currentPath[currentPath.Count - 1];
         }
         else
         {
-            Debug.Log("Cannot get neighbours of leaf node");
+            Debug.Log("At root");
             return null;
         }
     }

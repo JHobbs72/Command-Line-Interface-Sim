@@ -8,14 +8,15 @@ public class LS : MonoBehaviour
 
     public void ls(string options)
     {
-        Debug.Log("Listing files");
-        Debug.Log(options);
+        List<Node> neighbours = fileSystem.getCurrentNode().getNeighbours();
+        List<string> neighbourNamesList = new List<string>();
 
-        Node localCurrentNode = fileSystem.getCurrentNode();
-        localCurrentNode.GetType();
+        for (int i = 0; i < neighbours.Count; i++)
+        {
+            neighbourNamesList.Add(neighbours[i].name);
+        }
 
-        //Node[] neighbours = localCurrentNode.getNeighbours();
+        Debug.Log(">> " + string.Join(", ", neighbourNamesList));
 
-        // Return all neighbours of current node
     }
 }
