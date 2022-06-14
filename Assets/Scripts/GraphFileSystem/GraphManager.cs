@@ -5,7 +5,7 @@ using UnityEngine;
 public class GraphManager : MonoBehaviour
 {
     private Graph graph;
-    private Node currentNode;
+    private DirectoryNode currentNode;
     private List<Node> currentPath;
 
     // Start is called before the first frame update
@@ -29,6 +29,30 @@ public class GraphManager : MonoBehaviour
         currentNode = rootNode;
         currentPath = new List<Node>();
         currentPath.Add(rootNode);
+    }
+
+    public void addLeafNode(string name)
+    {
+        FileNode newFile = FileNode.Create<FileNode>(name);
+        currentNode.Neighbours.Add(newFile);
+        graph.AddNode(newFile);
+    }
+
+    public void removeLeafNode(Node node)
+    {
+        graph.removeLeafNode(node);
+    }
+
+    public void removeDirectoryNode(Node node)
+    {
+        graph.removeDirectoryNode(node);
+    }
+
+    public void addDirectoryNode(string name)
+    {
+        DirectoryNode newDir = DirectoryNode.Create<DirectoryNode>(name);
+        currentNode.Neighbours.Add(newDir);
+        graph.AddNode(newDir);
     }
 
     public Node getRootNode()

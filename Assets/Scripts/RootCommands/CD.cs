@@ -47,7 +47,6 @@ public class CD : MonoBehaviour
 
     private void checkNextStep(Node checkNode, string target)
     {
-        //Debug.Log(":: " + string.Join(", ", checkNode.getNeighbours()));
         List<Node> children = checkNode.getNeighbours();
 
         foreach (Node child in children)

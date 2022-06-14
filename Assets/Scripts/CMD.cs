@@ -53,6 +53,8 @@ public class CMD : MonoBehaviour
         AddListener(git);
         GameObject cd = GameObject.Find("cd");
         AddListener(cd);
+        GameObject rm = GameObject.Find("rm");
+        AddListener(rm);
         AddListener(gameObject);
     }
 }

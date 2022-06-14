@@ -1,16 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class TOUCH : MonoBehaviour
 {
+    public GraphManager fileSystem;
+
     public void touch(string options)
     {
-        Debug.Log("New thing");
-        Debug.Log(options);
+        options = Regex.Replace(options, @"\s+", "");
 
-        // Get current node (directory node)
-        // Create new node (file or directory)
-        // Add new node to neighbours of current node
+        if (options.IndexOf('.') == -1)
+        {
+            options += ".txt";
+        }
+
+        fileSystem.addLeafNode(options);
     }
 }

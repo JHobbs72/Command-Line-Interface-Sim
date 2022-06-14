@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class MKDIR : MonoBehaviour
 {
+    public GraphManager fileSystem;
+
     public void mkdir(string options)
     {
-        Debug.Log("New directory");
-        Debug.Log(options);
+        options = Regex.Replace(options, @"[\s/,.]+", "");
+
+        fileSystem.addDirectoryNode(options);
     }
 }

@@ -36,6 +36,23 @@ public class Graph : ScriptableObject
         AssetDatabase.SaveAssets();
     }
 
+    public void removeDirectoryNode(Node node)
+    {
+        if (node.getNeighbours().Count > 0)
+        {
+            Debug.Log(">> Cannot remove - has children");
+        }
+        else
+        {
+            Nodes.Remove(node);
+        }
+    }
+
+    public void removeLeafNode(Node node)
+    {
+        Nodes.Remove(node);
+    }
+
     public Node getRootNode()
     {
         return Nodes[0];

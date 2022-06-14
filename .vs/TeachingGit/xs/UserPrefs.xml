@@ -1,23 +1,20 @@
 ﻿<Properties StartupConfiguration="{F06A4C96-765E-42CB-E9FA-A7890B61E205}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/RootCommands/CD.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/RootCommands/GIT.cs">
     <Files>
-      <File FileName="Assets/Scripts/RootCommands/LS.cs" Line="12" Column="62" />
-      <File FileName="Assets/Scripts/RootCommands/CD.cs" Line="31" Column="48" />
-      <File FileName="Assets/Scripts/RootCommands/PWD.cs" Line="13" Column="6" />
-      <File FileName="Assets/Scripts/GraphFileSystem/GraphManager.cs" Line="45" Column="6" NotebookId="1" />
-      <File FileName="Assets/Scripts/GraphFileSystem/Graph.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets/Scripts/RootCommands/LS.cs" Line="19" Column="22" />
+      <File FileName="Assets/Scripts/RootCommands/CD.cs" Line="50" Column="57" />
+      <File FileName="Assets/Scripts/RootCommands/PWD.cs" />
+      <File FileName="Assets/Scripts/RootCommands/TOUCH.cs" Line="12" Column="54" />
+      <File FileName="Assets/Scripts/RootCommands/MKDIR.cs" Line="8" Column="36" />
+      <File FileName="Assets/Scripts/RootCommands/RM.cs" Line="18" Column="49" />
+      <File FileName="Assets/Scripts/GraphFileSystem/Graph.cs" Line="53" Column="28" NotebookId="1" />
+      <File FileName="Assets/Scripts/GraphFileSystem/GraphManager.cs" Line="48" Column="38" NotebookId="1" />
+      <File FileName="Assets/Scripts/RootCommands/GIT.cs" Line="1" Column="1" NotebookId="1" />
     </Files>
-    <Pads>
-      <Pad Id="ClassPad">
-        <State name="__root__">
-          <Node name="TeachingGit" selected="True" />
-        </State>
-      </Pad>
-    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="b0d976f1-fb71-416b-9a58-4ca0ef9638c6" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="a9b25e04-3a70-4e69-99f1-50bbb64120fe" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

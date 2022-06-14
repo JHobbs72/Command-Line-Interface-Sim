@@ -384,6 +384,7 @@
 "Assets/Scripts/RootCommands/MKDIR.cs"
 "Assets/Scripts/RootCommands/MV.cs"
 "Assets/Scripts/RootCommands/PWD.cs"
+"Assets/Scripts/RootCommands/RM.cs"
 "Assets/Scripts/RootCommands/RMDIR.cs"
 "Assets/Scripts/RootCommands/TOUCH.cs"
 "Assets/TextMesh Pro/Examples & Extras/Scripts/Benchmark01.cs"
