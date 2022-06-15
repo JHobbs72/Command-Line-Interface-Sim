@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class LS : MonoBehaviour
 {
+    // Root command for 'list' - list contents of current directory
+
     public GraphManager fileSystem;
 
     public void ls(string options)

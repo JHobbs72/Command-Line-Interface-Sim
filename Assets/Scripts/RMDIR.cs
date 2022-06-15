@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class RMDIR : MonoBehaviour
 {
+    // Root command for 'remove directory' - Remove empty directory
+
     public GraphManager fileSystem;
 
     public void rmdir(string option)

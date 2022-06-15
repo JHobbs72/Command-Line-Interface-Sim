@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class RM : MonoBehaviour
 {
+    // Root command for 'remove' - remove a file
+
     public GraphManager fileSystem;
 
     public void rm(string option)
@@ -12,6 +14,9 @@ public class RM : MonoBehaviour
         List<Node> neighbours = currentNode.getNeighbours();
         bool found = false;
 
+        // Check requested node is a child of the current node and is a file not
+        // a directory
+        // TODO move is a file check to graph.cs?
         foreach (Node targetNode in neighbours)
         {
             if (targetNode.GetType() != typeof(FileNode))

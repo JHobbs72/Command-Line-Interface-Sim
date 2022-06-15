@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class DirectoryNode : Node
 {
+    // Inherits from object 'Node' - describes a node that can have child nodes
+    // In this context that must be a directory
+
     [SerializeField]
     private List<Node> neighbours;
     public List<Node> Neighbours

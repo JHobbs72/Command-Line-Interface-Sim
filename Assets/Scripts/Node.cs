@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Node : ScriptableObject
 {
+    // Generic node object
+
     public static T Create<T>(string name)
        where T : Node
     {

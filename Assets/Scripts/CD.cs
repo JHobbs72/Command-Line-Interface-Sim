@@ -4,12 +4,16 @@ using UnityEngine;
 
 public class CD : MonoBehaviour
 {
+    // Root command for 'change directory'
+    // Take '..', '<path>' or '<directory>' and move to the appropriate directory
+
     public GraphManager fileSystem;
     private bool validPath = true;
     private Node localCurrentNode;
 
     public void cd(string options)
     {
+        // Move 'back' a directory
         if (options == "..")
         {
             DirectoryNode lastNode = fileSystem.stepBackInPath();
@@ -21,6 +25,7 @@ public class CD : MonoBehaviour
         }
         else
         {
+            // Get component directories & check path validity
             string[] path = options.Split('/');
             localCurrentNode = fileSystem.getCurrentNode();
 
@@ -45,6 +50,7 @@ public class CD : MonoBehaviour
         }
     }
 
+    // Check the requested next directory exists
     private void checkNextStep(Node checkNode, string target)
     {
         List<Node> children = checkNode.getNeighbours();
@@ -66,6 +72,7 @@ public class CD : MonoBehaviour
         }
     }
 
+    // Once valid, execute - go to valid file path
     private void executePathChange(Node localCurrentNode, string[] targetPath)
     {
         foreach (string nextDir in targetPath)
@@ -84,6 +91,7 @@ public class CD : MonoBehaviour
         }
     }
 
+    // Display new path to user
     private void printPath()
     {
         List<string> pathNames = new List<string>();

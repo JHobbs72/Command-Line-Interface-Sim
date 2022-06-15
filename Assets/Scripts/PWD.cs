@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PWD : MonoBehaviour
 {
+    // Root command for 'print working directory'
+    // Display current file path - path from root node to current node
+
     public GraphManager fileSystem;
 
     public void pwd(string options)
@@ -14,7 +17,8 @@ public class PWD : MonoBehaviour
         {
             currentPathNames.Add(node.name);
         }
-        Debug.Log(">> " + string.Join('/', currentPathNames));
+        
         fileSystem.sendOutput(string.Join('/', currentPathNames));
+        Debug.Log(">> " + string.Join('/', currentPathNames));
     }
 }

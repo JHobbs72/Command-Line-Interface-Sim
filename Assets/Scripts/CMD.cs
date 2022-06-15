@@ -5,10 +5,11 @@ using System.Linq;
 
 public class CMD : MonoBehaviour
 {
+    // Directs commands to relevant methods, 'Command' method called when an
+    // input is made
 
     private List<GameObject> listeners = new List<GameObject>();
 
-    // Start is called before the first frame update
     void Start()
     {
         AddListeners();
@@ -22,6 +23,8 @@ public class CMD : MonoBehaviour
         }
     }
 
+    // Split input into individual components then send the 'branch commands' to
+    // the correct root
     public void Command(string input)
     {
         string[] commands = input.Split(new char[] { ' ' });
@@ -35,6 +38,8 @@ public class CMD : MonoBehaviour
         }
     }
 
+    // Add 'root commands' - used to determine if the input should be forwarded
+    // and if so where to
     private void AddListeners()
     {
         GameObject pwd = GameObject.Find("pwd");

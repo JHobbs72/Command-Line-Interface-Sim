@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Graph : ScriptableObject
 {
+    // Contains methods to manage the structure of the graph (file structure)
+
     private GraphManager outputSource;
 
     public void Awake()
@@ -43,6 +45,8 @@ public class Graph : ScriptableObject
         AssetDatabase.SaveAssets();
     }
 
+    // Extra step in removing a 'directory node' - must be removed from it's
+    // parent's neighbours list
     public void removeDirectoryNode(DirectoryNode parent, Node node)
     {
         if (node.getNeighbours().Count > 0)

@@ -5,8 +5,7 @@ public class home : MonoBehaviour
 {
     public void homeScreen()
     {
+        // Load home screen
         SceneManager.LoadScene("Home");
     }
 }
-
-// Test comment for git

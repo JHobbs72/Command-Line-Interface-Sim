@@ -5,19 +5,15 @@ using UnityEngine.UI;
 
 public class autoScroll : MonoBehaviour
 {
+    // Auto scroll to mimic real terminal window - latest commands added to the
+    // bottom of the window, auto scroll so latest commands are visable
+
     [SerializeField]
     private Scrollbar bar;
 
-    // Start is called before the first frame update
     void Start()
     {
         bar.GetComponent<Scrollbar>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void updateScroll()
