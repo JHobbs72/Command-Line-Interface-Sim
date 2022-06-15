@@ -1,23 +1,16 @@
 ﻿<Properties StartupConfiguration="{F06A4C96-765E-42CB-E9FA-A7890B61E205}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/RootCommands/TOUCH.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Graph.cs">
     <Files>
-      <File FileName="Assets/Scripts/RootCommands/LS.cs" Line="12" Column="55" />
-      <File FileName="Assets/Scripts/RootCommands/CD.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/RootCommands/PWD.cs" Line="17" Column="60" />
-      <File FileName="Assets/Scripts/RootCommands/TOUCH.cs" Line="19" Column="26" />
-      <File FileName="Assets/Scripts/RootCommands/MKDIR.cs" Line="8" Column="36" />
-      <File FileName="Assets/Scripts/RootCommands/RM.cs" Line="12" Column="61" />
-      <File FileName="Assets/Scripts/RootCommands/RMDIR.cs" Line="24" Column="1" />
-      <File FileName="Assets/Scripts/GraphFileSystem/Node.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/GraphFileSystem/Graph.cs" Line="39" Column="28" NotebookId="1" />
-      <File FileName="Assets/Scripts/GraphFileSystem/GraphManager.cs" Line="48" Column="49" NotebookId="1" />
-      <File FileName="Assets/Scripts/GraphFileSystem/DirectoryNode.cs" Line="28" Column="33" NotebookId="1" />
-      <File FileName="Assets/Scripts/GraphFileSystem/FileNode.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets/Scripts/GraphManager.cs" Line="11" Column="20" />
+      <File FileName="Assets/Scripts/outputText.cs" Line="16" Column="13" />
+      <File FileName="Assets/Scripts/autoScroll.cs" Line="8" Column="20" />
+      <File FileName="Assets/Scripts/PWD.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Graph.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="8328c044-a401-4b09-aacb-c0cea0b99e05" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="66440c68-7562-4924-8aeb-86fe980a0894" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
