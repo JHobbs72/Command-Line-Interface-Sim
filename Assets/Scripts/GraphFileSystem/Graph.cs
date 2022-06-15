@@ -36,7 +36,7 @@ public class Graph : ScriptableObject
         AssetDatabase.SaveAssets();
     }
 
-    public void removeDirectoryNode(Node node)
+    public void removeDirectoryNode(DirectoryNode parent, Node node)
     {
         if (node.getNeighbours().Count > 0)
         {
@@ -45,12 +45,14 @@ public class Graph : ScriptableObject
         else
         {
             Nodes.Remove(node);
+            parent.removeNeighbour(node);
         }
     }
 
-    public void removeLeafNode(Node node)
+    public void removeLeafNode(DirectoryNode parent, FileNode target)
     {
-        Nodes.Remove(node);
+        Nodes.Remove(target);
+        parent.removeNeighbour(target);
     }
 
     public Node getRootNode()

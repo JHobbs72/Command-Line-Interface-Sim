@@ -22,4 +22,9 @@ public class DirectoryNode : Node
     {
         return Neighbours;
     }
+
+    public void removeNeighbour(Node node)
+    {
+        Neighbours.Remove(node);
+    }
 }

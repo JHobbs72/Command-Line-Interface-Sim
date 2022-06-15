@@ -8,14 +8,22 @@ public class RM : MonoBehaviour
 
     public void rm(string option)
     {
-        List<Node> neighbours = fileSystem.getCurrentNode().getNeighbours();
+        DirectoryNode currentNode = (DirectoryNode)fileSystem.getCurrentNode();
+        List<Node> neighbours = currentNode.getNeighbours();
         bool found = false;
 
-        foreach (Node node in neighbours)
+        foreach (Node targetNode in neighbours)
         {
-            if (node.name == option)
+            if (targetNode.GetType() != typeof(FileNode))
             {
-                fileSystem.removeLeafNode(node);
+                Debug.Log("Cannot remove - not a file.");
+                break;
+            }
+
+            if (targetNode.name == option)
+            {
+                fileSystem.removeLeafNode(currentNode, (FileNode)targetNode);
+                List<Node> newNeighbours = fileSystem.getCurrentNode().getNeighbours();
                 found = true;
                 break;
             }

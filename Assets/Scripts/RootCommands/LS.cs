@@ -8,7 +8,8 @@ public class LS : MonoBehaviour
 
     public void ls(string options)
     {
-        List<Node> neighbours = fileSystem.getCurrentNode().getNeighbours();
+        DirectoryNode currentNode = (DirectoryNode)fileSystem.getCurrentNode();
+        List<Node> neighbours = currentNode.getNeighbours();
         List<string> neighbourNamesList = new List<string>();
 
         for (int i = 0; i < neighbours.Count; i++)

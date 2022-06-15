@@ -8,14 +8,15 @@ public class RMDIR : MonoBehaviour
 
     public void rmdir(string option)
     {
-        List<Node> neighbours = fileSystem.getCurrentNode().getNeighbours();
+        DirectoryNode currentNode = (DirectoryNode)fileSystem.getCurrentNode();
+        List<Node> neighbours = currentNode.getNeighbours();
         bool found = false;
 
         foreach (Node node in neighbours)
         {
             if (node.name == option)
             {
-                fileSystem.removeDirectoryNode(node);
+                fileSystem.removeDirectoryNode(currentNode, node);
                 found = true;
                 break;
             }

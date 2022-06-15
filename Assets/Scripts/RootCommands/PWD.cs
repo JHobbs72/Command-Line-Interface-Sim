@@ -8,7 +8,12 @@ public class PWD : MonoBehaviour
 
     public void pwd(string options)
     {
-        DirectoryNode currentNode = (DirectoryNode)fileSystem.getCurrentNode();
-        Debug.Log(">> " + currentNode.name);
+        List<Node> currentPath = fileSystem.getCurrentPath();
+        List<string> currentPathNames = new List<string>();
+        foreach (Node node in currentPath)
+        {
+            currentPathNames.Add(node.name);
+        }
+        Debug.Log(">> " + string.Join('/', currentPathNames));
     }
 }

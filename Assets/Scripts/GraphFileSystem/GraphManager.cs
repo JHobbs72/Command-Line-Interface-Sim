@@ -38,14 +38,14 @@ public class GraphManager : MonoBehaviour
         graph.AddNode(newFile);
     }
 
-    public void removeLeafNode(Node node)
+    public void removeLeafNode(DirectoryNode parentNode, FileNode targetNode)
     {
-        graph.removeLeafNode(node);
+        graph.removeLeafNode(parentNode, targetNode);
     }
 
-    public void removeDirectoryNode(Node node)
+    public void removeDirectoryNode(DirectoryNode parent, Node node)
     {
-        graph.removeDirectoryNode(node);
+        graph.removeDirectoryNode(parent, node);
     }
 
     public void addDirectoryNode(string name)
