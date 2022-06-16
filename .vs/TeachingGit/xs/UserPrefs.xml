@@ -1,26 +1,26 @@
 ﻿<Properties StartupConfiguration="{F06A4C96-765E-42CB-E9FA-A7890B61E205}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/RM.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Graph.cs">
     <Files>
       <File FileName="Assets/Scripts/Graph.cs" Line="49" Column="32" />
-      <File FileName="Assets/Scripts/GraphManager.cs" Line="112" Column="1" />
-      <File FileName="Assets/Scripts/CMD.cs" Line="27" Column="24" />
-      <File FileName="Assets/Scripts/Node.cs" Line="9" Column="1" />
-      <File FileName="Assets/Scripts/DirectoryNode.cs" Line="8" Column="48" />
-      <File FileName="Assets/Scripts/FileNode.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/outputText.cs" Line="8" Column="43" />
-      <File FileName="Assets/Scripts/autoScroll.cs" Line="9" Column="72" />
-      <File FileName="Assets/Scripts/PWD.cs" Line="8" Column="71" />
-      <File FileName="Assets/Scripts/CD.cs" Line="94" Column="32" />
-      <File FileName="Assets/Scripts/LS.cs" Line="12" Column="6" />
-      <File FileName="Assets/Scripts/MKDIR.cs" Line="11" Column="1" />
-      <File FileName="Assets/Scripts/RM.cs" Line="7" Column="26" />
-      <File FileName="Assets/Scripts/RMDIR.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/TOUCH.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/GraphManager.cs" />
+      <File FileName="Assets/Scripts/CMD.cs" />
+      <File FileName="Assets/Scripts/Node.cs" />
+      <File FileName="Assets/Scripts/DirectoryNode.cs" />
+      <File FileName="Assets/Scripts/FileNode.cs" />
+      <File FileName="Assets/Scripts/outputText.cs" />
+      <File FileName="Assets/Scripts/autoScroll.cs" />
+      <File FileName="Assets/Scripts/PWD.cs" />
+      <File FileName="Assets/Scripts/CD.cs" />
+      <File FileName="Assets/Scripts/LS.cs" />
+      <File FileName="Assets/Scripts/MKDIR.cs" />
+      <File FileName="Assets/Scripts/RM.cs" />
+      <File FileName="Assets/Scripts/RMDIR.cs" />
+      <File FileName="Assets/Scripts/TOUCH.cs" Line="14" Column="65" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="66440c68-7562-4924-8aeb-86fe980a0894" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="94d1644e-ad15-4f24-8d43-6b4bda26f0e7" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

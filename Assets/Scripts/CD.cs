@@ -8,11 +8,13 @@ public class CD : MonoBehaviour
     // Take '..', '<path>' or '<directory>' and move to the appropriate directory
 
     public GraphManager fileSystem;
-    private bool validPath = true;
+    private bool validPath;
     private Node localCurrentNode;
+    private string invalidNode;
 
     public void cd(string options)
     {
+        validPath = true;
         // Move 'back' a directory
         if (options == "..")
         {
@@ -34,7 +36,8 @@ public class CD : MonoBehaviour
             {
                 if (validPath)
                 {
-                    checkNextStep(localCurrentNode, dir);
+                    invalidNode = dir;
+                    checkNextStep((DirectoryNode)localCurrentNode, dir);
                 }
                 else
                 {
@@ -47,11 +50,17 @@ public class CD : MonoBehaviour
                 executePathChange(fileSystem.getCurrentNode(), path);
                 printPath();
             }
+            else
+            {
+                fileSystem.sendOutput("No directory named " + invalidNode);
+                Debug.Log("No directory named " + invalidNode);
+                localCurrentNode = fileSystem.getCurrentNode();
+            }
         }
     }
 
     // Check the requested next directory exists
-    private void checkNextStep(Node checkNode, string target)
+    private void checkNextStep(DirectoryNode checkNode, string target)
     {
         List<Node> children = checkNode.getNeighbours();
 
@@ -60,14 +69,12 @@ public class CD : MonoBehaviour
             if (child.name == target && child.GetType() == typeof(DirectoryNode))
             {
                 localCurrentNode = child;
+                validPath = true;
                 break;
             }
             else
             {
-                fileSystem.sendOutput("No directory named " + target);
-                Debug.Log("No directory named " + target);
                 validPath = false;
-                localCurrentNode = fileSystem.getCurrentNode();
             }
         }
     }
