@@ -5,16 +5,16 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 637903651100000000
-    m_Hash: 738830550
+      ticks: 637909756740000000
+    m_Hash: 1101789607
   m_LockFileStatus:
     m_FilePath: /Users/jakehobbs/Documents/Unity-Projects/TeachingGit/Packages/packages-lock.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 637903651100000000
-    m_Hash: 2134303225
+      ticks: 637909756740000000
+    m_Hash: 1284109930
 m_EmbeddedPackageManifests:
   m_ManifestsStatus: {}
 m_LocalPackages:
@@ -265,12 +265,12 @@ m_ResolvedPackages:
   unityLifecycle:
     version: 1.0.0
     nextVersion: 
-- packageId: com.unity.ide.rider@3.0.13
+- packageId: com.unity.ide.rider@3.0.14
   testable: 0
   isDirectDependency: 1
-  version: 3.0.13
+  version: 3.0.14
   source: 1
-  resolvedPath: /Users/jakehobbs/Documents/Unity-Projects/TeachingGit/Library/PackageCache/com.unity.ide.rider@3.0.13
+  resolvedPath: /Users/jakehobbs/Documents/Unity-Projects/TeachingGit/Library/PackageCache/com.unity.ide.rider@3.0.14
   assetPath: Packages/com.unity.ide.rider
   name: com.unity.ide.rider
   displayName: JetBrains Rider Editor
@@ -337,13 +337,13 @@ m_ResolvedPackages:
     capabilities: 7
   hideInEditor: 1
   isAssetStorePackage: 0
-  datePublishedTicks: 637837345400000000
+  datePublishedTicks: 637861245770000000
   documentationUrl: 
   hasRepository: 1
   repository:
     type: git
     url: https://github.cds.internal.unity3d.com/unity/com.unity.ide.rider.git
-    revision: 26f15837ac7ebf5038274dcc39e2b79da5fcdc93
+    revision: e6bfc84a08a0876a2c20ec2ee0883b5ece331dfd
     path: 
   unityLifecycle:
     version: 3.0.13
@@ -2954,6 +2954,7 @@ m_ResolvedPackages:
     - 8.0.1
     - 8.0.2
     - 9.0.0-pre.1
+    - 9.0.0-pre.3
     compatible:
     - 7.0.4
     - 7.0.5
@@ -3166,6 +3167,7 @@ m_ResolvedPackages:
     - 7.0.0
     - 7.0.1
     - 8.0.0-pre.1
+    - 8.0.0-pre.3
     compatible:
     - 6.0.3
     - 6.0.4
@@ -3786,6 +3788,7 @@ m_ResolvedPackages:
     - 7.0.0-pre.4
     - 7.0.0
     - 8.0.0-pre.1
+    - 8.0.0-pre.2
     compatible:
     - 6.0.3
     verified: 6.0.3

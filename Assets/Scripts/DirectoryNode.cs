@@ -21,6 +21,8 @@ public class DirectoryNode : Node
         }
     }
 
+    // Important to check that this is being called on a <DirectoryNode> not a
+    // <Node>, to avoid erroneous results 
     public override List<Node> getNeighbours()
     {
         return Neighbours;
