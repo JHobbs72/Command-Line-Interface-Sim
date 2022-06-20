@@ -22,7 +22,7 @@ public class CD : MonoBehaviour
             if (lastNode != null)
             {
                 fileSystem.setCurrentNode(lastNode);
-                printPath();
+                printPath(options);
             }
         }
         else
@@ -48,7 +48,7 @@ public class CD : MonoBehaviour
             if (validPath)
             {
                 executePathChange(fileSystem.getCurrentNode(), path);
-                printPath();
+                printPath(options);
             }
             else
             {
@@ -99,7 +99,7 @@ public class CD : MonoBehaviour
     }
 
     // Display new path to user
-    private void printPath()
+    private void printPath(string options)
     {
         List<string> pathNames = new List<string>();
         foreach (Node dir in fileSystem.getCurrentPath())

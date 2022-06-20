@@ -12,7 +12,6 @@ public class LS : MonoBehaviour
     {
         DirectoryNode currentNode = (DirectoryNode)fileSystem.getCurrentNode();
         List<Node> neighbours = currentNode.getNeighbours();
-        Debug.Log("Neighbours: " + string.Join(',', neighbours));
         List<string> neighbourNamesList = new List<string>();
 
         for (int i = 0; i < neighbours.Count; i++)
@@ -22,6 +21,5 @@ public class LS : MonoBehaviour
 
         fileSystem.sendOutput(string.Join(", ", neighbourNamesList));
         Debug.Log(">> " + string.Join(", ", neighbourNamesList));
-
     }
 }

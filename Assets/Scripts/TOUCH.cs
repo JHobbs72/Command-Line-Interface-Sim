@@ -14,10 +14,12 @@ public class TOUCH : MonoBehaviour
         bool duplicate = false;
         List<Node> neighbours = fileSystem.getCurrentNode().getNeighbours();
         
-        // Remove white space & add 'file type' if none is given
+        // Remove white space & add .txt file extension if no valid extension is given
         options = Regex.Replace(options, @"\s+", "");
+        string lowerOptions = options.ToLower();
 
-        if (options.IndexOf('.') == -1)
+        if (!(lowerOptions.EndsWith(".txt") || lowerOptions.EndsWith(".doc") || lowerOptions.EndsWith(".html") || 
+            lowerOptions.EndsWith(".xls") || lowerOptions.EndsWith(".ppt")))
         {
             options += ".txt";
         }

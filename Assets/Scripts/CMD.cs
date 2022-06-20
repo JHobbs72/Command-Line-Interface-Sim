@@ -35,6 +35,7 @@ public class CMD : MonoBehaviour
         GameObject go = listeners.Where(obj => obj.name == commands[0]).SingleOrDefault();
         string[] options = commands.Skip(1).ToArray();
         string optionsString = string.Join(" ", options);
+        fileSystem.setCurrentCommand(input);
 
         try
         {
@@ -43,7 +44,6 @@ public class CMD : MonoBehaviour
         catch (NullReferenceException e)
         {
             fileSystem.sendOutput("Command not found " + commands[0]);
-            // throw;
         }
     }
 

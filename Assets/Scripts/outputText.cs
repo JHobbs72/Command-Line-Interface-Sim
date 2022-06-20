@@ -15,8 +15,15 @@ public class outputText : MonoBehaviour
         output.text = ">> ";
     }
 
-    public void addOutput(string content)
+    public void addOutput(string command, string content)
     {
-        output.text += "\n>> " + content;
+        if (content.Length == 0)
+        {
+            output.text += "\n>> " + command;
+        }
+        else
+        {
+            output.text += "\n>> " + command + "\n" + content;
+        }
     }
 }

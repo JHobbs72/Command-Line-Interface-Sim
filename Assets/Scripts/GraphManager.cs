@@ -11,6 +11,7 @@ public class GraphManager : MonoBehaviour
     private DirectoryNode currentNode;
     private List<Node> currentPath;
     private outputText outputSource;
+    private string currentCommand;
 
     void Start()
     {
@@ -36,6 +37,7 @@ public class GraphManager : MonoBehaviour
         currentPath.Add(rootNode);
 
         outputSource = FindObjectOfType<outputText>();
+        currentCommand = "";
     }
 
     public void addLeafNode(string name)
@@ -112,6 +114,11 @@ public class GraphManager : MonoBehaviour
 
     public void sendOutput(string content)
     {
-        outputSource.addOutput(content);
+        outputSource.addOutput(currentCommand, content);
+    }
+
+    public void setCurrentCommand(string command)
+    {
+        currentCommand = command;
     }
 }
