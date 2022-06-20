@@ -13,31 +13,35 @@ public class RM : MonoBehaviour
         DirectoryNode currentNode = (DirectoryNode)fileSystem.getCurrentNode();
         List<Node> neighbours = currentNode.getNeighbours();
         bool found = false;
+        bool isDirectory = false;
 
         // Check requested node is a child of the current node and is a file not
         // a directory
-        // TODO move is a file check to graph.cs?
+        // TODO move 'is a file' check to graph.cs?
         foreach (Node targetNode in neighbours)
         {
-            if (targetNode.GetType() != typeof(FileNode))
+            if (targetNode.name == option && targetNode.GetType() == typeof(FileNode))
             {
-                fileSystem.sendOutput("Cannot remove - not a file.");
-                Debug.Log("Cannot remove - not a file.");
+                fileSystem.removeLeafNode(currentNode, (FileNode)targetNode);
+                found = true;
+                fileSystem.sendOutput("");
                 break;
             }
 
-            if (targetNode.name == option)
+            if (targetNode.name == option && targetNode.GetType() == typeof(DirectoryNode))
             {
-                fileSystem.removeLeafNode(currentNode, (FileNode)targetNode);
-                List<Node> newNeighbours = fileSystem.getCurrentNode().getNeighbours();
-                found = true;
-                break;
+                isDirectory = true;
             }
         }
 
-        if (!found)
+        if (!found && isDirectory)
         {
-            fileSystem.sendOutput("Cannot remove - not a file.");
+            fileSystem.sendOutput(option + " is a directory");
+            Debug.Log("This is a directory");
+        }
+        else if (!found)
+        {
+            fileSystem.sendOutput("No file found named " + option);
             Debug.Log(">> No file found named " + option);
         }
     }

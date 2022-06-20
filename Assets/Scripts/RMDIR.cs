@@ -20,6 +20,7 @@ public class RMDIR : MonoBehaviour
             {
                 fileSystem.removeDirectoryNode(currentNode, node);
                 found = true;
+                fileSystem.sendOutput("");
                 break;
             }
         }
