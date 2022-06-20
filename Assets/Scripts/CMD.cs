@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,9 +11,12 @@ public class CMD : MonoBehaviour
 
     private List<GameObject> listeners = new List<GameObject>();
 
+    private GraphManager fileSystem;
+
     void Start()
     {
         AddListeners();
+        fileSystem = FindObjectOfType<GraphManager>();
     }
 
     public void AddListener(GameObject listener)
@@ -32,9 +36,14 @@ public class CMD : MonoBehaviour
         string[] options = commands.Skip(1).ToArray();
         string optionsString = string.Join(" ", options);
 
-        if (go != null)
+        try
         {
             go.SendMessage(commands[0], optionsString, SendMessageOptions.RequireReceiver);
+        }
+        catch (NullReferenceException e)
+        {
+            fileSystem.sendOutput("Command not found " + commands[0]);
+            // throw;
         }
     }
 

@@ -10,11 +10,30 @@ public class MKDIR : MonoBehaviour
     // or '.' in directory name
 
     public GraphManager fileSystem;
-
+    
     public void mkdir(string options)
     {
-        options = Regex.Replace(options, @"[\s/,.]+", "");
+        bool duplicate = false;
+        List<Node> neighbours = fileSystem.getCurrentNode().getNeighbours();
+        
+        options = Regex.Replace(options, @"[\s/,.:'|]+", "");
 
-        fileSystem.addDirectoryNode(options);
+        foreach (Node neighbour in neighbours)
+        {
+            if (neighbour.GetType() == typeof(DirectoryNode) && neighbour.name == options)
+            {
+                duplicate = true;
+            }
+        }
+
+        if (duplicate)
+        {
+            fileSystem.sendOutput("A directory called " + options + " already exists");
+        }
+        else
+        {
+            fileSystem.addDirectoryNode(options);
+            fileSystem.sendOutput("");
+        }
     }
 }
