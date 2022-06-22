@@ -11,6 +11,7 @@ public class MV : MonoBehaviour
 
     public void mv(string options)
     {
+        // TODO must be at least 2 long?
         string[] optionsString = options.Split(' ');
         string mvOpt = null;
         string[] sourceList = null;
@@ -25,11 +26,11 @@ public class MV : MonoBehaviour
             // Remove this from the command
             optionsString = optionsString.Skip(1).ToArray();
         }
-        // Destination (name, file, dir or path)
+        // Destination is last element (name, file, dir or path)
         dest = optionsString[optionsString.Length - 1];
         // Remaining must be the source
         sourceList = optionsString.SkipLast(1).ToArray();
-        // If source is not list use just single string
+        // If source is not list (case 1 only) use just single string
         if (sourceList.Length == 1)
         {
             source = sourceList[0];
@@ -41,7 +42,7 @@ public class MV : MonoBehaviour
         if (sourceList != null && validPath(dest) == 1)
         {
             // Get list of nodes as source
-            Node[] nodeList = validSrcList(sourceList);
+            Node[] nodeList = validSrcList(fileSystem.getCurrentNode(), sourceList);
             // If sourceList contains a node that doesn't exist -> returns null
             if (nodeList != null)
             {
@@ -59,19 +60,112 @@ public class MV : MonoBehaviour
         {
             // Remove '/' from name
             source.TrimEnd('/');
-            if (exists(source).GetType() == typeof(DirectoryNode))
+            if (exists(fileSystem.getCurrentNode(), source).GetType() == typeof(DirectoryNode))
             {
-                rename(mvOpt, exists(source), dest);
+                rename(mvOpt, exists(fileSystem.getCurrentNode(), source), dest);
             }
         }
         
+        // Renaming a file
+        // if source is a file & exists && dest doesn't exist
+        // error if new name includes '/' 
+        if (source != null)
+        {
+            if (exists(fileSystem.getCurrentNode(), source).GetType() == typeof(FileNode) &&
+                exists(fileSystem.getCurrentNode(), dest) == null)
+            {
+                rename(mvOpt, exists(fileSystem.getCurrentNode(), source), dest);
+            }
+        }
         
+        // Overwrite within current dir
+        // if both source and dest are valid files
+        if (source != null)
+        {
+            if (exists(fileSystem.getCurrentNode(), source).GetType() == typeof(FileNode) &&
+                exists(fileSystem.getCurrentNode(), dest).GetType() == typeof(FileNode))
+            {
+                overwrite(mvOpt, exists(fileSystem.getCurrentNode(), source), 
+                    exists(fileSystem.getCurrentNode(), dest));
+            }
+        }
+        
+        // Move or overwrite
+        // if source is valid file and dest is valid path to end
+        if (source != null)
+        {
+            Node srcNode = exists(fileSystem.getCurrentNode(), source);
+            bool movetoDest = false;
+            if (srcNode.GetType() == typeof(FileNode) && validPath(dest) == 1)
+            {
+                // does this work?
+                string[] separatedPath = dest.Split('/');
+
+                // recursively call searchNeighbours to follow path and get last node
+                DirectoryNode endNode = searchNeighbours((DirectoryNode)srcNode, 0, separatedPath);
+
+                foreach (Node node in endNode.getNeighbours())
+                {
+                    if (node.name == dest)
+                    {
+                        //move
+                        movetoDest = true;
+                        move(mvOpt, srcNode, endNode.name);
+                        break;
+                    }
+                }
+
+                if (movetoDest == false)
+                {
+                    // overwrite
+                    overwrite(mvOpt, srcNode, endNode);
+                }
+            }
+        }
+        
+        // move valid file or dir to new dir
+        if (source != null)
+        {
+            Node srcNode = exists(fileSystem.getCurrentNode(), source);
+            if ((srcNode.GetType() == typeof(DirectoryNode) || srcNode.GetType() == typeof(FileNode)) &&
+                validPath(dest) == 0)
+            {
+                string[] path = dest.Split('/');
+                DirectoryNode newDir = DirectoryNode.Create<DirectoryNode>(path[path.Length - 1]);
+                // Add newDir to relevant neighbours list
+                move(mvOpt, srcNode, newDir.name);
+                
+            }
+        }
     }
 
-    private Node exists(string target)
+    private DirectoryNode searchNeighbours(DirectoryNode dir, int item, string[] path)
+    {
+        DirectoryNode found = null;
+        List<Node> currentNeighbours = dir.getNeighbours();
+        foreach (Node node in currentNeighbours)
+        {
+            if (node.name == path[item] && node.GetType() == typeof(DirectoryNode))
+            {
+                found = (DirectoryNode)node;
+                break;
+            }
+        }
+
+        if (item < path.Length)
+        {
+            found = searchNeighbours(found, item + 1, path);
+        }
+
+        return found;
+    }
+
+    // Pass single string (target) as 'node' to be checked under what 'directory node' (searchArea)
+    // Returns the node if it exists else returns null
+    private Node exists(DirectoryNode searchArea, string target)
     {
         Node doesExist = null;
-        List<Node> neighbours = fileSystem.getCurrentNode().getNeighbours();
+        List<Node> neighbours = searchArea.getNeighbours();
         foreach (Node node in neighbours)
         {
             if (node.name == target)
@@ -83,18 +177,23 @@ public class MV : MonoBehaviour
         return doesExist;
     }
 
-    private Node[] validSrcList(string[] targets)
+    // Pass string array to check that each is a valid node
+    // return array of nodes if all are valid, else throw error on the first node that doesn't exist
+    private Node[] validSrcList(DirectoryNode searchArea, string[] targets)
     {
+        // Will call exists(searchArea, target[0,1,...])
         // If going to return null (invalid source list) throw error here to display which is causing the problem
+        return null;
     }
 
+    // Needed?
     // 1 -> valid directory
     // 0 -> valid file
     // -1 -> doesn't exist
     // Helper to check next in path
     private int validDest(string dest)
     {
-        
+        return 0;
     }
 
     // -1 -> invalid path
@@ -105,11 +204,12 @@ public class MV : MonoBehaviour
     {
         // split on '/'
         // foreach in list send to validDest
+        return 0;
     }
 
     private void rename(string mvOpt, Node src, string dest)
     {
-        
+        // Cannot have '-x' options i.e. mvOpt should be null
     }
 
     private void overwrite(string mvOpt, Node src, Node dest)

@@ -45,12 +45,17 @@ public class CMD : MonoBehaviour
         {
             fileSystem.sendOutput("Command not found " + commands[0]);
         }
+        
+        GameObject cmd = listeners.Where(obj => obj.name == "prevCmd").SingleOrDefault();
+        cmd.SendMessage("prevCmd", input, SendMessageOptions.RequireReceiver);
     }
 
     // Add 'root commands' - used to determine if the input should be forwarded
     // and if so where to
     private void AddListeners()
     {
+        GameObject prevCmd = GameObject.Find("prevCmd");
+        AddListener(prevCmd);
         GameObject pwd = GameObject.Find("pwd");
         AddListener(pwd);
         GameObject ls = GameObject.Find("ls");

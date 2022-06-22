@@ -43,6 +43,7 @@
   <ItemGroup>
      <Compile Include="Assets/Scripts/RM.cs" />
      <Compile Include="Assets/TextMesh Pro/Examples &amp; Extras/Scripts/SkewTextExample.cs" />
+     <Compile Include="Assets/Scripts/previousCmd.cs" />
      <Compile Include="Assets/TextMesh Pro/Examples &amp; Extras/Scripts/SimpleScript.cs" />
      <Compile Include="Assets/Scripts/section1.cs" />
      <Compile Include="Assets/Scripts/section4.cs" />
