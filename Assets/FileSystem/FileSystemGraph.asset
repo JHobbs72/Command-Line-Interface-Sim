@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7028778003382193953
+--- !u!114 &-9101003538724169810
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10,8 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
-  m_Name: file1.txt
+  m_Name: file2.txt
   m_EditorClassIdentifier: 
+--- !u!114 &-49418379664823357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
+  m_Name: UserA
+  m_EditorClassIdentifier: 
+  neighbours:
+  - {fileID: 2325622182876095027}
+  - {fileID: 6693929881924669909}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25,40 +40,11 @@ MonoBehaviour:
   m_Name: FileSystemGraph
   m_EditorClassIdentifier: 
   nodes:
-  - {fileID: 6355052321960202026}
-  - {fileID: 7480246388865931529}
-  - {fileID: -7028778003382193953}
-  - {fileID: 2885240040978494590}
-  - {fileID: 8953735069422743760}
---- !u!114 &2885240040978494590
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
-  m_Name: file2.txt
-  m_EditorClassIdentifier: 
---- !u!114 &6355052321960202026
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
-  m_Name: UserA
-  m_EditorClassIdentifier: 
-  neighbours:
-  - {fileID: 7480246388865931529}
-  - {fileID: -7028778003382193953}
-  - {fileID: 8953735069422743760}
---- !u!114 &7480246388865931529
+  - {fileID: -49418379664823357}
+  - {fileID: 2325622182876095027}
+  - {fileID: 6693929881924669909}
+  - {fileID: -9101003538724169810}
+--- !u!114 &2325622182876095027
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -71,8 +57,8 @@ MonoBehaviour:
   m_Name: Documents
   m_EditorClassIdentifier: 
   neighbours:
-  - {fileID: 2885240040978494590}
---- !u!114 &8953735069422743760
+  - {fileID: -9101003538724169810}
+--- !u!114 &6693929881924669909
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -82,5 +68,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
-  m_Name: myFile.txt
+  m_Name: file1.txt
   m_EditorClassIdentifier: 

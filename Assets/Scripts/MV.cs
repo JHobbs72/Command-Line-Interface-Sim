@@ -18,6 +18,13 @@ public class MV : MonoBehaviour
         string source = null;
         string dest = null;
 
+        if (options == "")
+        {
+            fileSystem.sendOutput("usage: mv [-f | -i | -n] [-v] source target \n" +
+                                  "           mv [-f | -i | -n] [-v] source ... directory");
+            return;
+        }
+
         // Separate '-x' option, source and destination
         if (optionsString[0].Contains('-') && optionsString[0].Length == 2)
         {

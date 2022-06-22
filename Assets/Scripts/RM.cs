@@ -10,6 +10,12 @@ public class RM : MonoBehaviour
 
     public void rm(string option)
     {
+        if (option == "")
+        {
+            fileSystem.sendOutput("usage: rm [-f | -i] [-dPRrvW] file ... \n           unlink file");
+            return;
+        }
+        
         DirectoryNode currentNode = (DirectoryNode)fileSystem.getCurrentNode();
         List<Node> neighbours = currentNode.getNeighbours();
         bool found = false;
@@ -37,12 +43,10 @@ public class RM : MonoBehaviour
         if (!found && isDirectory)
         {
             fileSystem.sendOutput(option + " is a directory");
-            Debug.Log("This is a directory");
         }
         else if (!found)
         {
             fileSystem.sendOutput("No file found named " + option);
-            Debug.Log(">> No file found named " + option);
         }
     }
 }

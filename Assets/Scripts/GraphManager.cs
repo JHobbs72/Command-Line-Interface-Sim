@@ -115,7 +115,6 @@ public class GraphManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("At root");
             sendOutput("At root");
             return null;
         }

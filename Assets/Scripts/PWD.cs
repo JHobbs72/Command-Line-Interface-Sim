@@ -19,6 +19,5 @@ public class PWD : MonoBehaviour
         }
         
         fileSystem.sendOutput(string.Join('/', currentPathNames));
-        Debug.Log(">> " + string.Join('/', currentPathNames));
     }
 }

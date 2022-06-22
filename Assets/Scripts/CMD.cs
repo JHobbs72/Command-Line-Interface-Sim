@@ -34,7 +34,9 @@ public class CMD : MonoBehaviour
         string[] commands = input.Split(new char[] { ' ' });
         GameObject go = listeners.Where(obj => obj.name == commands[0]).SingleOrDefault();
         string[] options = commands.Skip(1).ToArray();
+        Debug.Log("Options: " + options);
         string optionsString = string.Join(" ", options);
+        
         fileSystem.setCurrentCommand(input);
 
         try

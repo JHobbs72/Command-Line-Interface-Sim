@@ -20,6 +20,5 @@ public class LS : MonoBehaviour
         }
 
         fileSystem.sendOutput(string.Join(", ", neighbourNamesList));
-        Debug.Log(">> " + string.Join(", ", neighbourNamesList));
     }
 }

@@ -52,7 +52,6 @@ public class Graph : ScriptableObject
         if (node.getNeighbours().Count > 0)
         {
             outputSource.sendOutput("Cannot remove - has children");
-            Debug.Log(">> Cannot remove - has children");
         }
         else
         {

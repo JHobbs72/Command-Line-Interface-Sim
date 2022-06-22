@@ -14,6 +14,12 @@ public class CD : MonoBehaviour
 
     public void cd(string options)
     {
+        if (options == "")
+        {
+            // Go to root
+            fileSystem.sendOutput("");
+        }
+        
         validPath = true;
         // Move 'back' a directory
         if (options == "..")

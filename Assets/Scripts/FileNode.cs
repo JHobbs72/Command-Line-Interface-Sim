@@ -19,7 +19,6 @@ public class FileNode : Node
     public override List<Node> getNeighbours()
     {
         outputSource.sendOutput("Cannont get children on a leaf node");
-        Debug.Log("Cannont get children on a leaf node");
         return null;
     }
 

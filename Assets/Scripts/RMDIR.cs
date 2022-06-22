@@ -10,6 +10,12 @@ public class RMDIR : MonoBehaviour
 
     public void rmdir(string option)
     {
+        if (option == "")
+        {
+            fileSystem.sendOutput("usage: rmdir [-p] directory ...");
+            return;
+        }
+        
         DirectoryNode currentNode = (DirectoryNode)fileSystem.getCurrentNode();
         List<Node> neighbours = currentNode.getNeighbours();
         bool found = false;
@@ -34,11 +40,9 @@ public class RMDIR : MonoBehaviour
         if (!found && isFile)
         {
             fileSystem.sendOutput(option + " Is not a directory");
-            Debug.Log(option + " Is not a directory");
         } else if (!found)
         {
             fileSystem.sendOutput("No directory found named " + option);
-            Debug.Log(">> No directory found named " + option);
         }
     }
 }

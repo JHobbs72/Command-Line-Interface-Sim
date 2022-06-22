@@ -35,16 +35,12 @@ public class previousCmd : MonoBehaviour
         cmds.Add("");
         // Reset pointer
         point = cmds.Count - 1;
-
-        Debug.Log("previous commands: " + string.Join(',', cmds));
-        Debug.Log("Point: " + point);
     }
 
     private void showCmd(int? pointer)
     {
         if (pointer != null)
         {
-            Debug.Log(cmds[(int)pointer]);
             // Write to textbox
             cmdIn.text = cmds[(int)pointer];
             cmdIn.caretPosition = cmds[(int)pointer].Length;

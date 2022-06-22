@@ -13,6 +13,12 @@ public class MKDIR : MonoBehaviour
     
     public void mkdir(string options)
     {
+        if (options == "")
+        {
+            fileSystem.sendOutput("usage: mkdir [-pv] [-m mode] directory ...");
+            return;
+        }
+        
         bool duplicate = false;
         List<Node> neighbours = fileSystem.getCurrentNode().getNeighbours();
         
