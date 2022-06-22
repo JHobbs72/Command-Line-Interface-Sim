@@ -67,8 +67,8 @@ public class Graph : ScriptableObject
         parent.removeNeighbour(target);
     }
 
-    public Node getRootNode()
+    public DirectoryNode getRootNode()
     {
-        return Nodes[0];
+        return (DirectoryNode)Nodes[0];
     }
 }

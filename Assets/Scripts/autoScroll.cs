@@ -18,6 +18,9 @@ public class autoScroll : MonoBehaviour
 
     public void updateScroll()
     {
-        bar.value = 0;
+        if (bar.value != 0)
+        {
+            bar.value = 0;
+        }
     }
 }

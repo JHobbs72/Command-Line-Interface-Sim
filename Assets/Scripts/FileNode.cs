@@ -8,6 +8,7 @@ public class FileNode : Node
     // i.e. no children and in this context must be a file not a directory
 
     private GraphManager outputSource;
+    private string contents;
 
     public void Awake()
     {
@@ -20,5 +21,15 @@ public class FileNode : Node
         outputSource.sendOutput("Cannont get children on a leaf node");
         Debug.Log("Cannont get children on a leaf node");
         return null;
+    }
+
+    public void setFileContents(string toFillFile)
+    {
+        contents = toFillFile;
+    }
+
+    public string getFileContents()
+    {
+        return contents;
     }
 }

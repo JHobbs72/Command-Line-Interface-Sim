@@ -15,7 +15,6 @@ public class RMDIR : MonoBehaviour
         bool found = false;
         bool isFile = false;
 
-        // TODO move 'is a directory' check to graph.cs?
         foreach (Node targetNode in neighbours)
         {
             if (targetNode.name == option && targetNode.GetType() == typeof(DirectoryNode))

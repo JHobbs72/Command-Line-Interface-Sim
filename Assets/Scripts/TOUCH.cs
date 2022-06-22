@@ -38,7 +38,7 @@ public class TOUCH : MonoBehaviour
         }
         else
         {
-            fileSystem.addLeafNode(options);
+            fileSystem.addLeafNode(fileSystem.getCurrentNode(), options);
             fileSystem.sendOutput("");
         }
     }
