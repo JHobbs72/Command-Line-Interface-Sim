@@ -10,7 +10,7 @@ public class LS : MonoBehaviour
 
     public void ls(string options)
     {
-        DirectoryNode currentNode = (DirectoryNode)fileSystem.getCurrentNode();
+        DirectoryNode currentNode = (DirectoryNode)fileSystem.GetCurrentNode();
         List<Node> neighbours = currentNode.getNeighbours();
         List<string> neighbourNamesList = new List<string>();
 
@@ -19,6 +19,6 @@ public class LS : MonoBehaviour
             neighbourNamesList.Add(neighbours[i].name);
         }
 
-        fileSystem.sendOutput(string.Join(", ", neighbourNamesList));
+        fileSystem.SendOutput(string.Join(", ", neighbourNamesList));
     }
 }

@@ -1,45 +1,34 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class outputText : MonoBehaviour
 {
     // Adds output from system to user's 'display'
 
-    private TextMeshProUGUI output;
+    private TextMeshProUGUI _output;
     private autoScroll scroll;
 
     void Start()
     {
-        output = GetComponent<TextMeshProUGUI>();
-        output.text = ">> ";
+        _output = GetComponent<TextMeshProUGUI>();
+        _output.text = ">> ";
         scroll = FindObjectOfType<autoScroll>();
     }
 
-    public void addOutput(string command, string content)
+    public void AddOutput(string command, string content)
     {
         if (content.Length == 0)
         {
-            output.text += "\n>> " + command;
-            doScroll();
+            _output.text += "\n>> " + command;
         }
         else
         {
-            output.text += "\n>> " + command + "\n" + content;
-            doScroll();
+            _output.text += "\n>> " + command + "\n" + content;
         }
     }
 
-    public void emptyOut()
+    public void EmptyOut()
     {
-        output.text += "\n>>";
-        
-    }
-
-    private void doScroll()
-    {
-        scroll.updateScroll();
+        _output.text += "\n>>";
     }
 }

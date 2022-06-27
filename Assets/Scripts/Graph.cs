@@ -7,11 +7,11 @@ public class Graph : ScriptableObject
 {
     // Contains methods to manage the structure of the graph (file structure)
 
-    private GraphManager outputSource;
+    private GraphManager _outputSource;
 
     public void Awake()
     {
-        outputSource = FindObjectOfType<GraphManager>();
+        _outputSource = FindObjectOfType<GraphManager>();
     }
 
     [SerializeField]
@@ -38,35 +38,39 @@ public class Graph : ScriptableObject
         return graph;
     }
 
-    public void AddNode(Node node)
+    // Add nodes to graph
+    // Root (First node i.e. no parent)
+    public void AddRoot(DirectoryNode root)
+    {
+        Nodes.Add(root);
+        AssetDatabase.AddObjectToAsset(root, this);
+        AssetDatabase.SaveAssets();
+    }
+    
+    // All other nodes
+    public void AddNode(DirectoryNode parent, Node node)
     {
         Nodes.Add(node);
+        parent.Neighbours.Add(node);
         AssetDatabase.AddObjectToAsset(node, this);
         AssetDatabase.SaveAssets();
     }
 
-    // Extra step in removing a 'directory node' - must be removed from it's
-    // parent's neighbours list
-    public void removeDirectoryNode(DirectoryNode parent, Node node)
+    public void RemoveNode(DirectoryNode parent, Node target)
     {
-        if (node.getNeighbours().Count > 0)
+        if (target.GetType() == typeof(DirectoryNode) && target.getNeighbours().Count > 0)
         {
-            outputSource.sendOutput("Cannot remove - has children");
+            _outputSource.SendOutput("rmdir: " + target.name + ": Directory not empty");
+            return;
         }
-        else
-        {
-            Nodes.Remove(node);
-            parent.removeNeighbour(node);
-        }
-    }
-
-    public void removeLeafNode(DirectoryNode parent, FileNode target)
-    {
+        
         Nodes.Remove(target);
-        parent.removeNeighbour(target);
+        parent.RemoveNeighbour(target);
+        AssetDatabase.DeleteAsset("Assets/FileSystem/FileSystemGraph.asset/" + target.name);
+        AssetDatabase.SaveAssets();
     }
 
-    public DirectoryNode getRootNode()
+    public DirectoryNode GetRootNode()
     {
         return (DirectoryNode)Nodes[0];
     }

@@ -11,6 +11,7 @@ public class MV : MonoBehaviour
 
     public void mv(string options)
     {
+        Debug.Log("In MOVE");
         // TODO must be at least 2 long?
         string[] optionsString = options.Split(' ');
         string mvOpt = null;
@@ -20,7 +21,7 @@ public class MV : MonoBehaviour
 
         if (options == "")
         {
-            fileSystem.sendOutput("usage: mv [-f | -i | -n] [-v] source target \n" +
+            fileSystem.SendOutput("usage: mv [-f | -i | -n] [-v] source target \n" +
                                   "           mv [-f | -i | -n] [-v] source ... directory");
             return;
         }
@@ -44,12 +45,13 @@ public class MV : MonoBehaviour
             sourceList = null;
         }
         
-        
+        // --------------
+        // 1
         // if list of files & directories to be moved to valid directory 
         if (sourceList != null && validPath(dest) == 1)
         {
             // Get list of nodes as source
-            Node[] nodeList = validSrcList(fileSystem.getCurrentNode(), sourceList);
+            Node[] nodeList = validSrcList(fileSystem.GetCurrentNode(), sourceList);
             // If sourceList contains a node that doesn't exist -> returns null
             if (nodeList != null)
             {
@@ -61,47 +63,55 @@ public class MV : MonoBehaviour
             }
         }
         
+        // --------------
+        // 2
         // if is single source & source ends with '/' and source is a directory node
         // destination must be name to rename directory source 
         if (source != null && source.EndsWith('/'))
         {
             // Remove '/' from name
             source.TrimEnd('/');
-            if (exists(fileSystem.getCurrentNode(), source).GetType() == typeof(DirectoryNode))
+            if (exists(fileSystem.GetCurrentNode(), source).GetType() == typeof(DirectoryNode))
             {
-                rename(mvOpt, exists(fileSystem.getCurrentNode(), source), dest);
+                rename(mvOpt, exists(fileSystem.GetCurrentNode(), source), dest);
             }
         }
         
+        // --------------
+        // 3
         // Renaming a file
         // if source is a file & exists && dest doesn't exist
         // error if new name includes '/' 
         if (source != null)
         {
-            if (exists(fileSystem.getCurrentNode(), source).GetType() == typeof(FileNode) &&
-                exists(fileSystem.getCurrentNode(), dest) == null)
+            if (exists(fileSystem.GetCurrentNode(), source).GetType() == typeof(FileNode) &&
+                exists(fileSystem.GetCurrentNode(), dest) == null)
             {
-                rename(mvOpt, exists(fileSystem.getCurrentNode(), source), dest);
+                rename(mvOpt, exists(fileSystem.GetCurrentNode(), source), dest);
             }
         }
         
+        // --------------
+        // 4
         // Overwrite within current dir
         // if both source and dest are valid files
         if (source != null)
         {
-            if (exists(fileSystem.getCurrentNode(), source).GetType() == typeof(FileNode) &&
-                exists(fileSystem.getCurrentNode(), dest).GetType() == typeof(FileNode))
+            if (exists(fileSystem.GetCurrentNode(), source).GetType() == typeof(FileNode) &&
+                exists(fileSystem.GetCurrentNode(), dest).GetType() == typeof(FileNode))
             {
-                overwrite(mvOpt, exists(fileSystem.getCurrentNode(), source), 
-                    exists(fileSystem.getCurrentNode(), dest));
+                overwrite(mvOpt, exists(fileSystem.GetCurrentNode(), source), 
+                    exists(fileSystem.GetCurrentNode(), dest));
             }
         }
         
+        // --------------
+        // 5
         // Move or overwrite
         // if source is valid file and dest is valid path to end
         if (source != null)
         {
-            Node srcNode = exists(fileSystem.getCurrentNode(), source);
+            Node srcNode = exists(fileSystem.GetCurrentNode(), source);
             bool movetoDest = false;
             if (srcNode.GetType() == typeof(FileNode) && validPath(dest) == 1)
             {
@@ -130,10 +140,12 @@ public class MV : MonoBehaviour
             }
         }
         
+        // --------------
+        // 6
         // move valid file or dir to new dir
         if (source != null)
         {
-            Node srcNode = exists(fileSystem.getCurrentNode(), source);
+            Node srcNode = exists(fileSystem.GetCurrentNode(), source);
             if ((srcNode.GetType() == typeof(DirectoryNode) || srcNode.GetType() == typeof(FileNode)) &&
                 validPath(dest) == 0)
             {

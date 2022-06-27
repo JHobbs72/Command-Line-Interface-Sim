@@ -1,15 +1,12 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 public class previousCmd : MonoBehaviour
 {
     public TMP_InputField cmdIn;
-    private List<string> cmds = new List<string>();
-    private int? point = null;
+    private List<string> _cmds = new List<string>();
+    private int? _point = null;
     
     // List of previous commands
     // Pointer
@@ -18,32 +15,32 @@ public class previousCmd : MonoBehaviour
     // Reset pointer on press enter (command 'submitted')
     // Add command to end of list as it's 'submitted'
 
-    public void emptyInput()
+    public void EmptyInput()
     {
         cmdIn.text = "";
     }
 
-    public void prevCmd(string input)
+    public void PrevCmd(string input)
     {
         // remove ""
-        if (cmds.Count > 1)
+        if (_cmds.Count > 1)
         {
-            cmds.RemoveAt(cmds.Count - 1);
+            _cmds.RemoveAt(_cmds.Count - 1);
         }
         // Add new command
-        cmds.Add(input);
-        cmds.Add("");
+        _cmds.Add(input);
+        _cmds.Add("");
         // Reset pointer
-        point = cmds.Count - 1;
+        _point = _cmds.Count - 1;
     }
 
-    private void showCmd(int? pointer)
+    private void ShowCmd(int? pointer)
     {
         if (pointer != null)
         {
             // Write to textbox
-            cmdIn.text = cmds[(int)pointer];
-            cmdIn.caretPosition = cmds[(int)pointer].Length;
+            cmdIn.text = _cmds[(int)pointer];
+            cmdIn.caretPosition = _cmds[(int)pointer].Length;
         }
     }
 
@@ -52,34 +49,34 @@ public class previousCmd : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             // decrease pointer
-            point--;
-            if (point < 0)
+            _point--;
+            if (_point < 0)
             {
-                point = 0;
+                _point = 0;
             }
             // Show command pointed at
-            showCmd(point);
+            ShowCmd(_point);
         }
         
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             // increase pointer
-            point++;
-            if (point < cmds.Count - 1)
+            _point++;
+            if (_point < _cmds.Count - 1)
             {
                 // Show command pointed at
-                showCmd(point);
+                ShowCmd(_point);
             }
             else
             {
-                point = cmds.Count - 1;
-                showCmd(point);
+                _point = _cmds.Count - 1;
+                ShowCmd(_point);
             }
         }
 
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            emptyInput();
+            EmptyInput();
             cmdIn.ActivateInputField();
         }
     }

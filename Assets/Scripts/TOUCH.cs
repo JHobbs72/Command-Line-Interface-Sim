@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -12,7 +11,7 @@ public class TOUCH : MonoBehaviour
     public void touch(string options)
     {
         bool duplicate = false;
-        List<Node> neighbours = fileSystem.getCurrentNode().getNeighbours();
+        List<Node> neighbours = fileSystem.GetCurrentNode().getNeighbours();
         
         // Remove white space & add .txt file extension if no valid extension is given
         options = Regex.Replace(options, @"\s+", "");
@@ -34,12 +33,12 @@ public class TOUCH : MonoBehaviour
 
         if (duplicate)
         {
-            fileSystem.sendOutput("A file called " + options + " already exists");
+            fileSystem.SendOutput("A file called " + options + " already exists");
         }
         else
         {
-            fileSystem.addLeafNode(fileSystem.getCurrentNode(), options);
-            fileSystem.sendOutput("");
+            fileSystem.AddFileNode(fileSystem.GetCurrentNode(), options);
+            fileSystem.SendOutput("");
         }
     }
 }

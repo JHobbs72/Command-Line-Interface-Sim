@@ -12,11 +12,11 @@ public class RM : MonoBehaviour
     {
         if (option == "")
         {
-            fileSystem.sendOutput("usage: rm [-f | -i] [-dPRrvW] file ... \n           unlink file");
+            fileSystem.SendOutput("usage: rm [-f | -i] [-dPRrvW] file ... \n           unlink file");
             return;
         }
         
-        DirectoryNode currentNode = (DirectoryNode)fileSystem.getCurrentNode();
+        DirectoryNode currentNode = (DirectoryNode)fileSystem.GetCurrentNode();
         List<Node> neighbours = currentNode.getNeighbours();
         bool found = false;
         bool isDirectory = false;
@@ -28,9 +28,9 @@ public class RM : MonoBehaviour
         {
             if (targetNode.name == option && targetNode.GetType() == typeof(FileNode))
             {
-                fileSystem.removeLeafNode(currentNode, (FileNode)targetNode);
+                fileSystem.RemoveNode(currentNode, targetNode);
                 found = true;
-                fileSystem.sendOutput("");
+                fileSystem.SendOutput("");
                 break;
             }
 
@@ -42,11 +42,11 @@ public class RM : MonoBehaviour
 
         if (!found && isDirectory)
         {
-            fileSystem.sendOutput(option + " is a directory");
+            fileSystem.SendOutput(option + " is a directory");
         }
         else if (!found)
         {
-            fileSystem.sendOutput("No file found named " + option);
+            fileSystem.SendOutput("No file found named " + option);
         }
     }
 }

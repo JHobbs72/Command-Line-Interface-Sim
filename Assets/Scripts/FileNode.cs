@@ -7,28 +7,28 @@ public class FileNode : Node
     // Inherits from generic object 'Node' - describes a leaf node of the graph
     // i.e. no children and in this context must be a file not a directory
 
-    private GraphManager outputSource;
-    private string contents;
+    private GraphManager _outputSource;
+    private string _contents;
 
     public void Awake()
     {
-        outputSource = FindObjectOfType<GraphManager>();
+        _outputSource = FindObjectOfType<GraphManager>();
     }
 
     // Protects from error when trying to get children of a leaf node
     public override List<Node> getNeighbours()
     {
-        outputSource.sendOutput("Cannont get children on a leaf node");
+        _outputSource.SendOutput("Cannot get children on a leaf node");
         return null;
     }
 
-    public void setFileContents(string toFillFile)
+    public void SetFileContents(string toFillFile)
     {
-        contents = toFillFile;
+        _contents = toFillFile;
     }
 
-    public string getFileContents()
+    public string GetFileContents()
     {
-        return contents;
+        return _contents;
     }
 }

@@ -7,126 +7,114 @@ public class GraphManager : MonoBehaviour
 {
     // Create and manage the graph file structure
 
-    private Graph graph;
-    private DirectoryNode currentNode;
-    private List<Node> currentPath;
-    private outputText outputSource;
-    private string currentCommand;
+    private Graph _graph;
+    private DirectoryNode _currentNode;
+    private List<Node> _currentPath;
+    private outputText _outputSource;
+    private string _currentCommand;
     private autoScroll scroll;
 
     void Start()
     {
-        graph = Graph.Create("FileSystemGraph");
+        _graph = Graph.Create("FileSystemGraph");
 
         // Nodes added from start up
         DirectoryNode rootNode = DirectoryNode.Create<DirectoryNode>("UserA");
-        DirectoryNode Documents = DirectoryNode.Create<DirectoryNode>("Documents");
+        DirectoryNode documents = DirectoryNode.Create<DirectoryNode>("Documents");
         FileNode file1 = FileNode.Create<FileNode>("file1.txt");
         FileNode file2 = FileNode.Create<FileNode>("file2.txt");
-        rootNode.Neighbours.Add(Documents);
-        rootNode.Neighbours.Add(file1);
-        Documents.Neighbours.Add(file2);
 
-        graph.AddNode(rootNode);
-        graph.AddNode(Documents);
-        graph.AddNode(file1);
-        graph.AddNode(file2);
+        _graph.AddRoot(rootNode);
+        _graph.AddNode(rootNode, documents);
+        _graph.AddNode(rootNode, file1);
+        _graph.AddNode(documents, file2);
 
         // Helper variables initialised
-        currentNode = rootNode;
-        currentPath = new List<Node>();
-        currentPath.Add(rootNode);
+        _currentNode = rootNode;
+        _currentPath = new List<Node>();
+        AddToCurrentPath(rootNode);
 
-        outputSource = FindObjectOfType<outputText>();
-        currentCommand = "";
+        _outputSource = FindObjectOfType<outputText>();
+        _currentCommand = "";
         scroll = FindObjectOfType<autoScroll>();
     }
-
-    public void addLeafNode(DirectoryNode sourceNode, string name)
+    
+    // TODO Add checks for target being a file node - add checks in graph.cs
+    // ^^ Redundant?
+    public void RemoveNode(DirectoryNode parentNode, Node targetNode)
+    {
+        _graph.RemoveNode(parentNode, targetNode);
+    }
+    
+    public void AddFileNode(DirectoryNode sourceNode, string name)
     {
         FileNode newFile = FileNode.Create<FileNode>(name);
-        sourceNode.Neighbours.Add(newFile);
-        graph.AddNode(newFile);
+        _graph.AddNode(sourceNode, newFile);
     }
 
-    // TODO Add checks for target being a file node - add checks in graph.cs
-    // Done?
-    public void removeLeafNode(DirectoryNode parentNode, FileNode targetNode)
-    {
-        graph.removeLeafNode(parentNode, targetNode);
-    }
-
-    // TODO Add checks for target being a directory node - add checks in graph.cs
-    // Done?
-    public void removeDirectoryNode(DirectoryNode parent, DirectoryNode node)
-    {
-        graph.removeDirectoryNode(parent, node);
-    }
-
-    public void addDirectoryNode(string name)
+    public void AddDirectoryNode(string name)
     {
         DirectoryNode newDir = DirectoryNode.Create<DirectoryNode>(name);
-        currentNode.Neighbours.Add(newDir);
-        graph.AddNode(newDir);
+        _graph.AddNode(_currentNode, newDir);
     }
 
     // TODO check that what should be returned is expecting a directory node
     // Done?
-    public DirectoryNode getRootNode()
+    public DirectoryNode GetRootNode()
     {
-        return graph.getRootNode();
+        return _graph.GetRootNode();
     }
 
     // TODO check that what should be returned is expecting a directory node
     // Done?
-    public DirectoryNode getCurrentNode()
+    public DirectoryNode GetCurrentNode()
     {
-        return currentNode;
+        return _currentNode;
     }
 
     // TODO check that parameter is a directory node
     // Done?
-    public void setCurrentNode(DirectoryNode node)
+    public void SetCurrentNode(DirectoryNode node)
     {
-        currentNode = node;
+        _currentNode = node;
     }
 
-    public List<Node> getCurrentPath()
+    public List<Node> GetCurrentPath()
     {
-        return currentPath;
+        return _currentPath;
     }
 
     // TODO check that parameter is a directory node
     // Done?
-    public void addToCurrentPath(DirectoryNode directory)
+    public void AddToCurrentPath(DirectoryNode directory)
     {
-        currentPath.Add(directory);
+        _currentPath.Add(directory);
     }
 
     // TODO move checks to graph.cs
     // TODO check that return type expected is directory node
     // Done?
-    public DirectoryNode stepBackInPath()
+    public DirectoryNode StepBackInPath()
     {
-        if (currentPath.Count > 1)
+        if (_currentPath.Count > 1)
         {
-            currentPath.RemoveAt(currentPath.Count - 1);
-            return (DirectoryNode)currentPath[currentPath.Count - 1];
+            _currentPath.RemoveAt(_currentPath.Count - 1);
+            return (DirectoryNode)_currentPath[_currentPath.Count - 1];
         }
         else
         {
-            sendOutput("At root");
+            SendOutput("At root");
             return null;
         }
     }
 
-    public void sendOutput(string content)
+    public void SendOutput(string content)
     {
-        outputSource.addOutput(currentCommand, content);
+        _outputSource.AddOutput(_currentCommand, content);
     }
 
-    public void setCurrentCommand(string command)
+    public void SetCurrentCommand(string command)
     {
-        currentCommand = command;
+        _currentCommand = command;
     }
 }

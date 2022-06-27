@@ -28,7 +28,7 @@ public class DirectoryNode : Node
         return Neighbours;
     }
 
-    public void removeNeighbour(Node node)
+    public void RemoveNeighbour(Node node)
     {
         Neighbours.Remove(node);
     }

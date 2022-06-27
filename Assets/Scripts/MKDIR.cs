@@ -15,12 +15,12 @@ public class MKDIR : MonoBehaviour
     {
         if (options == "")
         {
-            fileSystem.sendOutput("usage: mkdir [-pv] [-m mode] directory ...");
+            fileSystem.SendOutput("usage: mkdir [-pv] [-m mode] directory ...");
             return;
         }
         
         bool duplicate = false;
-        List<Node> neighbours = fileSystem.getCurrentNode().getNeighbours();
+        List<Node> neighbours = fileSystem.GetCurrentNode().getNeighbours();
         
         options = Regex.Replace(options, @"[\s/,.:'|]+", "");
 
@@ -34,12 +34,12 @@ public class MKDIR : MonoBehaviour
 
         if (duplicate)
         {
-            fileSystem.sendOutput("A directory called " + options + " already exists");
+            fileSystem.SendOutput("A directory called " + options + " already exists");
         }
         else
         {
-            fileSystem.addDirectoryNode(options);
-            fileSystem.sendOutput("");
+            fileSystem.AddDirectoryNode(options);
+            fileSystem.SendOutput("");
         }
     }
 }

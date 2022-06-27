@@ -11,13 +11,13 @@ public class PWD : MonoBehaviour
 
     public void pwd(string options)
     {
-        List<Node> currentPath = fileSystem.getCurrentPath();
+        List<Node> currentPath = fileSystem.GetCurrentPath();
         List<string> currentPathNames = new List<string>();
         foreach (Node node in currentPath)
         {
             currentPathNames.Add(node.name);
         }
         
-        fileSystem.sendOutput(string.Join('/', currentPathNames));
+        fileSystem.SendOutput(string.Join('/', currentPathNames));
     }
 }

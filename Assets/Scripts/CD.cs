@@ -8,42 +8,42 @@ public class CD : MonoBehaviour
     // Take '..', '<path>' or '<directory>' and move to the appropriate directory
 
     public GraphManager fileSystem;
-    private bool validPath;
-    private Node localCurrentNode;
-    private string invalidNode;
+    private bool _validPath;
+    private Node _localCurrentNode;
+    private string _invalidNode;
 
     public void cd(string options)
     {
         if (options == "")
         {
             // Go to root
-            fileSystem.sendOutput("");
+            fileSystem.SendOutput("");
         }
         
-        validPath = true;
+        _validPath = true;
         // Move 'back' a directory
         if (options == "..")
         {
-            DirectoryNode lastNode = fileSystem.stepBackInPath();
+            DirectoryNode lastNode = fileSystem.StepBackInPath();
             if (lastNode != null)
             {
-                fileSystem.setCurrentNode(lastNode);
-                printPath(options);
+                fileSystem.SetCurrentNode(lastNode);
+                PrintPath(options);
             }
         }
         else
         {
             // Get component directories & check path validity
             string[] path = options.Split('/');
-            localCurrentNode = fileSystem.getCurrentNode();
+            _localCurrentNode = fileSystem.GetCurrentNode();
 
             // For each directory in path check if it exists in context
             foreach (string dir in path)
             {
-                if (validPath)
+                if (_validPath)
                 {
-                    invalidNode = dir;
-                    checkNextStep((DirectoryNode)localCurrentNode, dir);
+                    _invalidNode = dir;
+                    CheckNextStep((DirectoryNode)_localCurrentNode, dir);
                 }
                 else
                 {
@@ -51,22 +51,22 @@ public class CD : MonoBehaviour
                 }
             }
 
-            if (validPath)
+            if (_validPath)
             {
-                executePathChange(fileSystem.getCurrentNode(), path);
-                printPath(options);
+                ExecutePathChange(fileSystem.GetCurrentNode(), path);
+                PrintPath(options);
             }
             else
             {
-                fileSystem.sendOutput("No directory named " + invalidNode);
-                Debug.Log("No directory named " + invalidNode);
-                localCurrentNode = fileSystem.getCurrentNode();
+                fileSystem.SendOutput("No directory named " + _invalidNode);
+                Debug.Log("No directory named " + _invalidNode);
+                _localCurrentNode = fileSystem.GetCurrentNode();
             }
         }
     }
 
     // Check the requested next directory exists
-    private void checkNextStep(DirectoryNode checkNode, string target)
+    private void CheckNextStep(DirectoryNode checkNode, string target)
     {
         List<Node> children = checkNode.getNeighbours();
 
@@ -74,19 +74,19 @@ public class CD : MonoBehaviour
         {
             if (child.name == target && child.GetType() == typeof(DirectoryNode))
             {
-                localCurrentNode = child;
-                validPath = true;
+                _localCurrentNode = child;
+                _validPath = true;
                 break;
             }
             else
             {
-                validPath = false;
+                _validPath = false;
             }
         }
     }
 
     // Once valid, execute - go to valid file path
-    private void executePathChange(Node localCurrentNode, string[] targetPath)
+    private void ExecutePathChange(Node localCurrentNode, string[] targetPath)
     {
         foreach (string nextDir in targetPath)
         {
@@ -96,8 +96,8 @@ public class CD : MonoBehaviour
                 if (node.name == nextDir)
                 {
                     localCurrentNode = node;
-                    fileSystem.setCurrentNode((DirectoryNode)node);
-                    fileSystem.addToCurrentPath((DirectoryNode)node);
+                    fileSystem.SetCurrentNode((DirectoryNode)node);
+                    fileSystem.AddToCurrentPath((DirectoryNode)node);
                     break;
                 }
             }
@@ -105,14 +105,14 @@ public class CD : MonoBehaviour
     }
 
     // Display new path to user
-    private void printPath(string options)
+    private void PrintPath(string options)
     {
         List<string> pathNames = new List<string>();
-        foreach (Node dir in fileSystem.getCurrentPath())
+        foreach (Node dir in fileSystem.GetCurrentPath())
         {
             pathNames.Add(dir.name);
         }
-        fileSystem.sendOutput(string.Join("/", pathNames));
+        fileSystem.SendOutput(string.Join("/", pathNames));
         Debug.Log(">> " + string.Join("/", pathNames));
     }
 }

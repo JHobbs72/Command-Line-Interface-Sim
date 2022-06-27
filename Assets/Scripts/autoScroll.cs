@@ -16,10 +16,8 @@ public class autoScroll : MonoBehaviour
         bar = GetComponent<Scrollbar>();
     }
 
-    public void updateScroll()
+    public void UpdateScroll()
     {
-        Debug.Log("Called");
         bar.value = 0f;
-        Debug.Log("VALUE: " + bar.value);
     }
 }
