@@ -16,7 +16,7 @@ public class RMDIR : MonoBehaviour
             return;
         }
         
-        DirectoryNode currentNode = (DirectoryNode)fileSystem.getCurrentNode();
+        DirectoryNode currentNode = fileSystem.getCurrentNode();
         List<Node> neighbours = currentNode.getNeighbours();
         bool found = false;
         bool isFile = false;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,21 +7,19 @@ using UnityEngine.UI;
 public class autoScroll : MonoBehaviour
 {
     // Auto scroll to mimic real terminal window - latest commands added to the
-    // bottom of the window, auto scroll so latest commands are visable
+    // bottom of the window, auto scroll so latest commands are visible
 
-    [SerializeField]
     private Scrollbar bar;
 
-    void Start()
+    private void Start()
     {
-        bar.GetComponent<Scrollbar>();
+        bar = GetComponent<Scrollbar>();
     }
 
     public void updateScroll()
     {
-        if (bar.value != 0)
-        {
-            bar.value = 0;
-        }
+        Debug.Log("Called");
+        bar.value = 0f;
+        Debug.Log("VALUE: " + bar.value);
     }
 }

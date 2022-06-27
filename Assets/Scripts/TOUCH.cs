@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class TOUCH : MonoBehaviour
 {
-    // Rooot command for touch - create new file
+    // Root command for touch - create new file
 
     public GraphManager fileSystem;
 

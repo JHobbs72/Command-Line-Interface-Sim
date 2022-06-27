@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-9101003538724169810
+--- !u!114 &-4239595401430370453
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -12,21 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
   m_Name: file2.txt
   m_EditorClassIdentifier: 
---- !u!114 &-49418379664823357
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
-  m_Name: UserA
-  m_EditorClassIdentifier: 
-  neighbours:
-  - {fileID: 2325622182876095027}
-  - {fileID: 6693929881924669909}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40,11 +25,26 @@ MonoBehaviour:
   m_Name: FileSystemGraph
   m_EditorClassIdentifier: 
   nodes:
-  - {fileID: -49418379664823357}
-  - {fileID: 2325622182876095027}
-  - {fileID: 6693929881924669909}
-  - {fileID: -9101003538724169810}
---- !u!114 &2325622182876095027
+  - {fileID: 351903884938187563}
+  - {fileID: 3164141232573656131}
+  - {fileID: 7768061306571497187}
+  - {fileID: -4239595401430370453}
+--- !u!114 &351903884938187563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
+  m_Name: UserA
+  m_EditorClassIdentifier: 
+  neighbours:
+  - {fileID: 3164141232573656131}
+  - {fileID: 7768061306571497187}
+--- !u!114 &3164141232573656131
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -57,8 +57,8 @@ MonoBehaviour:
   m_Name: Documents
   m_EditorClassIdentifier: 
   neighbours:
-  - {fileID: -9101003538724169810}
---- !u!114 &6693929881924669909
+  - {fileID: -4239595401430370453}
+--- !u!114 &7768061306571497187
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
