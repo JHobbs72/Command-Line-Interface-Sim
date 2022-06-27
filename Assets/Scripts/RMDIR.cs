@@ -17,7 +17,7 @@ public class RMDIR : MonoBehaviour
         }
         
         DirectoryNode currentNode = fileSystem.GetCurrentNode();
-        List<Node> neighbours = currentNode.getNeighbours();
+        List<Node> neighbours = currentNode.GetNeighbours();
         bool found = false;
         bool isFile = false;
 

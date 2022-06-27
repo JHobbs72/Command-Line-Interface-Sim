@@ -11,7 +11,7 @@ public class TOUCH : MonoBehaviour
     public void touch(string options)
     {
         bool duplicate = false;
-        List<Node> neighbours = fileSystem.GetCurrentNode().getNeighbours();
+        List<Node> neighbours = fileSystem.GetCurrentNode().GetNeighbours();
         
         // Remove white space & add .txt file extension if no valid extension is given
         options = Regex.Replace(options, @"\s+", "");

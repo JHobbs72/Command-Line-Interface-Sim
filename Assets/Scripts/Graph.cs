@@ -9,11 +9,13 @@ public class Graph : ScriptableObject
 
     private GraphManager _outputSource;
 
+    // On start find and assign graph manager
     public void Awake()
     {
         _outputSource = FindObjectOfType<GraphManager>();
     }
 
+    // Build Nodes list
     [SerializeField]
     private List<Node> nodes;
     private List<Node> Nodes
@@ -28,11 +30,12 @@ public class Graph : ScriptableObject
         }
     }
 
+    // Create graph structure for file system
     public static Graph Create(string name)
     {
         Graph graph = CreateInstance<Graph>();
 
-        string path = string.Format("Assets/FileSystem/{0}.asset", name);
+        string path = string.Format($"Assets/FileSystem/{name}.asset");
         AssetDatabase.CreateAsset(graph, path);
 
         return graph;
@@ -46,7 +49,6 @@ public class Graph : ScriptableObject
         AssetDatabase.AddObjectToAsset(root, this);
         AssetDatabase.SaveAssets();
     }
-    
     // All other nodes
     public void AddNode(DirectoryNode parent, Node node)
     {
@@ -56,9 +58,10 @@ public class Graph : ScriptableObject
         AssetDatabase.SaveAssets();
     }
 
+    // Remove a node from the graph and assets -- Catch 'is a non-empty directory' error
     public void RemoveNode(DirectoryNode parent, Node target)
     {
-        if (target.GetType() == typeof(DirectoryNode) && target.getNeighbours().Count > 0)
+        if (target.GetType() == typeof(DirectoryNode) && target.GetNeighbours().Count > 0)
         {
             _outputSource.SendOutput("rmdir: " + target.name + ": Directory not empty");
             return;

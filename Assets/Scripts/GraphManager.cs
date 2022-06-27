@@ -18,12 +18,11 @@ public class GraphManager : MonoBehaviour
     {
         _graph = Graph.Create("FileSystemGraph");
 
-        // Nodes added from start up
-        DirectoryNode rootNode = DirectoryNode.Create<DirectoryNode>("UserA");
-        DirectoryNode documents = DirectoryNode.Create<DirectoryNode>("Documents");
-        FileNode file1 = FileNode.Create<FileNode>("file1.txt");
-        FileNode file2 = FileNode.Create<FileNode>("file2.txt");
-
+        // Nodes created and added from start up
+        DirectoryNode rootNode = Node.Create<DirectoryNode>("UserA");
+        DirectoryNode documents = Node.Create<DirectoryNode>("Documents");
+        FileNode file1 = Node.Create<FileNode>("file1.txt");
+        FileNode file2 = Node.Create<FileNode>("file2.txt");
         _graph.AddRoot(rootNode);
         _graph.AddNode(rootNode, documents);
         _graph.AddNode(rootNode, file1);
@@ -39,41 +38,36 @@ public class GraphManager : MonoBehaviour
         scroll = FindObjectOfType<autoScroll>();
     }
     
-    // TODO Add checks for target being a file node - add checks in graph.cs
-    // ^^ Redundant?
+    // Remove a node
     public void RemoveNode(DirectoryNode parentNode, Node targetNode)
     {
         _graph.RemoveNode(parentNode, targetNode);
     }
     
+    // Add a file node
     public void AddFileNode(DirectoryNode sourceNode, string name)
     {
-        FileNode newFile = FileNode.Create<FileNode>(name);
+        FileNode newFile = Node.Create<FileNode>(name);
         _graph.AddNode(sourceNode, newFile);
     }
 
+    // Add a directory node
     public void AddDirectoryNode(string name)
     {
-        DirectoryNode newDir = DirectoryNode.Create<DirectoryNode>(name);
+        DirectoryNode newDir = Node.Create<DirectoryNode>(name);
         _graph.AddNode(_currentNode, newDir);
     }
-
-    // TODO check that what should be returned is expecting a directory node
-    // Done?
+    
     public DirectoryNode GetRootNode()
     {
         return _graph.GetRootNode();
     }
 
-    // TODO check that what should be returned is expecting a directory node
-    // Done?
     public DirectoryNode GetCurrentNode()
     {
         return _currentNode;
     }
 
-    // TODO check that parameter is a directory node
-    // Done?
     public void SetCurrentNode(DirectoryNode node)
     {
         _currentNode = node;
@@ -84,37 +78,31 @@ public class GraphManager : MonoBehaviour
         return _currentPath;
     }
 
-    // TODO check that parameter is a directory node
-    // Done?
     public void AddToCurrentPath(DirectoryNode directory)
     {
         _currentPath.Add(directory);
     }
 
-    // TODO move checks to graph.cs
-    // TODO check that return type expected is directory node
-    // Done?
+    // One step back in current path through file system
     public DirectoryNode StepBackInPath()
     {
         if (_currentPath.Count > 1)
         {
             _currentPath.RemoveAt(_currentPath.Count - 1);
-            return (DirectoryNode)_currentPath[_currentPath.Count - 1];
+            return (DirectoryNode)_currentPath[^1];
         }
-        else
-        {
-            SendOutput("At root");
-            return null;
-        }
-    }
-
-    public void SendOutput(string content)
-    {
-        _outputSource.AddOutput(_currentCommand, content);
+        
+        SendOutput("At root");
+        return null;
     }
 
     public void SetCurrentCommand(string command)
     {
         _currentCommand = command;
+    }
+    
+    public void SendOutput(string content)
+    {
+        _outputSource.AddOutput(_currentCommand, content);
     }
 }

@@ -17,7 +17,7 @@ public class RM : MonoBehaviour
         }
         
         DirectoryNode currentNode = (DirectoryNode)fileSystem.GetCurrentNode();
-        List<Node> neighbours = currentNode.getNeighbours();
+        List<Node> neighbours = currentNode.GetNeighbours();
         bool found = false;
         bool isDirectory = false;
 

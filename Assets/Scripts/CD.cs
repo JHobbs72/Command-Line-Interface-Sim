@@ -68,7 +68,7 @@ public class CD : MonoBehaviour
     // Check the requested next directory exists
     private void CheckNextStep(DirectoryNode checkNode, string target)
     {
-        List<Node> children = checkNode.getNeighbours();
+        List<Node> children = checkNode.GetNeighbours();
 
         foreach (Node child in children)
         {
@@ -78,10 +78,8 @@ public class CD : MonoBehaviour
                 _validPath = true;
                 break;
             }
-            else
-            {
-                _validPath = false;
-            }
+            
+            _validPath = false;
         }
     }
 
@@ -90,7 +88,7 @@ public class CD : MonoBehaviour
     {
         foreach (string nextDir in targetPath)
         {
-            List<Node> neighbours = localCurrentNode.getNeighbours();
+            List<Node> neighbours = localCurrentNode.GetNeighbours();
             foreach (Node node in neighbours)
             {
                 if (node.name == nextDir)

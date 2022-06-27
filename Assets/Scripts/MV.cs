@@ -1,4 +1,4 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -25,7 +25,7 @@ public class MV : MonoBehaviour
                                   "           mv [-f | -i | -n] [-v] source ... directory");
             return;
         }
-
+        
         // Separate '-x' option, source and destination
         if (optionsString[0].Contains('-') && optionsString[0].Length == 2)
         {
@@ -35,35 +35,41 @@ public class MV : MonoBehaviour
             optionsString = optionsString.Skip(1).ToArray();
         }
         // Destination is last element (name, file, dir or path)
-        dest = optionsString[optionsString.Length - 1];
+        dest = optionsString[^1];
         // Remaining must be the source
         sourceList = optionsString.SkipLast(1).ToArray();
-        // If source is not list (case 1 only) use just single string
+        // If source is not list (case 1 only) use single string
         if (sourceList.Length == 1)
         {
             source = sourceList[0];
             sourceList = null;
         }
         
-        // --------------
+        Debug.Log("Option: " + mvOpt + "\nSources: " + string.Join(',', sourceList) + "\nDestination: " + dest);
+        Debug.Log(ValidPath(dest));
+        
+        // -------------------------------------------------------------------------------------------------------------
         // 1
-        // if list of files & directories to be moved to valid directory 
-        if (sourceList != null && validPath(dest) == 1)
+        // if list of valid files &/or directories to be moved to valid directory
+        List<Node> nodeList = ValidSrcList(fileSystem.GetCurrentNode(), sourceList);
+        if (nodeList != null)
         {
-            // Get list of nodes as source
-            Node[] nodeList = validSrcList(fileSystem.GetCurrentNode(), sourceList);
-            // If sourceList contains a node that doesn't exist -> returns null
-            if (nodeList != null)
+            Node validity = ValidPath(dest);
+            if (validity.GetType() == typeof(DirectoryNode))
             {
-                // Move each node in source
+                // If sourceList contains a node that doesn't exist -> returns null
                 foreach (Node node in nodeList)
                 {
-                    move(mvOpt, node, dest);
+                    Move(mvOpt, node, dest);
                 }
+            } else if (validity.GetType() == typeof(FileNode))
+            {
+                // Add invalid file
+                fileSystem.SendOutput("mv: " + validity.name + " is not a directory");
             }
         }
         
-        // --------------
+        // -------------------------------------------------------------------------------------------------------------
         // 2
         // if is single source & source ends with '/' and source is a directory node
         // destination must be name to rename directory source 
@@ -71,63 +77,63 @@ public class MV : MonoBehaviour
         {
             // Remove '/' from name
             source.TrimEnd('/');
-            if (exists(fileSystem.GetCurrentNode(), source).GetType() == typeof(DirectoryNode))
+            if (Exists(fileSystem.GetCurrentNode(), source).GetType() == typeof(DirectoryNode))
             {
-                rename(mvOpt, exists(fileSystem.GetCurrentNode(), source), dest);
+                Rename(mvOpt, Exists(fileSystem.GetCurrentNode(), source), dest);
             }
         }
         
-        // --------------
+        // -------------------------------------------------------------------------------------------------------------
         // 3
         // Renaming a file
         // if source is a file & exists && dest doesn't exist
         // error if new name includes '/' 
         if (source != null)
         {
-            if (exists(fileSystem.GetCurrentNode(), source).GetType() == typeof(FileNode) &&
-                exists(fileSystem.GetCurrentNode(), dest) == null)
+            if (Exists(fileSystem.GetCurrentNode(), source).GetType() == typeof(FileNode) &&
+                Exists(fileSystem.GetCurrentNode(), dest) == null)
             {
-                rename(mvOpt, exists(fileSystem.GetCurrentNode(), source), dest);
+                Rename(mvOpt, Exists(fileSystem.GetCurrentNode(), source), dest);
             }
         }
         
-        // --------------
+        // -------------------------------------------------------------------------------------------------------------
         // 4
         // Overwrite within current dir
         // if both source and dest are valid files
         if (source != null)
         {
-            if (exists(fileSystem.GetCurrentNode(), source).GetType() == typeof(FileNode) &&
-                exists(fileSystem.GetCurrentNode(), dest).GetType() == typeof(FileNode))
+            if (Exists(fileSystem.GetCurrentNode(), source).GetType() == typeof(FileNode) &&
+                Exists(fileSystem.GetCurrentNode(), dest).GetType() == typeof(FileNode))
             {
-                overwrite(mvOpt, exists(fileSystem.GetCurrentNode(), source), 
-                    exists(fileSystem.GetCurrentNode(), dest));
+                Overwrite(mvOpt, Exists(fileSystem.GetCurrentNode(), source), 
+                    Exists(fileSystem.GetCurrentNode(), dest));
             }
         }
         
-        // --------------
+        // -------------------------------------------------------------------------------------------------------------
         // 5
         // Move or overwrite
         // if source is valid file and dest is valid path to end
         if (source != null)
         {
-            Node srcNode = exists(fileSystem.GetCurrentNode(), source);
+            Node srcNode = Exists(fileSystem.GetCurrentNode(), source);
             bool movetoDest = false;
-            if (srcNode.GetType() == typeof(FileNode) && validPath(dest) == 1)
+            if (srcNode.GetType() == typeof(FileNode) && ValidPath(dest).GetType() == typeof(DirectoryNode))
             {
                 // does this work?
                 string[] separatedPath = dest.Split('/');
 
                 // recursively call searchNeighbours to follow path and get last node
-                DirectoryNode endNode = searchNeighbours((DirectoryNode)srcNode, 0, separatedPath);
+                DirectoryNode endNode = SearchNeighbours((DirectoryNode)srcNode, 0, separatedPath);
 
-                foreach (Node node in endNode.getNeighbours())
+                foreach (Node node in endNode.GetNeighbours())
                 {
                     if (node.name == dest)
                     {
                         //move
                         movetoDest = true;
-                        move(mvOpt, srcNode, endNode.name);
+                        Move(mvOpt, srcNode, endNode.name);
                         break;
                     }
                 }
@@ -135,33 +141,34 @@ public class MV : MonoBehaviour
                 if (movetoDest == false)
                 {
                     // overwrite
-                    overwrite(mvOpt, srcNode, endNode);
+                    Overwrite(mvOpt, srcNode, endNode);
                 }
             }
         }
-        
-        // --------------
+
+        // -------------------------------------------------------------------------------------------------------------
         // 6
         // move valid file or dir to new dir
         if (source != null)
         {
-            Node srcNode = exists(fileSystem.GetCurrentNode(), source);
+            Node srcNode = Exists(fileSystem.GetCurrentNode(), source);
             if ((srcNode.GetType() == typeof(DirectoryNode) || srcNode.GetType() == typeof(FileNode)) &&
-                validPath(dest) == 0)
+                ValidPath(dest).GetType() == typeof(FileNode))
             {
                 string[] path = dest.Split('/');
-                DirectoryNode newDir = DirectoryNode.Create<DirectoryNode>(path[path.Length - 1]);
+                DirectoryNode newDir = Node.Create<DirectoryNode>(path[^1]);
                 // Add newDir to relevant neighbours list
-                move(mvOpt, srcNode, newDir.name);
+                Move(mvOpt, srcNode, newDir.name);
                 
             }
         }
     }
+        // -------------------------------------------------------------------------------------------------------------
 
-    private DirectoryNode searchNeighbours(DirectoryNode dir, int item, string[] path)
+    private DirectoryNode SearchNeighbours(DirectoryNode dir, int item, string[] path)
     {
         DirectoryNode found = null;
-        List<Node> currentNeighbours = dir.getNeighbours();
+        List<Node> currentNeighbours = dir.GetNeighbours();
         foreach (Node node in currentNeighbours)
         {
             if (node.name == path[item] && node.GetType() == typeof(DirectoryNode))
@@ -173,7 +180,7 @@ public class MV : MonoBehaviour
 
         if (item < path.Length)
         {
-            found = searchNeighbours(found, item + 1, path);
+            found = SearchNeighbours(found, item + 1, path);
         }
 
         return found;
@@ -181,10 +188,10 @@ public class MV : MonoBehaviour
 
     // Pass single string (target) as 'node' to be checked under what 'directory node' (searchArea)
     // Returns the node if it exists else returns null
-    private Node exists(DirectoryNode searchArea, string target)
+    private Node Exists(DirectoryNode searchArea, string target)
     {
         Node doesExist = null;
-        List<Node> neighbours = searchArea.getNeighbours();
+        List<Node> neighbours = searchArea.GetNeighbours();
         foreach (Node node in neighbours)
         {
             if (node.name == target)
@@ -197,12 +204,34 @@ public class MV : MonoBehaviour
     }
 
     // Pass string array to check that each is a valid node
-    // return array of nodes if all are valid, else throw error on the first node that doesn't exist
-    private Node[] validSrcList(DirectoryNode searchArea, string[] targets)
+    // return Node array if all are valid, else return null & throw error on the first node that doesn't exist
+    private List<Node> ValidSrcList(DirectoryNode searchArea, string[] targets)
     {
+        if (targets == null || searchArea == null)
+        {
+            return null;
+        }
+        
+        List<Node> validNodes = new List<Node>();
+        foreach (string node in targets)
+        {
+            Node thisNode = Exists(searchArea, node);
+            if (thisNode != null)
+            {
+                validNodes.Add(thisNode);
+            }
+            else
+            {
+                // Error, non-existent node
+                fileSystem.SendOutput(thisNode.name + ": no such file or directory");
+                return null;
+            }
+        }
+
+        return validNodes;
+        // Check not null
         // Will call exists(searchArea, target[0,1,...])
         // If going to return null (invalid source list) throw error here to display which is causing the problem
-        return null;
     }
 
     // Needed?
@@ -210,34 +239,73 @@ public class MV : MonoBehaviour
     // 0 -> valid file
     // -1 -> doesn't exist
     // Helper to check next in path
-    private int validDest(string dest)
+    private Node ValidDest(DirectoryNode searchArea, string dest)
     {
-        return 0;
+        List<Node> neighbours = searchArea.GetNeighbours();
+
+        foreach (Node node in neighbours)
+        {
+            if (node.name == dest)
+            {
+                return node;
+            }
+        }
+        
+        return null;
+    }
+    private Node ValidPath(string destPath)
+    {
+        string[] pathElements = destPath.Split('/');
+
+        return NextStep(fileSystem.GetCurrentNode(), pathElements, 0);
+
     }
 
-    // -1 -> invalid path
-    // 0 -> valid bar last 
-    // 1 -> fully valid
-    // Will check single dir or full path
-    private int validPath(string destPath)
+    private Node NextStep(DirectoryNode searchArea, string[] path, int index)
     {
-        // split on '/'
-        // foreach in list send to validDest
-        return 0;
-    }
+        Node validity = ValidDest(searchArea, path[index]);
+        Debug.Log(validity);
+        
+        if (validity == null)
+        {
+            // Invalid node
+            fileSystem.SendOutput(path[index] + ": no such file or directory");
+            return null;
+        }
+        
+        if (validity.GetType() == typeof(DirectoryNode))
+        {
+            if (index == path.Length)
+            {
+                // All nodes valid, last node = Directory Node
+                return validity;
+            }
+            NextStep((DirectoryNode)validity, path, index++);
+        }
+        else if (validity.GetType() == typeof(FileNode))
+        {
+            // All nodes valid, last node = File Node
+            return validity;
+        }
 
-    private void rename(string mvOpt, Node src, string dest)
+        return validity;
+    }
+    
+    private void Rename(string mvOpt, Node src, string dest)
     {
         // Cannot have '-x' options i.e. mvOpt should be null
+        fileSystem.SendOutput("RENAMING");
     }
 
-    private void overwrite(string mvOpt, Node src, Node dest)
+    private void Overwrite(string mvOpt, Node src, Node dest)
     {
-        
+        fileSystem.SendOutput("OVERWRITING");
+        // Moving a file to where there's a duplicate overwrites the old file
     }
 
-    private void move(string mvOpt, Node src, string dest)
+    private void Move(string mvOpt, Node src, string dest)
     {
-        
+        // Check for duplicates at destination --> overwrite
+        fileSystem.SendOutput("MOVING");
     }
 }

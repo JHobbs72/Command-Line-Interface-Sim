@@ -20,7 +20,7 @@ public class MKDIR : MonoBehaviour
         }
         
         bool duplicate = false;
-        List<Node> neighbours = fileSystem.GetCurrentNode().getNeighbours();
+        List<Node> neighbours = fileSystem.GetCurrentNode().GetNeighbours();
         
         options = Regex.Replace(options, @"[\s/,.:'|]+", "");
 

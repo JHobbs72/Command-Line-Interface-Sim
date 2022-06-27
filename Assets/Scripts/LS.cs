@@ -11,7 +11,7 @@ public class LS : MonoBehaviour
     public void ls(string options)
     {
         DirectoryNode currentNode = (DirectoryNode)fileSystem.GetCurrentNode();
-        List<Node> neighbours = currentNode.getNeighbours();
+        List<Node> neighbours = currentNode.GetNeighbours();
         List<string> neighbourNamesList = new List<string>();
 
         for (int i = 0; i < neighbours.Count; i++)

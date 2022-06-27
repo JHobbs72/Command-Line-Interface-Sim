@@ -15,7 +15,7 @@ public class Node : ScriptableObject
         return node;
     }
 
-    public virtual List<Node> getNeighbours()
+    public virtual List<Node> GetNeighbours()
     {
         return null;
     }
