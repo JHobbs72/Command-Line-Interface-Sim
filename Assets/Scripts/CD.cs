@@ -59,7 +59,6 @@ public class CD : MonoBehaviour
             else
             {
                 fileSystem.SendOutput("No directory named " + _invalidNode);
-                Debug.Log("No directory named " + _invalidNode);
                 _localCurrentNode = fileSystem.GetCurrentNode();
             }
         }
@@ -111,6 +110,5 @@ public class CD : MonoBehaviour
             pathNames.Add(dir.name);
         }
         fileSystem.SendOutput(string.Join("/", pathNames));
-        Debug.Log(">> " + string.Join("/", pathNames));
     }
 }

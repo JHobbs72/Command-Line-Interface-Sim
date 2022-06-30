@@ -49,7 +49,7 @@ public class MV : MonoBehaviour
         Debug.Log(ValidPath(dest));
         
         // -------------------------------------------------------------------------------------------------------------
-        // 1
+        // Case 1
         // if list of valid files &/or directories to be moved to valid directory
         List<Node> nodeList = ValidSrcList(fileSystem.GetCurrentNode(), sourceList);
         if (nodeList != null)
@@ -70,7 +70,7 @@ public class MV : MonoBehaviour
         }
         
         // -------------------------------------------------------------------------------------------------------------
-        // 2
+        // Case 2
         // if is single source & source ends with '/' and source is a directory node
         // destination must be name to rename directory source 
         if (source != null && source.EndsWith('/'))
@@ -84,7 +84,7 @@ public class MV : MonoBehaviour
         }
         
         // -------------------------------------------------------------------------------------------------------------
-        // 3
+        // Case 3
         // Renaming a file
         // if source is a file & exists && dest doesn't exist
         // error if new name includes '/' 
@@ -98,7 +98,7 @@ public class MV : MonoBehaviour
         }
         
         // -------------------------------------------------------------------------------------------------------------
-        // 4
+        // Case 4
         // Overwrite within current dir
         // if both source and dest are valid files
         if (source != null)
@@ -112,7 +112,7 @@ public class MV : MonoBehaviour
         }
         
         // -------------------------------------------------------------------------------------------------------------
-        // 5
+        // Case 5
         // Move or overwrite
         // if source is valid file and dest is valid path to end
         if (source != null)
@@ -125,6 +125,7 @@ public class MV : MonoBehaviour
                 string[] separatedPath = dest.Split('/');
 
                 // recursively call searchNeighbours to follow path and get last node
+                // TODO use 'ValidPath' instead?
                 DirectoryNode endNode = SearchNeighbours((DirectoryNode)srcNode, 0, separatedPath);
 
                 foreach (Node node in endNode.GetNeighbours())
@@ -147,7 +148,7 @@ public class MV : MonoBehaviour
         }
 
         // -------------------------------------------------------------------------------------------------------------
-        // 6
+        // Case 6
         // move valid file or dir to new dir
         if (source != null)
         {
@@ -163,8 +164,10 @@ public class MV : MonoBehaviour
             }
         }
     }
-        // -------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------
 
+        
+    // TODO redundant? Use 'ValidPath instead?
     private DirectoryNode SearchNeighbours(DirectoryNode dir, int item, string[] path)
     {
         DirectoryNode found = null;
@@ -186,29 +189,13 @@ public class MV : MonoBehaviour
         return found;
     }
 
-    // Pass single string (target) as 'node' to be checked under what 'directory node' (searchArea)
-    // Returns the node if it exists else returns null
-    private Node Exists(DirectoryNode searchArea, string target)
-    {
-        Node doesExist = null;
-        List<Node> neighbours = searchArea.GetNeighbours();
-        foreach (Node node in neighbours)
-        {
-            if (node.name == target)
-            {
-                doesExist = node;
-            }
-        }
-
-        return doesExist;
-    }
-
-    // Pass string array to check that each is a valid node
-    // return Node array if all are valid, else return null & throw error on the first node that doesn't exist
+    // Pass string array to check that each node within source is a valid node
+    // Return Node array if all are valid, else return null & throw error on the first node that doesn't exist
     private List<Node> ValidSrcList(DirectoryNode searchArea, string[] targets)
     {
         if (targets == null || searchArea == null)
         {
+            // Display error message?
             return null;
         }
         
@@ -229,30 +216,27 @@ public class MV : MonoBehaviour
         }
 
         return validNodes;
-        // Check not null
-        // Will call exists(searchArea, target[0,1,...])
-        // If going to return null (invalid source list) throw error here to display which is causing the problem
     }
-
-    // Needed?
-    // 1 -> valid directory
-    // 0 -> valid file
-    // -1 -> doesn't exist
-    // Helper to check next in path
-    private Node ValidDest(DirectoryNode searchArea, string dest)
+    
+    // Pass single string (target) as 'node' to be checked under what 'Directory Node' (searchArea)
+    // Returns the node if it exists else returns null
+    private Node Exists(DirectoryNode searchArea, string target)
     {
+        Node doesExist = null;
         List<Node> neighbours = searchArea.GetNeighbours();
-
         foreach (Node node in neighbours)
         {
-            if (node.name == dest)
+            if (node.name == target)
             {
-                return node;
+                doesExist = node;
             }
         }
-        
-        return null;
+
+        return doesExist;
     }
+
+    // Check file path destination is valid
+    // Returns a File or Directory Node if valid, null if not valid
     private Node ValidPath(string destPath)
     {
         string[] pathElements = destPath.Split('/');
@@ -261,6 +245,7 @@ public class MV : MonoBehaviour
 
     }
 
+    // Helper to 'ValidPath' - Initial call in 'ValidPath' then call recursively to end of path
     private Node NextStep(DirectoryNode searchArea, string[] path, int index)
     {
         Node validity = ValidDest(searchArea, path[index]);
@@ -291,21 +276,41 @@ public class MV : MonoBehaviour
         return validity;
     }
     
+    // Check for a single neighbour under a single Directory Node
+    // Stand alone and helper to 'ValidPath'
+    // Returns File or Directory Node if valid, null if not valid
+    private Node ValidDest(DirectoryNode searchArea, string dest)
+    {
+        List<Node> neighbours = searchArea.GetNeighbours();
+
+        foreach (Node node in neighbours)
+        {
+            if (node.name == dest)
+            {
+                return node;
+            }
+        }
+        
+        return null;
+    }
+    
     private void Rename(string mvOpt, Node src, string dest)
     {
         // Cannot have '-x' options i.e. mvOpt should be null
+        // DUPLICATES
         fileSystem.SendOutput("RENAMING");
     }
 
     private void Overwrite(string mvOpt, Node src, Node dest)
     {
         fileSystem.SendOutput("OVERWRITING");
-        // Moving a file to where there's a duplicate overwrites the old file
+        // Moving a file to where there's a DUPLICATE overwrites the old file
     }
 
     private void Move(string mvOpt, Node src, string dest)
     {
         // Check for duplicates at destination --> overwrite
+        // DUPLICATES
         fileSystem.SendOutput("MOVING");
     }
 }
