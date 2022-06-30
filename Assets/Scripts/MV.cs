@@ -27,6 +27,7 @@ public class MV : MonoBehaviour
         }
         
         // Separate '-x' option, source and destination
+        // TODO - Stricter --> e.g. '-fn' or '-f -n'
         if (optionsString[0].Contains('-') && optionsString[0].Length == 2)
         {
             // Variable for '-x' option

@@ -24,46 +24,25 @@ public class RM : MonoBehaviour
         // -------------------------------------------------------------------------------------------------------------
         DirectoryNode currentNode = fileSystem.GetCurrentNode();
         List<Node> neighbours = currentNode.GetNeighbours();
-        bool found = false;
-        bool isDirectory = false;
+        
         // ------------------------------------------------------------------------------------------------------------- 
 
-        string[] optionComponents = option.Split(' ');
-        List<string> opts = new List<string>();
-        // null if no options given, else character array of individual options
-        char[] finalOpts = null;
-
-        // OPTIONS DETECTION AND SEPARATION
-        // Does the command contain at least one option?
-        if (optionComponents[0].StartsWith('-'))
-        {
-            // If yes add to options list and remove from rest of the command
-            opts.Add(optionComponents[0]);
-            optionComponents = optionComponents.Skip(1).ToArray();
-            
-            // 'Longest' combination of options = '-x -x -x -x' with no file in between 
-            for (int i = 0; i < 3; i++)
-            {
-                // Is the next part within given range an option?
-                if (optionComponents[0].StartsWith('-'))
-                {
-                    // If yes add to options list and remove from rest of the command
-                    opts.Add(optionComponents[0]);
-                    optionComponents = optionComponents.Skip(1).ToArray();
-                }
-            }
-
-            // Convert to string, remove '-' characters then convert to character array
-            string stringOpts = opts.ToString();
-            stringOpts = stringOpts.Trim(new [] { '-' });
-            finalOpts = stringOpts.ToCharArray();
-        }
+        // Separate '-x' options and remaining commands
+            // MaxLength = '-x -x -x -x'
+        Tuple<char[], string[]> commands = fileSystem.SeparateOptions(option, 4);
+        char[] options = commands.Item1;
+        string[] remCommands = commands.Item2;
+        
+        Debug.Log("Options: " + String.Join(',', remCommands));
         
         // LIST OR SINGLE FILE/DIRECTORY
-            // Skip over any invalid files/dirs
+            // Skip over any invalid files/dirs - Don't break on error, just skip onto the next
+        // Init empty list to fill with valid nodes that will be removed
+        List<Node> toRemove = new List<Node>();
         // Iterate through each file/dir given in command (may be just one)
-        foreach (string file in optionComponents)
+        foreach (string file in remCommands)
         {
+            bool fileFound = false;
             // Attempt to find given node in neighbours of current node
             foreach (Node node in neighbours)
             {
@@ -71,82 +50,81 @@ public class RM : MonoBehaviour
                 if (node.name == file && node.GetType() == typeof(DirectoryNode))
                 {
                     // If it's a directory the '-r' option must be included
-                    if (finalOpts == null || !finalOpts.Contains('r'))
+                    if (options == null || !options.Contains('r'))
                     {
                         // Error
                         fileSystem.SendOutput("rm: " + file + ": is a directory");
                     }
-                    // Call to remove this directory and all nested files and directories
-                    RemoveTree(currentNode, (DirectoryNode)node, finalOpts);
+                    // Add to list of nodes to be removed
+                    toRemove.Add(node);
+                    fileFound = true;
                 }
                 // If what's given is a valid file 
                 else if (node.name == file && node.GetType() == typeof(FileNode))
                 {
-                    // Call to remove single file
-                    RemoveSingle(currentNode, (FileNode)node, finalOpts);
-                }
-                else
-                {
-                    // Error on invalid input -- No break, just skip onto the next
-                    fileSystem.SendOutput("rm: " + file + ": No such file or directory");
+                    // Add to list of nodes to be removed
+                    toRemove.Add(node);
+                    fileFound = true;
                 }
             }
+
+            if (!fileFound)
+            {
+                // Error on invalid input
+                fileSystem.SendOutput("rm: " + file + ": No such file or directory");
+            }
         }
-        
-        
-        
-        // -------------------------------------------------------------------------------------------------------------
-        
-    //     foreach (Node targetNode in neighbours)
-    //     {
-    //         if (targetNode.name == option && targetNode.GetType() == typeof(FileNode))
-    //         {
-    //             fileSystem.RemoveNode(currentNode, targetNode);
-    //             found = true;
-    //             fileSystem.SendOutput("");
-    //             break;
-    //         }
-    //
-    //         if (targetNode.name == option && targetNode.GetType() == typeof(DirectoryNode))
-    //         {
-    //             isDirectory = true;
-    //         }
-    //     }
-    //
-    //     if (!found && isDirectory)
-    //     {
-    //         fileSystem.SendOutput("rm: " + option + ": is a directory");
-    //     }
-    //     else if (!found)
-    //     {
-    //         fileSystem.SendOutput("rm: " + option + ": No such file or directory");
-    //     }
+
+        // IF options == null CATCH
+        foreach (Node node in toRemove)
+        {
+            if (node.GetType() == typeof(FileNode))
+            {
+                // FileNode
+                RemoveSingle(currentNode, (FileNode)node, options);
+            }
+            else if (node.GetType() == typeof(DirectoryNode) && node.GetNeighbours().Count == 0)
+            {
+                // DirectoryNode with no children
+                RemoveSingle(currentNode, (FileNode)node, options);
+            }
+            else
+            {
+                // DirectoryNode with children
+                RemoveTree(currentNode, (DirectoryNode)node, options);
+            }
+        }
     }
     
     // -----------------------------------------------------------------------------------------------------------------
 
-    private void RemoveSingle(DirectoryNode currentNode, FileNode target, char[] opts)
+    
+    // RemoveSingle must be identified by number of neighbours, not 'is FileNode' else directories will never be removed 
+    
+    
+    private void RemoveSingle(DirectoryNode currentNode, Node target, char[] opts)
     {
         // TODO opts
         fileSystem.RemoveNode(currentNode, target);
         fileSystem.SendOutput("");
     }
 
-    private void RemoveTree(DirectoryNode currentNode, DirectoryNode target, char[] opts)
+    private void RemoveTree(DirectoryNode localCurrentNode, DirectoryNode target, char[] opts)
     {
         // TODO opts
-        List<Node> neighbours = currentNode.GetNeighbours();
+        Debug.Log("LCN: " + localCurrentNode + "\nTarget: " + target + "\nOptions: " + opts);
+        List<Node> neighbours = localCurrentNode.GetNeighbours();
         foreach (Node node in neighbours)
         {
             if (node.name == target.name)
             {
                 if (node.GetType() == typeof(FileNode))
                 {
-                    RemoveSingle(currentNode, (FileNode)node, opts);
+                    RemoveSingle(localCurrentNode, node, opts);
                 }
                 else
                 {
-                    RemoveTree(currentNode, (DirectoryNode)node, opts);
+                    RemoveTree(localCurrentNode, (DirectoryNode)node, opts);
                 }
             }
         }

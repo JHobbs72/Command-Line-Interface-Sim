@@ -1,5 +1,6 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -15,14 +16,31 @@ public class MKDIR : MonoBehaviour
     {
         if (options == "")
         {
-            fileSystem.SendOutput("usage: mkdir [-pv] [-m mode] directory ...");
+            fileSystem.SendOutput("usage: mkdir [-pv] directory ...");
             return;
         }
         
+        // TODO -p --> parent give path, create parents as necessary
+        // TODO -v --> verbose, print name of each directory created
+        // TODO Should allow multiple directories to be created
+
+        Tuple<char[], string[]> commands = fileSystem.SeparateOptions(options, 2);
+        char[] charOptions = commands.Item1;
+        string[] remCommands = commands.Item2;
+        
         bool duplicate = false;
         List<Node> neighbours = fileSystem.GetCurrentNode().GetNeighbours();
+
+        // Remove illegal characters (\) from commands
+        for (int i = 0; i < remCommands.Length; i++)
+        {
+            remCommands[i] = Regex.Replace(remCommands[i], @"['\']+", "");
+        }
         
-        options = Regex.Replace(options, @"[\s/,.:'|]+", "");
+        
+        
+        
+        
 
         foreach (Node neighbour in neighbours)
         {
