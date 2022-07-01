@@ -23,11 +23,15 @@ public class GraphManager : MonoBehaviour
         // Nodes created and added from start up
         DirectoryNode rootNode = Node.Create<DirectoryNode>("UserA");
         DirectoryNode documents = Node.Create<DirectoryNode>("Documents");
+        DirectoryNode dir1 = Node.Create<DirectoryNode>("dir1");
+        DirectoryNode dir2 = Node.Create<DirectoryNode>("dir2");
         FileNode file1 = Node.Create<FileNode>("file1.txt");
         FileNode file2 = Node.Create<FileNode>("file2.txt");
         _graph.AddRoot(rootNode);
         _graph.AddNode(rootNode, documents);
-        _graph.AddNode(rootNode, file1);
+        _graph.AddNode(documents, dir1);
+        _graph.AddNode(dir1, dir2);
+        _graph.AddNode(dir2, file1);
         _graph.AddNode(documents, file2);
 
         // Helper variables initialised
@@ -149,39 +153,46 @@ public class GraphManager : MonoBehaviour
 
     // Follow path from current node to last in input
     // return last node & bool - Use type of node to check if valid for each use case
-    // Invalid path if bool == false, Node is the node it failed on
-    public Tuple<Node, bool> followPath(string path)
+    // Invalid path if bool == false, Node is the node it failed on (invalid node created to fulfil return)
+    public Tuple<Node, bool> FollowPath(string path)
     {
         string[] elems = path.Split('/');
 
         return DoPath(_currentNode, elems, 0);
     }
 
-    // File and directory with same name?
     private Tuple<Node, bool> DoPath(DirectoryNode localCurrentNode, string[] path, int step)
     {
+        Debug.Log("LCN: " + localCurrentNode + "\nPath: " + string.Join('/', path) + "\nstep: " + step);
         
         if (step == path.Length)
         {
             return new Tuple<Node, bool>(localCurrentNode, true);
         }
-        
-        List<Node> neighbours = localCurrentNode.GetNeighbours();
 
-        foreach (Node node in neighbours)
+        foreach (Node node in localCurrentNode.GetNeighbours())
         {
-            if (node.name == path[step] && node.GetType() == typeof(DirectoryNode))
+            // If a node exists in the localCurrentNode's neighbours with the correct name of the next element in the path
+            if (node.name == path[step])
             {
-                DoPath((DirectoryNode)node, path, step++);
-                break;
-            }
-            
-            if (node.name == path[step] && node.GetType() == typeof(FileNode))
-            {
+                // If node is a DirectoryNode
+                if (node.GetType() == typeof(DirectoryNode))
+                {
+                    return DoPath((DirectoryNode)node, path, step + 1);
+                }
+                
+                // If node is a FileNode but not at the end of the path i.e. '<dir>/<dir>/<file>/<file>' --> invalid path
+                if (node.GetType() == typeof(FileNode) && step < path.Length - 1)
+                {
+                    return new Tuple<Node, bool>(node, false);
+                }
+                
+                // node is a FileNode and is the last Node in the path
                 return new Tuple<Node, bool>(node, true);
             }
         }
 
-        return null;
+        // Node in path does not exist in localCurrentNode's neighbours
+        return new Tuple<Node, bool>(Node.Create<Node>(path[step]), false);
     }
 }

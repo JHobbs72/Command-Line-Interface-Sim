@@ -14,6 +14,10 @@ public class MKDIR : MonoBehaviour
     
     public void mkdir(string options)
     {
+        // Tuple<Node, bool> res = fileSystem.FollowPath(options);
+        // Debug.Log("Node: " + res.Item1);
+        // Debug.Log("Valid: " + res.Item2);
+
         if (options == "")
         {
             fileSystem.SendOutput("usage: mkdir [-pv] directory ...");
@@ -23,14 +27,15 @@ public class MKDIR : MonoBehaviour
         // TODO -p --> parent give path, create parents as necessary
         // TODO -v --> verbose, print name of each directory created
         // TODO Should allow multiple directories to be created
-
+        
+        // Separate '-x' options from remaining commands
         Tuple<char[], string[]> commands = fileSystem.SeparateOptions(options, 2);
         char[] charOptions = commands.Item1;
         string[] remCommands = commands.Item2;
         
         bool duplicate = false;
         List<Node> neighbours = fileSystem.GetCurrentNode().GetNeighbours();
-
+        
         // Remove illegal characters (\) from commands
         for (int i = 0; i < remCommands.Length; i++)
         {
@@ -41,7 +46,8 @@ public class MKDIR : MonoBehaviour
         
         
         
-
+        
+        
         foreach (Node neighbour in neighbours)
         {
             if (neighbour.GetType() == typeof(DirectoryNode) && neighbour.name == options)
@@ -49,7 +55,7 @@ public class MKDIR : MonoBehaviour
                 duplicate = true;
             }
         }
-
+        
         if (duplicate)
         {
             fileSystem.SendOutput("A directory called " + options + " already exists");
