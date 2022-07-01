@@ -58,10 +58,10 @@ public class GraphManager : MonoBehaviour
     }
 
     // Add a directory node
-    public void AddDirectoryNode(string name)
+    public void AddDirectoryNode(DirectoryNode parent, string name)
     {
         DirectoryNode newDir = Node.Create<DirectoryNode>(name);
-        _graph.AddNode(_currentNode, newDir);
+        _graph.AddNode(parent, newDir);
     }
     
     public DirectoryNode GetRootNode()
@@ -115,6 +115,7 @@ public class GraphManager : MonoBehaviour
     // Separating '-x' options from the rest of the command - could be in '-xyz' or '-x -y -z' format or any combination
     // with lenght up to maxLength
     // Return char array of options (null if none) and string array with remaining, separated commands
+    // TODO can 'commands' (return string[]) be null? Should have length of 0 if not valid
     public Tuple<char[], string[]> SeparateOptions(string input, int maxLength)
     {
         string[] commands = input.Split(' ');
@@ -143,7 +144,7 @@ public class GraphManager : MonoBehaviour
             }
 
             // Convert to string, remove '-' characters then convert to character array
-            string stringOpts = opts.ToString();
+            string stringOpts = string.Join(',', opts);
             stringOpts = stringOpts.Trim(new [] { '-' });
             finalOpts = stringOpts.ToCharArray();
         }
@@ -163,7 +164,6 @@ public class GraphManager : MonoBehaviour
 
     private Tuple<Node, bool> DoPath(DirectoryNode localCurrentNode, string[] path, int step)
     {
-        Debug.Log("LCN: " + localCurrentNode + "\nPath: " + string.Join('/', path) + "\nstep: " + step);
         
         if (step == path.Length)
         {
