@@ -1,6 +1,8 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+/*
+ * Author: Jacob Hobbs - 190161842
+ * Date : July 2022
+ */
+
 using UnityEngine;
 using UnityEngine.UI;
 

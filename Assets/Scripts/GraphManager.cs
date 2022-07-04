@@ -1,8 +1,11 @@
+/*
+ * Author: Jacob Hobbs - 190161842
+ * Date : July 2022
+ */
+
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 
 public class GraphManager : MonoBehaviour
@@ -58,10 +61,11 @@ public class GraphManager : MonoBehaviour
     }
 
     // Add a directory node
-    public void AddDirectoryNode(DirectoryNode parent, string name)
+    public DirectoryNode AddDirectoryNode(DirectoryNode parent, string name)
     {
         DirectoryNode newDir = Node.Create<DirectoryNode>(name);
         _graph.AddNode(parent, newDir);
+        return newDir;
     }
     
     public DirectoryNode GetRootNode()
@@ -194,5 +198,19 @@ public class GraphManager : MonoBehaviour
 
         // Node in path does not exist in localCurrentNode's neighbours
         return new Tuple<Node, bool>(Node.Create<Node>(path[step]), false);
+    }
+
+    public Node SearchChildren(DirectoryNode parent, string target)
+    {
+        List<Node> neighbours = parent.GetNeighbours();
+
+        foreach (Node node in neighbours)
+        {
+            if (node.name == target)
+            {
+                return node;
+            }
+        }
+        return null;
     }
 }

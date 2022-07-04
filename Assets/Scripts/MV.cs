@@ -1,4 +1,8 @@
-using System;
+/*
+ * Author: Jacob Hobbs - 190161842
+ * Date : July 2022
+ */
+
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;

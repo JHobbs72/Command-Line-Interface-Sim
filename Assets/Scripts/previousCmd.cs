@@ -1,3 +1,8 @@
+/*
+ * Author: Jacob Hobbs - 190161842
+ * Date : July 2022
+ */
+
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;

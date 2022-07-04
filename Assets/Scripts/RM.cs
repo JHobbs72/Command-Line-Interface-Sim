@@ -1,5 +1,9 @@
+/*
+ * Author: Jacob Hobbs - 190161842
+ * Date : July 2022
+ */
+
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;

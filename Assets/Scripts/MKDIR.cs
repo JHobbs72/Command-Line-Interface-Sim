@@ -1,3 +1,8 @@
+/*
+ * Author: Jacob Hobbs - 190161842
+ * Date : July 2022
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,24 +11,12 @@ using UnityEngine;
 
 public class MKDIR : MonoBehaviour
 {
-    // Root command for 'make directory' - create new directory
-    // Create new directory as child of current directory, don't allow '/', ',',
-    // or '.' in directory name
-
     public GraphManager fileSystem;
     private bool _pOption;
     private bool _vOption;
     
     public void mkdir(string options)
     {
-        // Tuple<Node, bool> res = fileSystem.FollowPath(options);
-        // Debug.Log("Node: " + res.Item1);
-        // Debug.Log("Valid: " + res.Item2);
-        
-        // TODO -p --> parent give path, create parents as necessary
-        // TODO -v --> verbose, print name of each directory created
-        // TODO Should allow multiple directories to be created
-
         // TODO catch only enter '-x' command(s)
         if (options == "")
         {
@@ -34,7 +27,7 @@ public class MKDIR : MonoBehaviour
         // Separate '-x' options from remaining commands
         Tuple<char[], string[]> commands = fileSystem.SeparateOptions(options, 2);
         char[] charOptions = commands.Item1;
-        string[] remCommands = commands.Item2;
+        string[] arguments = commands.Item2;
 
         if (charOptions != null)
         {
@@ -50,158 +43,71 @@ public class MKDIR : MonoBehaviour
             
         }
         
-        if (remCommands.Length == 0)
+        if (arguments.Length == 0)
         {
             fileSystem.SendOutput("usage: mkdir [-pv] directory ...");
             return;
         }
 
         // Remove illegal character (\) from commands
-        for (int i = 0; i < remCommands.Length; i++)
+        for (int i = 0; i < arguments.Length; i++)
         {
-            remCommands[i] = Regex.Replace(remCommands[i], @"['\']+", "");
+            arguments[i] = Regex.Replace(arguments[i], @"['\']+", "");
         }
         
-        List<Node> neighbours = fileSystem.GetCurrentNode().GetNeighbours();
         
-        // TODO message to be sent to log --> only one, make sure it's the right one for the scenario
-        // TODO '-x' options
-        foreach (string comm in remCommands)
+        foreach (string comm in arguments)
         {
-            if (comm.Contains('/'))
-            {
-                // From path
-                MkdirPath(comm, neighbours);
-            }
-            else
-            {
-                // Single directory
-                MkdirSingle(comm, neighbours);
-            }
+            Next(fileSystem.GetCurrentNode(), comm.Split('/'), 0);
+        }
+
+        if (!_vOption)
+        {
+            fileSystem.SendOutput("");
         }
     }
 
-    private void NewDir(DirectoryNode parent, string[] path, int step)
+    private void Next(DirectoryNode lcn, string[] path, int step)
     {
-        List<Node> localNeighbours = parent.GetNeighbours();
-        
-        Debug.Log("PATH LENGTH: " + path.Length);
-        Debug.Log("STEP: " + step);
-        // Last element in path
-        if (step - 1 == path.Length)
+        if (path.Length == step)
         {
-            bool duplicate = false;
-            foreach (Node node in localNeighbours)
-            {
-                if (node.name == path[step])
-                {
-                    duplicate = true;
-                }
-            }
-
-            if (!duplicate)
-            {
-                fileSystem.AddDirectoryNode(parent, path[step]);
-                fileSystem.SendOutput("");
-                return;
-            }
-            
-            fileSystem.SendOutput("mkdir: " + path[step] + ": File exists");
             return;
         }
 
-        foreach (Node node in localNeighbours)
+        Node node = fileSystem.SearchChildren(lcn, path[step]);
+        // Null --> no directory or file with that name exists under this parent
+        int scenario = -1;
+        
+        // A DirectoryNode with this name exists under this parent
+        if (node.GetType() == typeof(DirectoryNode))
         {
-            if (node.name == path[step] && node.GetType() == typeof(DirectoryNode))
-            {
-                NewDir((DirectoryNode)node, path, step + 1);
-                return;
-            }
-            
-            if (node.name == path[step] && node.GetType() == typeof(FileNode))
-            {
-                fileSystem.SendOutput("mkdir: " + node.name + ": Not a directory");
-                return;
-            }
+            scenario = 0;
+        }
+        // A FileNode with this name exists under this parent
+        else if (node.GetType() == typeof(FileNode))
+        {
+            scenario = 1;
         }
         
-        // Create needed directory
-        fileSystem.AddDirectoryNode(parent, path[step]);
-        List<Node> newNeighbours = parent.GetNeighbours();
-        foreach (Node node in newNeighbours)
+        switch (scenario)
         {
-            if (node.name == path[step] && node.GetType() == typeof(DirectoryNode))
-            {
-                NewDir((DirectoryNode)node, path, step + 1);
-            }
-        }
-    }
-    
-    // NO '-p' OPTION
-    private void MkdirPath(string dir, List<Node> neighbours)
-    {
-        if (_pOption)
-        {
-            string[] path = dir.Split('/');
-            NewDir(fileSystem.GetCurrentNode(), path, 0);
-        }
-        
-        // Path given must be valid apart from last (hence 'SkipLast(1)')
-        string toValidate = string.Join('/', dir.Split('/').SkipLast(1));
-        Tuple<Node, bool> validity = fileSystem.FollowPath(toValidate);
-        if (validity.Item2)
-        {
-            List<Node> localNeighbours = validity.Item1.GetNeighbours();
-            string newNode = dir.Split('/')[^1];
-            foreach (Node node in localNeighbours)
-            {
-                if (node.name == newNode)
+            case -1:
+                Debug.Log("No directory or file exists with that name --> create new dir and enter");
+                DirectoryNode newNode = fileSystem.AddDirectoryNode(lcn, path[step]);
+                if (_vOption)
                 {
-                    fileSystem.SendOutput("mkdir: " + validity.Item1.name + ": File exists");
-                    return;
+                    fileSystem.SendOutput("mkdir: created directory '" + newNode.name + "'");
                 }
-            }
-            fileSystem.AddDirectoryNode((DirectoryNode)validity.Item1, newNode);
-            fileSystem.SendOutput("");
+                Next(newNode, path, step + 1);
+                break;
+            case 0:
+                Debug.Log("A DirectoryNode with this name exists under this parent");
+                Next((DirectoryNode)node, path, step + 1);
+                break;
+            case 1:
+                Debug.Log("A FileNode with this name exists under this parent");
+                fileSystem.SendOutput("mkdir: " + node.name + ": Not a directory"); // Add path up to this point to 'node.name' e.g. dir/dir/<failed-file>
+                break;
         }
-        else
-        {
-            // Invalid path given
-            // File Node given in the middle
-            if (validity.Item1.GetType() == typeof(FileNode))
-            {
-                fileSystem.SendOutput("mkdir: " + string.Join('/', dir.Split('/').SkipLast(1)) + ":" + validity.Item1.name + ": Not a directory");
-            }
-            // Non existent directory
-            fileSystem.SendOutput("mkdir: " + validity.Item1.name + ": No such file or directory");
-        }
-    }
-
-    private void MkdirSingle(string dir, List<Node> neighbours)
-    {
-        bool duplicate = false;
-            
-        foreach (Node neighbour in neighbours)
-        {
-            if (neighbour.GetType() == typeof(DirectoryNode) && neighbour.name == dir)
-            {
-                duplicate = true;
-            }
-        }
-        
-        if (duplicate)
-        {
-            fileSystem.SendOutput("A directory called " + dir + " already exists");
-        }
-        else
-        {
-            fileSystem.AddDirectoryNode(fileSystem.GetCurrentNode(), dir);
-            fileSystem.SendOutput("");
-        }
-    }
-
-    private void POptionPath(string dir)
-    {
-        
     }
 }
