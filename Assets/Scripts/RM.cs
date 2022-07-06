@@ -23,11 +23,7 @@ public class RM : MonoBehaviour
             fileSystem.SendOutput("usage: rm [-f | -i] [-rv] file ... \n           unlink file");
             return;
         }
-
-        // -f | -i --> if used together (pointless) the second takes precedence
-        // -rv     --> both execute individually
-
-
+        
         // Separate '-x' options and remaining commands
         // MaxLength = '-x -x -x -x'
         Tuple<char[], string[]> commands = fileSystem.SeparateOptions(option, 4);
@@ -42,46 +38,39 @@ public class RM : MonoBehaviour
                 _options = InteractAndForce(_options);
             }
         }
+        else
+        {
+            _options = new char[]{'x'};
+        }
+        
+        fileSystem.SendOutput("");
 
         foreach (string arg in arguments)
         {
             DoRemoving(fileSystem.GetCurrentNode(), arg.Split('/'), 0);
         }
-
-
     }
 
     private void DoRemoving(DirectoryNode lcn, string[] path, int step)
     {
-        if (path.Length == step)
-        {
-            return;
-        }
-        
+        if (path.Length == step){ return; }
+        Debug.Log("PEEP");
         Node node = fileSystem.SearchChildren(lcn, path[step]);
 
         // Null --> no directory or file with that name exists under this parent
         int scenario = -1;
-        
-        if (node == null)
-        {
-            scenario = -1;
-        }
+        if (node == null) { scenario = -1; }
         // A DirectoryNode with this name exists under this parent
-        else if (node.GetType() == typeof(DirectoryNode))
-        {
-            scenario = 0;
-        }
+        else if (node.GetType() == typeof(DirectoryNode)) { scenario = 0; }
         // A FileNode with this name exists under this parent
-        else if (node.GetType() == typeof(FileNode))
-        {
-            scenario = 1;
-        }
+        else if (node.GetType() == typeof(FileNode)) { scenario = 1; }
+        
+        Debug.Log("Scenario: " + scenario + "\nOptions: " + string.Join(',', _options));
 
         switch (scenario)
         {
             case -1:
-                fileSystem.SendOutput("rm: " + node.name + ": No such file or directory");
+                fileSystem.SendOutput("rm: " + path[step] + ": No such file or directory");
                 break;
             case 0:
                 if (!_options.Contains('r'))
@@ -89,27 +78,63 @@ public class RM : MonoBehaviour
                     fileSystem.SendOutput("rm: " + node.name + ": is a directory");
                     break;
                 }
-
-                if (_options.Contains('i') && Prompt(node, 0))
+                if (_options.Contains('i'))
                 {
-                    DoRemoving((DirectoryNode)node, path, step + 1);
+                    if (Prompt(node, 0))
+                    {
+                        DoRemoving((DirectoryNode)node, path, step + 1);
+                    }
                 }
-                
+                else
+                {
+                    if (node.GetNeighbours().Count == 0)
+                    {
+                        if (_options.Contains('i'))
+                        {
+                            if (Prompt(node, 1))
+                            {
+                                fileSystem.RemoveNode(lcn, node);
+                        
+                                if (_options.Contains('v'))
+                                {
+                                    fileSystem.SendOutput(node.name);
+                                }
+                            }
+                        }
+                        fileSystem.RemoveNode(lcn, node);
+                        
+                        if (_options.Contains('v'))
+                        {
+                            fileSystem.SendOutput(node.name);
+                        }
+                    }
+                    else
+                    {
+                        DoRemoving((DirectoryNode)node, path, step);
+                    }
+                }
                 break;
             case 1:
-                if (Prompt(node, 1))
+                if (_options.Contains('i'))
+                {
+                    if (Prompt(node, 1))
+                    {
+                        fileSystem.RemoveNode(lcn, node);
+                        
+                        if (_options.Contains('v'))
+                        {
+                            fileSystem.SendOutput(node.name);
+                        }
+                    }
+                }
+                else
                 {
                     fileSystem.RemoveNode(lcn, node);
-                    if (_options.Contains('v'))
-                    {
-                        fileSystem.SendOutput(node.name);
-                    }
-                    fileSystem.SendOutput("");
                 }
                 break;
         }
     }
-    
+
     private char[] InteractAndForce(char[] options)
     {
         int priority = Array.IndexOf(options, 'i') - Array.IndexOf(options, 'f');
@@ -131,21 +156,15 @@ public class RM : MonoBehaviour
 
     private bool Prompt(Node node, int promptPoint)
     {
-        // for -i option
-        // use promptPoint for what message to display - enter dir or remove xyz
-
-        // Enter directory
-        if (promptPoint == 0)
+        switch (promptPoint)
         {
-            fileSystem.SendOutput("Examine file in directory '" + node.name + "'?");
-            // Get input
-            return true;
-        }
-
-        if (promptPoint == 1)
-        {
-            fileSystem.SendOutput("Remove " + node.name + "?");
-            return true;
+            case 0:
+                fileSystem.SendOutput("Examine file in directory '" + node.name + "'?");
+                // Get input
+                return true;
+            case 1:
+                fileSystem.SendOutput("Remove " + node.name + "?");
+                return true;
         }
 
         return false;
