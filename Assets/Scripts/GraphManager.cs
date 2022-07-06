@@ -200,6 +200,7 @@ public class GraphManager : MonoBehaviour
         return new Tuple<Node, bool>(Node.Create<Node>(path[step]), false);
     }
 
+    // Search children of 'parent' return the node if it exists else return null
     public Node SearchChildren(DirectoryNode parent, string target)
     {
         List<Node> neighbours = parent.GetNeighbours();

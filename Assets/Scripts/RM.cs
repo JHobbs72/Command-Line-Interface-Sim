@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 public class RM : MonoBehaviour
@@ -13,6 +14,7 @@ public class RM : MonoBehaviour
     // Root command for 'remove' - remove a file
 
     public GraphManager fileSystem;
+    private char[] _options;
 
     public void rm(string option)
     {
@@ -21,116 +23,131 @@ public class RM : MonoBehaviour
             fileSystem.SendOutput("usage: rm [-f | -i] [-rv] file ... \n           unlink file");
             return;
         }
-        
+
         // -f | -i --> if used together (pointless) the second takes precedence
         // -rv     --> both execute individually
 
-        // -------------------------------------------------------------------------------------------------------------
-        DirectoryNode currentNode = fileSystem.GetCurrentNode();
-        List<Node> neighbours = currentNode.GetNeighbours();
-        
-        // ------------------------------------------------------------------------------------------------------------- 
 
         // Separate '-x' options and remaining commands
-            // MaxLength = '-x -x -x -x'
+        // MaxLength = '-x -x -x -x'
         Tuple<char[], string[]> commands = fileSystem.SeparateOptions(option, 4);
-        char[] options = commands.Item1;
-        string[] remCommands = commands.Item2;
-        
-        Debug.Log("Options: " + String.Join(',', remCommands));
-        
-        // LIST OR SINGLE FILE/DIRECTORY
-            // Skip over any invalid files/dirs - Don't break on error, just skip onto the next
-        // Init empty list to fill with valid nodes that will be removed
-        List<Node> toRemove = new List<Node>();
-        // Iterate through each file/dir given in command (may be just one)
-        foreach (string file in remCommands)
+        _options = commands.Item1;
+        string[] arguments = commands.Item2;
+
+        // If options -i and -f are both given the second is used
+        if (_options != null)
         {
-            bool fileFound = false;
-            // Attempt to find given node in neighbours of current node
-            foreach (Node node in neighbours)
+            if (_options.Contains('i') && _options.Contains('f'))
             {
-                // If what's given is a valid directory
-                if (node.name == file && node.GetType() == typeof(DirectoryNode))
+                _options = InteractAndForce(_options);
+            }
+        }
+
+        foreach (string arg in arguments)
+        {
+            DoRemoving(fileSystem.GetCurrentNode(), arg.Split('/'), 0);
+        }
+
+
+    }
+
+    private void DoRemoving(DirectoryNode lcn, string[] path, int step)
+    {
+        if (path.Length == step)
+        {
+            return;
+        }
+        
+        Node node = fileSystem.SearchChildren(lcn, path[step]);
+
+        // Null --> no directory or file with that name exists under this parent
+        int scenario = -1;
+        
+        if (node == null)
+        {
+            scenario = -1;
+        }
+        // A DirectoryNode with this name exists under this parent
+        else if (node.GetType() == typeof(DirectoryNode))
+        {
+            scenario = 0;
+        }
+        // A FileNode with this name exists under this parent
+        else if (node.GetType() == typeof(FileNode))
+        {
+            scenario = 1;
+        }
+
+        switch (scenario)
+        {
+            case -1:
+                fileSystem.SendOutput("rm: " + node.name + ": No such file or directory");
+                break;
+            case 0:
+                if (!_options.Contains('r'))
                 {
-                    // If it's a directory the '-r' option must be included
-                    if (options == null || !options.Contains('r'))
+                    fileSystem.SendOutput("rm: " + node.name + ": is a directory");
+                    break;
+                }
+
+                if (_options.Contains('i') && Prompt(node, 0))
+                {
+                    DoRemoving((DirectoryNode)node, path, step + 1);
+                }
+                
+                break;
+            case 1:
+                if (Prompt(node, 1))
+                {
+                    fileSystem.RemoveNode(lcn, node);
+                    if (_options.Contains('v'))
                     {
-                        // Error
-                        fileSystem.SendOutput("rm: " + file + ": is a directory");
+                        fileSystem.SendOutput(node.name);
                     }
-                    // Add to list of nodes to be removed
-                    toRemove.Add(node);
-                    fileFound = true;
+                    fileSystem.SendOutput("");
                 }
-                // If what's given is a valid file 
-                else if (node.name == file && node.GetType() == typeof(FileNode))
-                {
-                    // Add to list of nodes to be removed
-                    toRemove.Add(node);
-                    fileFound = true;
-                }
-            }
-
-            if (!fileFound)
-            {
-                // Error on invalid input
-                fileSystem.SendOutput("rm: " + file + ": No such file or directory");
-            }
-        }
-
-        // IF options == null CATCH
-        foreach (Node node in toRemove)
-        {
-            if (node.GetType() == typeof(FileNode))
-            {
-                // FileNode
-                RemoveSingle(currentNode, (FileNode)node, options);
-            }
-            else if (node.GetType() == typeof(DirectoryNode) && node.GetNeighbours().Count == 0)
-            {
-                // DirectoryNode with no children
-                RemoveSingle(currentNode, (FileNode)node, options);
-            }
-            else
-            {
-                // DirectoryNode with children
-                RemoveTree(currentNode, (DirectoryNode)node, options);
-            }
+                break;
         }
     }
     
-    // -----------------------------------------------------------------------------------------------------------------
-
-    
-    // RemoveSingle must be identified by number of neighbours, not 'is FileNode' else directories will never be removed 
-    
-    
-    private void RemoveSingle(DirectoryNode currentNode, Node target, char[] opts)
+    private char[] InteractAndForce(char[] options)
     {
-        // TODO opts
-        fileSystem.RemoveNode(currentNode, target);
-        fileSystem.SendOutput("");
+        int priority = Array.IndexOf(options, 'i') - Array.IndexOf(options, 'f');
+        if (priority > 0)
+        {
+            // -i is after -f so use -i
+            List<char> charList = options.ToList();
+            charList.Remove('f');
+            return charList.ToArray();
+        }
+        else
+        {
+            // -f is after -i so use -f
+            List<char> charList = options.ToList();
+            charList.Remove('i');
+            return charList.ToArray();
+        }
     }
 
-    private void RemoveTree(DirectoryNode localCurrentNode, DirectoryNode target, char[] opts)
+    private bool Prompt(Node node, int promptPoint)
     {
-        // TODO opts
-        Debug.Log("LCN: " + localCurrentNode + "\nTarget: " + target + "\nOptions: " + opts);
-        List<Node> neighbours = localCurrentNode.GetNeighbours();
-        foreach (Node node in neighbours)
+        // for -i option
+        // use promptPoint for what message to display - enter dir or remove xyz
+
+        // Enter directory
+        if (promptPoint == 0)
         {
-            if (node.name == target.name)
-            {
-                if (node.GetType() == typeof(FileNode))
-                {
-                    RemoveSingle(localCurrentNode, node, opts);
-                }
-                else
-                {
-                    RemoveTree(localCurrentNode, (DirectoryNode)node, opts);
-                }
-            }
+            fileSystem.SendOutput("Examine file in directory '" + node.name + "'?");
+            // Get input
+            return true;
         }
+
+        if (promptPoint == 1)
+        {
+            fileSystem.SendOutput("Remove " + node.name + "?");
+            return true;
+        }
+
+        return false;
     }
 }

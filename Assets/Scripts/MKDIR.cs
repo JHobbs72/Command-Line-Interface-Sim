@@ -60,11 +60,6 @@ public class MKDIR : MonoBehaviour
         {
             Next(fileSystem.GetCurrentNode(), comm.Split('/'), 0);
         }
-
-        if (!_vOption)
-        {
-            fileSystem.SendOutput("");
-        }
     }
 
     private void Next(DirectoryNode lcn, string[] path, int step)
@@ -73,13 +68,18 @@ public class MKDIR : MonoBehaviour
         {
             return;
         }
-
+        
         Node node = fileSystem.SearchChildren(lcn, path[step]);
+
         // Null --> no directory or file with that name exists under this parent
         int scenario = -1;
         
+        if (node == null)
+        {
+            scenario = -1;
+        }
         // A DirectoryNode with this name exists under this parent
-        if (node.GetType() == typeof(DirectoryNode))
+        else if (node.GetType() == typeof(DirectoryNode))
         {
             scenario = 0;
         }
@@ -92,20 +92,40 @@ public class MKDIR : MonoBehaviour
         switch (scenario)
         {
             case -1:
-                Debug.Log("No directory or file exists with that name --> create new dir and enter");
-                DirectoryNode newNode = fileSystem.AddDirectoryNode(lcn, path[step]);
-                if (_vOption)
+                // If last node in path --> create and return
+                if (step == path.Length - 1)
                 {
-                    fileSystem.SendOutput("mkdir: created directory '" + newNode.name + "'");
+                    DirectoryNode lastNode = fileSystem.AddDirectoryNode(lcn, path[step]);
+                    fileSystem.SendOutput("");
+                    
+                    if (_vOption)
+                    {
+                        fileSystem.SendOutput("mkdir: created directory '" + lastNode.name + "'");
+                    }
+                    return;
                 }
-                Next(newNode, path, step + 1);
+                
+                // If not last node in path but -p --> create and next
+                if (_pOption)
+                {
+                    DirectoryNode pNode = fileSystem.AddDirectoryNode(lcn, path[step]);
+                    Next(pNode, path, step + 1);
+                    
+                    if (_vOption)
+                    {
+                        fileSystem.SendOutput("mkdir: created directory '" + pNode.name + "'");
+                    }
+                }
+
+                // If not last node in path and !-p
+                fileSystem.SendOutput("mkdir: " + path[step] + ": No such file or directory");
                 break;
+            
             case 0:
-                Debug.Log("A DirectoryNode with this name exists under this parent");
                 Next((DirectoryNode)node, path, step + 1);
                 break;
+            
             case 1:
-                Debug.Log("A FileNode with this name exists under this parent");
                 fileSystem.SendOutput("mkdir: " + node.name + ": Not a directory"); // Add path up to this point to 'node.name' e.g. dir/dir/<failed-file>
                 break;
         }

@@ -30,7 +30,7 @@ public class CMD : MonoBehaviour
         _cmdIn.onSubmit.AddListener(Command);
     }
 
-    public void AddListener(GameObject listener)
+    public void AddLocalListener(GameObject listener)
     {
         if (!_listeners.Contains(listener))
         {
@@ -38,8 +38,7 @@ public class CMD : MonoBehaviour
         }
     }
 
-    // Split input into individual components then send the 'branch commands' to
-    // the correct root
+    // Split input into individual components then send the arguments to the correct root
     public void Command(string input)
     {
         if (input == "")
@@ -47,6 +46,7 @@ public class CMD : MonoBehaviour
             _output.EmptyOut();
             return;
         }
+        
         string[] commands = input.Split(new char[] { ' ' });
         GameObject go = _listeners.Where(obj => obj.name == commands[0]).SingleOrDefault();
         string[] options = commands.Skip(1).ToArray();
@@ -58,10 +58,9 @@ public class CMD : MonoBehaviour
         {
             go.SendMessage(commands[0], optionsString, SendMessageOptions.RequireReceiver);
         }
-        catch (NullReferenceException)
+        catch (NullReferenceException e)
         {
             _fileSystem.SendOutput("Command not found " + commands[0]);
-            Debug.Log("Not found command: " + string.Join(',', commands));
             return;
         }
         
@@ -81,25 +80,25 @@ public class CMD : MonoBehaviour
     private void AddListeners()
     {
         GameObject prevCmd = GameObject.Find("prevCmd");
-        AddListener(prevCmd);
+        AddLocalListener(prevCmd);
         GameObject pwd = GameObject.Find("pwd");
-        AddListener(pwd);
+        AddLocalListener(pwd);
         GameObject ls = GameObject.Find("ls");
-        AddListener(ls);
+        AddLocalListener(ls);
         GameObject mkdir = GameObject.Find("mkdir");
-        AddListener(mkdir);
+        AddLocalListener(mkdir);
         GameObject rmdir = GameObject.Find("rmdir");
-        AddListener(rmdir);
+        AddLocalListener(rmdir);
         GameObject mv = GameObject.Find("mv");
-        AddListener(mv);
+        AddLocalListener(mv);
         GameObject touch = GameObject.Find("touch");
-        AddListener(touch);
+        AddLocalListener(touch);
         GameObject git = GameObject.Find("git");
-        AddListener(git);
+        AddLocalListener(git);
         GameObject cd = GameObject.Find("cd");
-        AddListener(cd);
+        AddLocalListener(cd);
         GameObject rm = GameObject.Find("rm");
-        AddListener(rm);
-        AddListener(gameObject);
+        AddLocalListener(rm);
+        AddLocalListener(gameObject);
     }
 }

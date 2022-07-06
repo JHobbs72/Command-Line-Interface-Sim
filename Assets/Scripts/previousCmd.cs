@@ -43,7 +43,7 @@ public class previousCmd : MonoBehaviour
     {
         if (pointer != null)
         {
-            // Write to textbox
+            // Write to text box
             cmdIn.text = _cmds[(int)pointer];
             cmdIn.caretPosition = _cmds[(int)pointer].Length;
         }
