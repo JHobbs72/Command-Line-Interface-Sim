@@ -103,7 +103,7 @@ public class GraphManager : MonoBehaviour
             return (DirectoryNode)_currentPath[^1];
         }
         
-        SendOutput("At root");
+        SendOutput("At root", false);
         return null;
     }
 
@@ -112,9 +112,9 @@ public class GraphManager : MonoBehaviour
         _currentCommand = command;
     }
     
-    public void SendOutput(string content)
+    public void SendOutput(string content, bool flag)
     {
-        _outputSource.AddOutput(_currentCommand, content);
+        _outputSource.AddOutput(_currentCommand, content, flag);
     }
 
     // Separating '-x' options from the rest of the command - could be in '-xyz' or '-x -y -z' format or any combination
@@ -157,9 +157,12 @@ public class GraphManager : MonoBehaviour
         return Tuple.Create(finalOpts, commands);
     }
 
-    public Node CheckPath(DirectoryNode lcn, string[] path, int step)
+    // Check validity of a path
+    // Return null if invalid
+    // Return list of nodes if valid
+    public List<Node> CheckPath(DirectoryNode lcn, string[] path, int step, List<Node> validPath)
     {
-        // If step == path lenght isLst = true
+        // If step == path lenght isLast = true
         // else isLast = false
         bool isLast = step == path.Length - 1;
 
@@ -169,26 +172,31 @@ public class GraphManager : MonoBehaviour
         if (nextNode == null) { scenario = -1; }
         else if (nextNode.GetType() == typeof(DirectoryNode)) { scenario = 0; }
         else if (nextNode.GetType() == typeof(FileNode)) { scenario = 1; }
-        
+
         switch (scenario)
         {
             case -1:
-                SendOutput("Error");
+                SendOutput("zsh: No Such file or directory: " + string.Join('/', validPath) + "/" + nextNode.name, false);
+                
                 return null;
             case 0:
                 if (isLast)
                 {
-                    return nextNode;
+                    validPath.Add(nextNode);
+                    
+                    return validPath;
                 }
-
-                CheckPath((DirectoryNode)nextNode, path, step + 1);
-                break;
+                validPath.Add(nextNode);
+                
+                return CheckPath((DirectoryNode)nextNode, path, step + 1, validPath);
             case 1:
                 if (isLast)
                 {
-                    return nextNode;
+                    validPath.Add(nextNode);
+                    return validPath;
                 }
-                SendOutput("Error");
+                SendOutput("zsh: not a directory: " + string.Join('/', validPath) + "/" + nextNode.name, false);
+                
                 return null;
         }
 

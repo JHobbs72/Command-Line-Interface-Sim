@@ -21,7 +21,7 @@ public class FileNode : Node
     // Protects from error when trying to get children of a leaf node
     public override List<Node> GetNeighbours()
     {
-        _outputSource.SendOutput("Cannot get children on a leaf node");
+        _outputSource.SendOutput("Cannot get children on a leaf node", false);
         return null;
     }
 

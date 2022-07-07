@@ -38,12 +38,12 @@ public class TOUCH : MonoBehaviour
 
         if (duplicate)
         {
-            fileSystem.SendOutput("A file called " + options + " already exists");
+            fileSystem.SendOutput("A file called " + options + " already exists", false);
         }
         else
         {
             fileSystem.AddFileNode(fileSystem.GetCurrentNode(), options);
-            fileSystem.SendOutput("");
+            fileSystem.SendOutput("", false);
         }
     }
 }

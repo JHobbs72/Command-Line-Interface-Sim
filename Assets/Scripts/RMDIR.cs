@@ -16,7 +16,7 @@ public class RMDIR : MonoBehaviour
     {
         if (option == "")
         {
-            fileSystem.SendOutput("usage: rmdir [-p] directory ...");
+            fileSystem.SendOutput("usage: rmdir [-p] directory ...", false);
             return;
         }
         
@@ -31,7 +31,7 @@ public class RMDIR : MonoBehaviour
             {
                 fileSystem.RemoveNode(currentNode, targetNode);
                 found = true;
-                fileSystem.SendOutput("");
+                fileSystem.SendOutput("", false);
                 break;
             }
             
@@ -43,10 +43,10 @@ public class RMDIR : MonoBehaviour
         
         if (!found && isFile)
         {
-            fileSystem.SendOutput(option + " Is not a directory");
+            fileSystem.SendOutput(option + " Is not a directory", false);
         } else if (!found)
         {
-            fileSystem.SendOutput("No directory found named " + option);
+            fileSystem.SendOutput("No directory found named " + option, false);
         }
     }
 }

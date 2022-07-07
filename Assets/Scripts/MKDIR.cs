@@ -20,7 +20,7 @@ public class MKDIR : MonoBehaviour
         // TODO catch only enter '-x' command(s)
         if (options == "")
         {
-            fileSystem.SendOutput("usage: mkdir [-pv] directory ...");
+            fileSystem.SendOutput("usage: mkdir [-pv] directory ...", false);
             return;
         }
 
@@ -45,7 +45,7 @@ public class MKDIR : MonoBehaviour
         
         if (arguments.Length == 0)
         {
-            fileSystem.SendOutput("usage: mkdir [-pv] directory ...");
+            fileSystem.SendOutput("usage: mkdir [-pv] directory ...", false);
             return;
         }
 
@@ -96,11 +96,11 @@ public class MKDIR : MonoBehaviour
                 if (step == path.Length - 1)
                 {
                     DirectoryNode lastNode = fileSystem.AddDirectoryNode(lcn, path[step]);
-                    fileSystem.SendOutput("");
+                    fileSystem.SendOutput("", false);
                     
                     if (_vOption)
                     {
-                        fileSystem.SendOutput("mkdir: created directory '" + lastNode.name + "'");
+                        fileSystem.SendOutput("mkdir: created directory '" + lastNode.name + "'", false);
                     }
                     return;
                 }
@@ -113,12 +113,12 @@ public class MKDIR : MonoBehaviour
                     
                     if (_vOption)
                     {
-                        fileSystem.SendOutput("mkdir: created directory '" + pNode.name + "'");
+                        fileSystem.SendOutput("mkdir: created directory '" + pNode.name + "'", false);
                     }
                 }
 
                 // If not last node in path and !-p
-                fileSystem.SendOutput("mkdir: " + path[step] + ": No such file or directory");
+                fileSystem.SendOutput("mkdir: " + path[step] + ": No such file or directory", false);
                 break;
             
             case 0:
@@ -126,7 +126,7 @@ public class MKDIR : MonoBehaviour
                 break;
             
             case 1:
-                fileSystem.SendOutput("mkdir: " + node.name + ": Not a directory"); // Add path up to this point to 'node.name' e.g. dir/dir/<failed-file>
+                fileSystem.SendOutput("mkdir: " + node.name + ": Not a directory", false); // Add path up to this point to 'node.name' e.g. dir/dir/<failed-file>
                 break;
         }
     }

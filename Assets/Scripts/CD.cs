@@ -21,7 +21,7 @@ public class CD : MonoBehaviour
         if (options == "")
         {
             // Go to root
-            fileSystem.SendOutput("");
+            fileSystem.SendOutput("", false);
         }
         
         _validPath = true;
@@ -62,7 +62,7 @@ public class CD : MonoBehaviour
             }
             else
             {
-                fileSystem.SendOutput("No directory named " + _invalidNode);
+                fileSystem.SendOutput("No directory named " + _invalidNode, false);
                 _localCurrentNode = fileSystem.GetCurrentNode();
             }
         }
@@ -113,6 +113,6 @@ public class CD : MonoBehaviour
         {
             pathNames.Add(dir.name);
         }
-        fileSystem.SendOutput(string.Join("/", pathNames));
+        fileSystem.SendOutput(string.Join("/", pathNames), false);
     }
 }

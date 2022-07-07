@@ -60,7 +60,7 @@ public class CMD : MonoBehaviour
         }
         catch (NullReferenceException e)
         {
-            _fileSystem.SendOutput("Command not found " + commands[0]);
+            _fileSystem.SendOutput("Command not found " + commands[0], false);
             return;
         }
         

@@ -26,7 +26,7 @@ public class MV : MonoBehaviour
         if (options == "")
         {
             fileSystem.SendOutput("usage: mv [-f | -i | -n] [-v] source target \n" +
-                                  "           mv [-f | -i | -n] [-v] source ... directory");
+                                  "           mv [-f | -i | -n] [-v] source ... directory", false);
             return;
         }
         
@@ -70,7 +70,7 @@ public class MV : MonoBehaviour
             } else if (validity.GetType() == typeof(FileNode))
             {
                 // Add invalid file
-                fileSystem.SendOutput("mv: " + validity.name + " is not a directory");
+                fileSystem.SendOutput("mv: " + validity.name + " is not a directory", false);
             }
         }
         
@@ -215,7 +215,7 @@ public class MV : MonoBehaviour
             else
             {
                 // Error, non-existent node
-                fileSystem.SendOutput(thisNode.name + ": no such file or directory");
+                fileSystem.SendOutput(thisNode.name + ": no such file or directory", false);
                 return null;
             }
         }
@@ -259,7 +259,7 @@ public class MV : MonoBehaviour
         if (validity == null)
         {
             // Invalid node
-            fileSystem.SendOutput(path[index] + ": no such file or directory");
+            fileSystem.SendOutput(path[index] + ": no such file or directory", false);
             return null;
         }
         
@@ -303,12 +303,12 @@ public class MV : MonoBehaviour
     {
         // Cannot have '-x' options i.e. mvOpt should be null
         // DUPLICATES
-        fileSystem.SendOutput("RENAMING");
+        fileSystem.SendOutput("RENAMING", false);
     }
 
     private void Overwrite(string mvOpt, Node src, Node dest)
     {
-        fileSystem.SendOutput("OVERWRITING");
+        fileSystem.SendOutput("OVERWRITING", false);
         // Moving a file to where there's a DUPLICATE overwrites the old file
     }
 
@@ -316,6 +316,6 @@ public class MV : MonoBehaviour
     {
         // Check for duplicates at destination --> overwrite
         // DUPLICATES
-        fileSystem.SendOutput("MOVING");
+        fileSystem.SendOutput("MOVING", false);
     }
 }

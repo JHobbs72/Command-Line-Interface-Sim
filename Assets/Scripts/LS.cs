@@ -23,6 +23,6 @@ public class LS : MonoBehaviour
             neighbourNamesList.Add(neighbours[i].name);
         }
 
-        fileSystem.SendOutput(string.Join(", ", neighbourNamesList));
+        fileSystem.SendOutput(string.Join(", ", neighbourNamesList), false);
     }
 }

@@ -22,6 +22,6 @@ public class PWD : MonoBehaviour
             currentPathNames.Add(node.name);
         }
         
-        fileSystem.SendOutput(string.Join('/', currentPathNames));
+        fileSystem.SendOutput(string.Join('/', currentPathNames), false);
     }
 }

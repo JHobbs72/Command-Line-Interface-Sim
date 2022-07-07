@@ -20,15 +20,20 @@ public class outputText : MonoBehaviour
         scroll = FindObjectOfType<autoScroll>();
     }
 
-    public void AddOutput(string command, string content)
+    public void AddOutput(string command, string content, bool flag)
     {
-        if (content.Length == 0)
+        Debug.Log("OUTPUTTED");
+        if (content.Length == 0 && !flag)
         {
             _output.text += "\n>> " + command;
         }
-        else
+        else if (content.Length > 0 && !flag)
         {
             _output.text += "\n>> " + command + "\n" + content;
+        }
+        else if (flag)
+        {
+            _output.text += "\n>> " + content;
         }
     }
 

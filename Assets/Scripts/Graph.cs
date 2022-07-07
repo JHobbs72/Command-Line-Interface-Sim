@@ -67,7 +67,7 @@ public class Graph : ScriptableObject
     {
         if (target.GetType() == typeof(DirectoryNode) && target.GetNeighbours().Count > 0)
         {
-            _outputSource.SendOutput("rmdir: " + target.name + ": Directory not empty");
+            _outputSource.SendOutput("rmdir: " + target.name + ": Directory not empty", false);
             return;
         }
         
