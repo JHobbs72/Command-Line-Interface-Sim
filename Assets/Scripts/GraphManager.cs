@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GraphManager : MonoBehaviour
@@ -156,48 +157,42 @@ public class GraphManager : MonoBehaviour
         return Tuple.Create(finalOpts, commands);
     }
 
-    // Follow path from current node to last in input
-    // return last node & bool - Use type of node to check if valid for each use case
-    // Invalid path if bool == false, Node is the node it failed on (invalid node created to fulfil return)
-    public Tuple<Node, bool> FollowPath(string path)
+    public Node CheckPath(DirectoryNode lcn, string[] path, int step)
     {
-        string[] elems = path.Split('/');
+        // If step == path lenght isLst = true
+        // else isLast = false
+        bool isLast = step == path.Length - 1;
 
-        return DoPath(_currentNode, elems, 0);
-    }
-
-    private Tuple<Node, bool> DoPath(DirectoryNode localCurrentNode, string[] path, int step)
-    {
+        Node nextNode = SearchChildren(lcn, path[step]);
         
-        if (step == path.Length)
+        int scenario = -1;
+        if (nextNode == null) { scenario = -1; }
+        else if (nextNode.GetType() == typeof(DirectoryNode)) { scenario = 0; }
+        else if (nextNode.GetType() == typeof(FileNode)) { scenario = 1; }
+        
+        switch (scenario)
         {
-            return new Tuple<Node, bool>(localCurrentNode, true);
+            case -1:
+                SendOutput("Error");
+                return null;
+            case 0:
+                if (isLast)
+                {
+                    return nextNode;
+                }
+
+                CheckPath((DirectoryNode)nextNode, path, step + 1);
+                break;
+            case 1:
+                if (isLast)
+                {
+                    return nextNode;
+                }
+                SendOutput("Error");
+                return null;
         }
 
-        foreach (Node node in localCurrentNode.GetNeighbours())
-        {
-            // If a node exists in the localCurrentNode's neighbours with the correct name of the next element in the path
-            if (node.name == path[step])
-            {
-                // If node is a DirectoryNode
-                if (node.GetType() == typeof(DirectoryNode))
-                {
-                    return DoPath((DirectoryNode)node, path, step + 1);
-                }
-                
-                // If node is a FileNode but not at the end of the path i.e. '<dir>/<dir>/<file>/<file>' --> invalid path
-                if (node.GetType() == typeof(FileNode) && step < path.Length - 1)
-                {
-                    return new Tuple<Node, bool>(node, false);
-                }
-                
-                // node is a FileNode and is the last Node in the path
-                return new Tuple<Node, bool>(node, true);
-            }
-        }
-
-        // Node in path does not exist in localCurrentNode's neighbours
-        return new Tuple<Node, bool>(Node.Create<Node>(path[step]), false);
+        return null;
     }
 
     // Search children of 'parent' return the node if it exists else return null
