@@ -3,9 +3,12 @@
  * Date : July 2022
  */
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.Animations;
 
 public class TOUCH : MonoBehaviour
 {
@@ -15,35 +18,55 @@ public class TOUCH : MonoBehaviour
 
     public void touch(string options)
     {
-        bool duplicate = false;
-        List<Node> neighbours = fileSystem.GetCurrentNode().GetNeighbours();
-        
-        // Remove white space & add .txt file extension if no valid extension is given
-        options = Regex.Replace(options, @"\s+", "");
-        string lowerOptions = options.ToLower();
-
-        if (!(lowerOptions.EndsWith(".txt") || lowerOptions.EndsWith(".doc") || lowerOptions.EndsWith(".html") || 
-            lowerOptions.EndsWith(".xls") || lowerOptions.EndsWith(".ppt")))
+        string[] files = options.Split(' ');
+        foreach (string file in files)
         {
-            options += ".txt";
-        }
-
-        foreach (Node neighbour in neighbours)
-        {
-            if (neighbour.GetType() == typeof(FileNode) && neighbour.name == options)
+            if (file.StartsWith('-'))
             {
-                duplicate = true;
+                fileSystem.SendOutput("touch: illegal option \n usage: touch <file> ...", false);
+                return;
             }
         }
 
-        if (duplicate)
+        foreach (string file in files)
         {
-            fileSystem.SendOutput("A file called " + options + " already exists", false);
+            string[] splitPath = file.Split('/');
+            
+            if (splitPath.Length > 1)
+            {
+                List<Node> validPath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), splitPath.SkipLast(1).ToArray(), 0, new List<Node>());
+                if (validPath != null && validPath[^1].GetType() == typeof(DirectoryNode))
+                {
+                    if (!CheckDuplicate((DirectoryNode)validPath[^1], splitPath[^1]))
+                    {
+                        fileSystem.AddFileNode((DirectoryNode)validPath[^1], splitPath[^1]);
+                    }
+                }
+            }
+            else
+            {
+                if (!CheckDuplicate(fileSystem.GetCurrentNode(), splitPath[0]))
+                {
+                    fileSystem.AddFileNode(fileSystem.GetCurrentNode(), splitPath[0]);
+                    
+                }
+            }
         }
-        else
+        fileSystem.SendOutput("", false);
+    }
+
+    private bool CheckDuplicate(DirectoryNode parent, string target)
+    {
+        List<Node> neighbours = parent.GetNeighbours();
+
+        foreach (Node node in neighbours)
         {
-            fileSystem.AddFileNode(fileSystem.GetCurrentNode(), options);
-            fileSystem.SendOutput("", false);
+            if (node.name == target)
+            {
+                return true;
+            }
         }
+
+        return false;
     }
 }

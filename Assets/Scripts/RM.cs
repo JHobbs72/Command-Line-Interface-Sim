@@ -75,7 +75,6 @@ public class RM : MonoBehaviour
                 if (target.GetType() == typeof(FileNode))
                 {
                     RemoveSingle(fileSystem.GetCurrentNode(), target);
-                    fileSystem.SendOutput("", false);
                 }
                 else if (target.GetType() == typeof(DirectoryNode))
                 {
@@ -97,6 +96,7 @@ public class RM : MonoBehaviour
                 }
             }
         }
+        fileSystem.SendOutput("", false);
     }
 
     private void RemoveSingle(DirectoryNode parent, Node target)
