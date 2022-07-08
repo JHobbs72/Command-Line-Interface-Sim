@@ -22,7 +22,6 @@ public class outputText : MonoBehaviour
 
     public void AddOutput(string command, string content, bool flag)
     {
-        Debug.Log("OUTPUTTED");
         if (content.Length == 0 && !flag)
         {
             _output.text += "\n>> " + command;

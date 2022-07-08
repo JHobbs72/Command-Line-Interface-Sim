@@ -46,7 +46,7 @@ public class RMDIR : MonoBehaviour
                 
                 if (path[^1].GetType() == typeof(FileNode))
                 {
-                    fileSystem.SendOutput("Error --> last is file", false);
+                    fileSystem.SendOutput("rmdir: " + path[^1] + ": Not a directory", false);
                     return;
                 }
 
@@ -71,7 +71,7 @@ public class RMDIR : MonoBehaviour
         {
             if (path[^i].GetNeighbours().Count > 0)
             {
-                fileSystem.SendOutput("Error -> not empty", false);
+                fileSystem.SendOutput("rmdir: " + path[^i] + ": Directory not empty", false);
             }
             else
             {
@@ -82,7 +82,7 @@ public class RMDIR : MonoBehaviour
         // Last node to remove (first in path)
         if (path[0].GetNeighbours().Count > 0)
         {
-            fileSystem.SendOutput("Error -> not empty", false);
+            fileSystem.SendOutput("rmdir: " + path[0] + ": Directory not empty", false);
         }
         else
         {
@@ -96,11 +96,12 @@ public class RMDIR : MonoBehaviour
         Node targetNode = fileSystem.SearchChildren(parent, target);
         if (targetNode.GetNeighbours().Count > 0)
         {
-            fileSystem.SendOutput("Error - directory not empty", false);
+            fileSystem.SendOutput("rmdir: " + targetNode.name + ": Directory not empty", false);
             return;
         }
         
         fileSystem.RemoveNode(parent, targetNode);
+        fileSystem.SendOutput("", false);
 
         if (_options.Contains('v'))
         {
