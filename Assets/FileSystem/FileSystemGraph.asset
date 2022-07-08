@@ -1,22 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7520530937001424343
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
-  m_Name: Documents
-  m_EditorClassIdentifier: 
-  neighbours:
-  - {fileID: -2848127657391851145}
-  - {fileID: 5665563431858562275}
-  - {fileID: -7509795914371836214}
---- !u!114 &-7509795914371836214
+--- !u!114 &-8023954584346035283
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -28,19 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
   m_Name: file
   m_EditorClassIdentifier: 
---- !u!114 &-7354284117985825349
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
-  m_Name: file1.txt
-  m_EditorClassIdentifier: 
---- !u!114 &-6978390575981663713
+--- !u!114 &-5111326543614507299
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -53,8 +25,8 @@ MonoBehaviour:
   m_Name: dir2
   m_EditorClassIdentifier: 
   neighbours:
-  - {fileID: -7354284117985825349}
---- !u!114 &-3606968959533930380
+  - {fileID: 7975993295830043211}
+--- !u!114 &-3773941425828394229
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -64,11 +36,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
-  m_Name: UserA
+  m_Name: dirr
   m_EditorClassIdentifier: 
-  neighbours:
-  - {fileID: -7520530937001424343}
---- !u!114 &-2848127657391851145
+  neighbours: []
+--- !u!114 &-787251057258774642
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -77,11 +48,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
-  m_Name: dir1
+  m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
+  m_Name: file2.txt
   m_EditorClassIdentifier: 
-  neighbours:
-  - {fileID: -6978390575981663713}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95,14 +64,77 @@ MonoBehaviour:
   m_Name: FileSystemGraph
   m_EditorClassIdentifier: 
   nodes:
-  - {fileID: -3606968959533930380}
-  - {fileID: -7520530937001424343}
-  - {fileID: -2848127657391851145}
-  - {fileID: -6978390575981663713}
-  - {fileID: -7354284117985825349}
-  - {fileID: 5665563431858562275}
-  - {fileID: -7509795914371836214}
---- !u!114 &5665563431858562275
+  - {fileID: 175507000585404353}
+  - {fileID: 5639555389683671677}
+  - {fileID: 754678195577805072}
+  - {fileID: -5111326543614507299}
+  - {fileID: 7975993295830043211}
+  - {fileID: -787251057258774642}
+  - {fileID: 8668178197215768116}
+  - {fileID: -3773941425828394229}
+  - {fileID: -8023954584346035283}
+  - {fileID: 8537231709724835828}
+  - {fileID: 6355295927813342962}
+--- !u!114 &175507000585404353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
+  m_Name: UserA
+  m_EditorClassIdentifier: 
+  neighbours:
+  - {fileID: 5639555389683671677}
+  - {fileID: 8668178197215768116}
+  - {fileID: 8537231709724835828}
+  - {fileID: 6355295927813342962}
+--- !u!114 &754678195577805072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
+  m_Name: dir1
+  m_EditorClassIdentifier: 
+  neighbours:
+  - {fileID: -5111326543614507299}
+--- !u!114 &5639555389683671677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
+  m_Name: Documents
+  m_EditorClassIdentifier: 
+  neighbours:
+  - {fileID: 754678195577805072}
+  - {fileID: -787251057258774642}
+--- !u!114 &6355295927813342962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
+  m_Name: dirrrr
+  m_EditorClassIdentifier: 
+  neighbours: []
+--- !u!114 &7975993295830043211
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -112,5 +144,33 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
-  m_Name: file2.txt
+  m_Name: file1.txt
   m_EditorClassIdentifier: 
+--- !u!114 &8537231709724835828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
+  m_Name: dirrr
+  m_EditorClassIdentifier: 
+  neighbours: []
+--- !u!114 &8668178197215768116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
+  m_Name: dir
+  m_EditorClassIdentifier: 
+  neighbours:
+  - {fileID: -3773941425828394229}
+  - {fileID: -8023954584346035283}
