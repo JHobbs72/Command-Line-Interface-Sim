@@ -69,7 +69,7 @@ public class MKDIR : MonoBehaviour
             return;
         }
         
-        Node node = fileSystem.SearchChildren(lcn, path[step]);
+        Node node = lcn.SearchChildren(path[step]);
 
         // Null --> no directory or file with that name exists under this parent
         int scenario = -1;

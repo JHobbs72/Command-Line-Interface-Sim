@@ -36,4 +36,17 @@ public class DirectoryNode : Node
     {
         Neighbours.Remove(node);
     }
+    
+    // Search children of 'parent' return the node if it exists else return null
+    public Node SearchChildren(string target)
+    {
+        foreach (Node node in GetNeighbours())
+        {
+            if (node.name == target)
+            {
+                return node;
+            }
+        }
+        return null;
+    }
 }

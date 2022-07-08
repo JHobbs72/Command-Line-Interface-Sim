@@ -166,7 +166,7 @@ public class GraphManager : MonoBehaviour
         // else isLast = false
         bool isLast = step == path.Length - 1;
 
-        Node nextNode = SearchChildren(lcn, path[step]);
+        Node nextNode = lcn.SearchChildren(path[step]);
         
         int scenario = -1;
         if (nextNode == null) { scenario = -1; }
@@ -200,21 +200,6 @@ public class GraphManager : MonoBehaviour
                 return null;
         }
 
-        return null;
-    }
-
-    // Search children of 'parent' return the node if it exists else return null
-    public Node SearchChildren(DirectoryNode parent, string target)
-    {
-        List<Node> neighbours = parent.GetNeighbours();
-
-        foreach (Node node in neighbours)
-        {
-            if (node.name == target)
-            {
-                return node;
-            }
-        }
         return null;
     }
 }

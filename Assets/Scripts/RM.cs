@@ -70,7 +70,7 @@ public class RM : MonoBehaviour
             // Argument is a single Node 
             else
             {
-                Node target = fileSystem.SearchChildren(fileSystem.GetCurrentNode(), path[0]);
+                Node target = fileSystem.GetCurrentNode().SearchChildren(path[0]);
                 // If it's a valid FileNode --> remove
                 if (target.GetType() == typeof(FileNode))
                 {

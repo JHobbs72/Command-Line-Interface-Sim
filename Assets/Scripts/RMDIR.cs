@@ -93,7 +93,7 @@ public class RMDIR : MonoBehaviour
     private void RemoveDir(DirectoryNode parent, string target)
     {
         // Don't need to check if target is a file - done in main method
-        Node targetNode = fileSystem.SearchChildren(parent, target);
+        Node targetNode = parent.SearchChildren(target);
         if (targetNode.GetNeighbours().Count > 0)
         {
             fileSystem.SendOutput("rmdir: " + targetNode.name + ": Directory not empty", false);
