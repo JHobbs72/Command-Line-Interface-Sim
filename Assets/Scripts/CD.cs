@@ -12,107 +12,88 @@ public class CD : MonoBehaviour
     // Take '..', '<path>' or '<directory>' and move to the appropriate directory
 
     public GraphManager fileSystem;
-    private bool _validPath;
-    private Node _localCurrentNode;
-    private string _invalidNode;
 
     public void cd(string options)
     {
+        // Go to home directory
         if (options == "")
         {
-            // Go to root
-            fileSystem.SendOutput("", false);
-        }
-        
-        _validPath = true;
-        // Move 'back' a directory
-        if (options == "..")
-        {
-            DirectoryNode lastNode = fileSystem.StepBackInPath();
-            if (lastNode != null)
+            // TODO Go to root
+            for (int i = 0; i < fileSystem.GetCurrentPath().Count; i++)
             {
-                fileSystem.SetCurrentNode(lastNode);
-                PrintPath(options);
-            }
-        }
-        else
-        {
-            // Get component directories & check path validity
-            string[] path = options.Split('/');
-            _localCurrentNode = fileSystem.GetCurrentNode();
-
-            // For each directory in path check if it exists in context
-            foreach (string dir in path)
-            {
-                if (_validPath)
-                {
-                    _invalidNode = dir;
-                    CheckNextStep((DirectoryNode)_localCurrentNode, dir);
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            if (_validPath)
-            {
-                ExecutePathChange(fileSystem.GetCurrentNode(), path);
-                PrintPath(options);
-            }
-            else
-            {
-                fileSystem.SendOutput("No directory named " + _invalidNode, false);
-                _localCurrentNode = fileSystem.GetCurrentNode();
-            }
-        }
-    }
-
-    // Check the requested next directory exists
-    private void CheckNextStep(DirectoryNode checkNode, string target)
-    {
-        List<Node> children = checkNode.GetNeighbours();
-
-        foreach (Node child in children)
-        {
-            if (child.name == target && child.GetType() == typeof(DirectoryNode))
-            {
-                _localCurrentNode = child;
-                _validPath = true;
-                break;
+                fileSystem.StepBackInPath();
             }
             
-            _validPath = false;
+            fileSystem.SendOutput(string.Join('/',fileSystem.GetCurrentPath()), false);
         }
+        
+        string[] arguments = options.Split(' ');
+        if (arguments.Length > 1)
+        {
+            fileSystem.SendOutput("Error ", false);
+            return;
+        }
+        
+        string[] path = arguments[0].Split('/');
+
+        if (path.Length == 1)
+        {
+            if (path[0] == "-")
+            {
+                // TODO go to previous dir
+                fileSystem.SendOutput("Previous dir ", false);
+                return;
+            }
+            
+            if (path[0] == "~")
+            {
+                // TODO go to home
+                fileSystem.SendOutput("Home dir ", false);
+                return;
+            }
+            
+            fileSystem.SendOutput("Error", false);
+        }
+
+        List<Node> oldPath = fileSystem.GetCurrentPath();
+        bool validPath = CheckPath(fileSystem.GetCurrentNode(), path, 0);
+        
+        if (!validPath)
+        {
+            fileSystem.SetNewPathFromOrigin(oldPath);
+            return;
+        }
+        
+        fileSystem.SendOutput("", false);
     }
 
-    // Once valid, execute - go to valid file path
-    private void ExecutePathChange(Node localCurrentNode, string[] targetPath)
+    private bool CheckPath(DirectoryNode lcn, string[] path, int step)
     {
-        foreach (string nextDir in targetPath)
+        if (path[step] == "-")
         {
-            List<Node> neighbours = localCurrentNode.GetNeighbours();
-            foreach (Node node in neighbours)
+            fileSystem.SendOutput("Error --> path & error msg", false);
+            return false;
+        }
+
+        if (path[step] == "..") { return CheckPath(fileSystem.StepBackInPath(), path, step + 1); }
+
+        foreach (Node node in lcn.GetNeighbours())
+        {
+            if (node.name == path[step])
             {
-                if (node.name == nextDir)
+                if (node.GetType() == typeof(DirectoryNode))
                 {
-                    localCurrentNode = node;
                     fileSystem.SetCurrentNode((DirectoryNode)node);
                     fileSystem.AddToCurrentPath((DirectoryNode)node);
-                    break;
+                    return CheckPath((DirectoryNode)node, path, step + 1);
                 }
+                
+                fileSystem.SendOutput("Error --> is File", false);
             }
         }
-    }
-
-    // Display new path to user
-    private void PrintPath(string options)
-    {
-        List<string> pathNames = new List<string>();
-        foreach (Node dir in fileSystem.GetCurrentPath())
-        {
-            pathNames.Add(dir.name);
-        }
-        fileSystem.SendOutput(string.Join("/", pathNames), false);
+        
+        fileSystem.SendOutput("No such file or directory", false);
+        
+        return false;
     }
 }

@@ -94,12 +94,19 @@ public class GraphManager : MonoBehaviour
         _currentPath.Add(directory);
     }
 
+    public void SetNewPathFromOrigin(List<Node> path)
+    {
+        _currentPath = path;
+        SetCurrentNode((DirectoryNode)path[^1]);
+    }
+
     // One step back in current path through file system
     public DirectoryNode StepBackInPath()
     {
         if (_currentPath.Count > 1)
         {
             _currentPath.RemoveAt(_currentPath.Count - 1);
+            SetCurrentNode((DirectoryNode)_currentPath[^1]);
             return (DirectoryNode)_currentPath[^1];
         }
         
