@@ -30,7 +30,7 @@ public class CD : MonoBehaviour
         string[] arguments = options.Split(' ');
         if (arguments.Length > 1)
         {
-            fileSystem.SendOutput("Error ", false);
+            fileSystem.SendOutput("Error 1", false);
             return;
         }
         
@@ -51,8 +51,6 @@ public class CD : MonoBehaviour
                 fileSystem.SendOutput("Home dir ", false);
                 return;
             }
-            
-            fileSystem.SendOutput("Error", false);
         }
 
         List<Node> oldPath = fileSystem.GetCurrentPath();
@@ -69,6 +67,11 @@ public class CD : MonoBehaviour
 
     private bool CheckPath(DirectoryNode lcn, string[] path, int step)
     {
+        if (step == path.Length)
+        {
+            return true;
+        }
+        
         if (path[step] == "-")
         {
             fileSystem.SendOutput("Error --> path & error msg", false);
@@ -88,7 +91,8 @@ public class CD : MonoBehaviour
                     return CheckPath((DirectoryNode)node, path, step + 1);
                 }
                 
-                fileSystem.SendOutput("Error --> is File", false);
+                fileSystem.SendOutput("cd: not a directory: " + node.name, false);
+                return false;
             }
         }
         
