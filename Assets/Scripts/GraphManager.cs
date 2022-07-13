@@ -123,6 +123,11 @@ public class GraphManager : MonoBehaviour
     {
         _outputSource.AddOutput(_currentCommand, content, flag);
     }
+    
+    public void SendSpecialOutput(string content)
+    {
+        _outputSource.SpecialOutput(content);
+    }
 
     // Separating '-x' options from the rest of the command - could be in '-xyz' or '-x -y -z' format or any combination
     // with lenght up to maxLength

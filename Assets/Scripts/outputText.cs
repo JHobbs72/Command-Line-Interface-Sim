@@ -35,6 +35,11 @@ public class outputText : MonoBehaviour
             _output.text += "\n>> " + content;
         }
     }
+    
+    public void SpecialOutput(string content)
+    {
+        _output.text += content;
+    }
 
     public void EmptyOut()
     {
