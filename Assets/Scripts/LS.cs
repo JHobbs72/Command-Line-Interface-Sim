@@ -19,92 +19,77 @@ public class LS : MonoBehaviour
 
     public void ls(string options)
     {
-        string[] commands = options.Split(' ');
-        string[] arguments;
-            
-        if (commands[0] == "-F")
+        if (options == "")
         {
-            _fOption = true;
-            arguments = commands.Skip(1).ToArray();
-        }
-        else
-        {
-            arguments = commands;
+            GetNeighbourNames(fileSystem.GetCurrentNode().GetNeighbours(), _fOption);
+            return;
         }
         
-        foreach (string arg in arguments)
-        {
-            string[] path = arg.Split('/');
-
-            Debug.Log("YEEAA: " + path.Length);
-            Debug.Log("YEEAA: " + path[0]);
-
+        string[] arguments = options.Split(' ');
             
-            switch (path.Length)
+        if (arguments[0] == "-F")
+        {
+            _fOption = true;
+            arguments = arguments.Skip(1).ToArray();
+        }
+        
+        if (arguments.Length == 0)
+        {
+            GetNeighbourNames(fileSystem.GetCurrentNode().GetNeighbours(), _fOption);
+            return;
+        }
+
+        if (arguments.Length == 1)
+        {
+            if (arguments[0] == "$HOME")
             {
-                case 0:
-                {
-                    Debug.Log("YYEEE" + string.Join(',', path));
-
-                    List<string> neighbourNames = GetNeighbourNames(fileSystem.GetCurrentNode().GetNeighbours(), _fOption);
-                    fileSystem.SendOutput(string.Join(", ", neighbourNames), false);
-                    
-                    break;
-                }
-                case 1:
-                {
-                    if (path[0] == "$HOME")
-                    {
-                        List<string> neighbourNames = GetNeighbourNames(fileSystem.GetRootNode().GetNeighbours(), _fOption);
-                        fileSystem.SendOutput(string.Join(", ", neighbourNames), false);
-                        break;
-                    }
-
-                    List<Node> neighbours = fileSystem.GetCurrentNode().GetNeighbours();
-                    foreach (Node node in neighbours)
-                    {
-                        if (node.name == path[0])
-                        {
-                            if (node.GetType() == typeof(DirectoryNode))
-                            {
-                                List<string> neighbourNames = GetNeighbourNames(node.GetNeighbours(), _fOption);
-                                fileSystem.SendOutput(string.Join(", ", neighbourNames), false);
-                            }
-                            else
-                            {
-                                fileSystem.SendOutput(string.Join(", ", path), false);
-                            }
-                        }
-                    }
-
-                    break;
-                }
-                case > 1:
-                {
-                    List<Node> nodePath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
-                    if (nodePath[^1] == null)
-                    {
-                        fileSystem.SendOutput("Error", false);
-                    }
-                    else if (nodePath[^1].GetType() == typeof(FileNode))
-                    {
-                        fileSystem.SendOutput(arg, false);
-                    }
-                    else if (nodePath[^1].GetType() == typeof(DirectoryNode))
-                    {
-                        List<string> neighbourNames = GetNeighbourNames(fileSystem.GetCurrentNode().GetNeighbours(), _fOption);
-                        fileSystem.SendOutput(string.Join(", ", neighbourNames), false);
-                    }
-
-                    break;
-                }
+                GetNeighbourNames(fileSystem.GetRootNode().GetNeighbours(), _fOption);
+                return;
             }
         }
 
-        fileSystem.SendOutput("ls: " + options + ": No such file or Directory", false);
+        foreach (string arg in arguments)
+        {
+            string[] path = arg.Split('/');
+            if (path.Length == 1)
+            {
+                Node found = fileSystem.GetCurrentNode().SearchChildren(path[0]);
+                if (found == null)
+                {
+                    fileSystem.SendOutput("Error not exist", false);
+                }
+                else if (found.GetType() == typeof(DirectoryNode))
+                {
+                    GetNeighbourNames(found.GetNeighbours(), _fOption);
+                }
+                else if (found.GetType() == typeof(FileNode))
+                {
+                    fileSystem.SendOutput(found.name, false);
+                }
+            }
+            else
+            {
+                List<Node> validPath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
+                if (validPath != null)
+                {
+                    if (validPath[^1].GetType() == typeof(DirectoryNode))
+                    {
+                        GetNeighbourNames(validPath[^1].GetNeighbours(), _fOption);
+                    }
+                    else
+                    {
+                        fileSystem.SendOutput(validPath[^1].name, false);
+                    }
+                }
+                else
+                {
+                    fileSystem.SendOutput("Error --> invalid path", false);
+                }
+            }
+        }
     }
 
-    private List<string> GetNeighbourNames(List<Node> neighbours, bool fOption)
+    private void GetNeighbourNames(List<Node> neighbours, bool fOption)
     {
         List<string> names = new List<string>();
 
@@ -120,6 +105,6 @@ public class LS : MonoBehaviour
             }
         }
 
-        return names;
+        fileSystem.SendOutput(string.Join(' ', names), false);
     }
 }
