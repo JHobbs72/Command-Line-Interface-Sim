@@ -119,11 +119,13 @@ public class GraphManager : MonoBehaviour
         _currentCommand = command;
     }
     
+    // Normal output -- includes '>>' and new line
     public void SendOutput(string content, bool flag)
     {
         _outputSource.AddOutput(_currentCommand, content, flag);
     }
     
+    // Directly sends content to output for full flexibility
     public void SendSpecialOutput(string content)
     {
         _outputSource.SpecialOutput(content);
