@@ -24,13 +24,76 @@ public class MV : MonoBehaviour
         }
 
         Tuple<char[], string[]> command = fileSystem.SeparateOptions(options, 4);
-        Debug.Log("Options: " + string.Join(',', command.Item1));
-        Debug.Log("Arguments: " + string.Join(',', command.Item2));
+
+        if (command.Item2.Length < 2)
+        {
+            fileSystem.SendOutput("usage: mv [-f | -i | -n] [-v] source target \n" +
+                                  "           mv [-f | -i | -n] [-v] source ... directory", false);
+            return;
+        }
+
+        Tuple<Node, string> dest = GetDest(command.Item2[^1]);
+        if (dest == null)
+        {
+            fileSystem.SendOutput("Error in dest", false);
+            return;
+        }
+
+        List<Node> validSrcNodes = GetValidSource(command.Item2.SkipLast(1).ToArray());
+
+        if (validSrcNodes.Count > 1)
+        {
+            if (dest.Item1 == null)
+            {
+                fileSystem.SendOutput("Not a directory 1", false);
+                return;
+            }
+
+            if (dest.Item1.GetType() == typeof(FileNode))
+            {
+                fileSystem.SendOutput("Not a directory 2", false);
+                return;
+            }
+            
+            fileSystem.SendOutput("Do move", false);
+            Move(validSrcNodes, (DirectoryNode)dest.Item1);
+            return;
+        }
         
+        //if dest == name --> RENAME
+        if (dest.Item2 != null)
+        {
+            Rename(validSrcNodes[0], dest.Item2);
+            return;
+        }
         
+        if (dest.Item1 != null)
+        {
+            // if <file> and <dir> --> MOVE
+            if (validSrcNodes[0].GetType() == typeof(FileNode) && dest.Item1.GetType() == typeof(DirectoryNode))
+            {
+                Move(new List<Node> { validSrcNodes[0] }, (DirectoryNode)dest.Item1);
+                return;
+            }
+            
+            // if <file> and <file> --> OVERWRITE
+            if (validSrcNodes[0].GetType() == typeof(FileNode) && dest.Item1.GetType() == typeof(FileNode))
+            {
+                Overwrite(validSrcNodes[0], dest.Item1);
+                return;
+            }
+            
+            // if <dir> and <dir> --> MOVE
+            if (validSrcNodes[0].GetType() == typeof(DirectoryNode) && dest.Item1.GetType() == typeof(DirectoryNode))
+            {
+                Move(new List<Node> { validSrcNodes[0] }, (DirectoryNode)dest.Item1);
+            }
+        }
     }
 
-    private Tuple<List<Node>, Node, string, int> GetDest(string destination)
+    // Returns destination as tuple
+    // one of {<Node>(<dir> or <file>), <name>}
+    private Tuple<Node, string> GetDest(string destination)
     {
         string[] dest = destination.Split('/');
         if (dest.Length > 1)
@@ -45,42 +108,72 @@ public class MV : MonoBehaviour
                     fileSystem.SendOutput("Error - invalid path", false);
                     return null;
                 }
-                return new Tuple<List<Node>, Node, string, int>(null, null, dest[^1], 3);
+                return new Tuple<Node, string>(null, dest[^1]);
             }
             
-            return new Tuple<List<Node>, Node, string, int>(destPath, null, null, 1);
+            return new Tuple<Node, string>(destPath[^1], null);
             
         }
         
         if (dest[0] == "..")
         {
-            return new Tuple<List<Node>, Node, string, int>(null, fileSystem.GetCurrentPath()[^2], null, 2);
+            return new Tuple<Node, string>(fileSystem.GetCurrentPath()[^2], null);
         }
+    
+        Node validNode = fileSystem.GetCurrentNode().SearchChildren(dest[0]);
         
-        List<Node> neighbours = fileSystem.GetCurrentNode().GetNeighbours();
-        foreach (Node node in neighbours)
+        return validNode == null ? new Tuple<Node, string>(null, dest[0]) : 
+            new Tuple<Node, string>(validNode, null);
+    }
+
+    private List<Node> GetValidSource(string[] arguments)
+    {
+        List<Node> validSrcNodes = new List<Node>();
+        
+        foreach (string arg in arguments)
         {
-            if (node.name == dest[0])
+            string[] path = arg.Split('/');
+
+            if (path.Length > 1)
             {
-                return new Tuple<List<Node>, Node, string, int>(null, node, null, 2);
+                List<Node> validPath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
+                if (validPath == null)
+                {
+                    fileSystem.SendOutput("Invalid source 1", false);
+                }
+                else
+                {
+                    validSrcNodes.Add(validPath[^1]);
+                }
+            }
+            else
+            {
+                Node target = fileSystem.GetCurrentNode().SearchChildren(path[0]);
+                if (target == null)
+                {
+                    fileSystem.SendOutput("Invalid source 2", false);
+                }
+                else
+                {
+                    validSrcNodes.Add(target);
+                }
             }
         }
-
-        return new Tuple<List<Node>, Node, string, int>(null, null, dest[0], 3);
         
+        return validSrcNodes;
     }
 
-    private void Rename()
+    private void Rename(Node src, string dest)
     {
-        
+        fileSystem.SendOutput("RENAMING", false);
     }
 
-    private void Overwrite()
+    private void Overwrite(Node src, Node dest)
     {
         fileSystem.SendOutput("OVERWRITING", false);
     }
 
-    private void Move()
+    private void Move(List<Node> src, DirectoryNode dest)
     {
         fileSystem.SendOutput("MOVING", false);
     }
