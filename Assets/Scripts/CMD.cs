@@ -18,14 +18,12 @@ public class CMD : MonoBehaviour
     private GraphManager _fileSystem;
     private TMP_InputField _cmdIn;
     private outputText _output;
-    private autoScroll scroll;
 
     void Start()
     {
         AddListeners();
         _fileSystem = FindObjectOfType<GraphManager>();
         _output = FindObjectOfType<outputText>();
-        scroll = FindObjectOfType<autoScroll>();
         _cmdIn = FindObjectOfType<TMP_InputField>();
         _cmdIn.onSubmit.AddListener(Command);
     }
@@ -99,6 +97,8 @@ public class CMD : MonoBehaviour
         AddLocalListener(cd);
         GameObject rm = GameObject.Find("rm");
         AddLocalListener(rm);
+        GameObject echo = GameObject.Find("echo");
+        AddLocalListener(echo);
         AddLocalListener(gameObject);
     }
 }

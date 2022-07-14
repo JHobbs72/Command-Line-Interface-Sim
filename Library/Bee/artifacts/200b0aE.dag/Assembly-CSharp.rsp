@@ -370,6 +370,7 @@
 "Assets/Scripts/CD.cs"
 "Assets/Scripts/CMD.cs"
 "Assets/Scripts/DirectoryNode.cs"
+"Assets/Scripts/ECHO.cs"
 "Assets/Scripts/FileNode.cs"
 "Assets/Scripts/GIT.cs"
 "Assets/Scripts/Graph.cs"

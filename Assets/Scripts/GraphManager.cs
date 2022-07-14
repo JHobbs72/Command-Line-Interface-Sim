@@ -56,6 +56,7 @@ public class GraphManager : MonoBehaviour
     public void AddFileNode(DirectoryNode sourceNode, string name)
     {
         FileNode newFile = Node.Create<FileNode>(name);
+        newFile.SetParent(sourceNode);
         _graph.AddNode(sourceNode, newFile);
     }
 
