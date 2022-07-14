@@ -55,7 +55,6 @@ public class MV : MonoBehaviour
                 return;
             }
             
-            fileSystem.SendOutput("Do move", false);
             Move(validSrcNodes, (DirectoryNode)dest.Item1);
             return;
         }
@@ -79,7 +78,7 @@ public class MV : MonoBehaviour
             // if <file> and <file> --> OVERWRITE
             if (validSrcNodes[0].GetType() == typeof(FileNode) && dest.Item1.GetType() == typeof(FileNode))
             {
-                Overwrite(validSrcNodes[0], dest.Item1);
+                Overwrite((FileNode)validSrcNodes[0], (FileNode)dest.Item1);
                 return;
             }
             
@@ -165,16 +164,29 @@ public class MV : MonoBehaviour
 
     private void Rename(Node src, string dest)
     {
-        fileSystem.SendOutput("RENAMING", false);
+        src.name = dest;
+        
+        fileSystem.SendOutput("", false);
     }
 
-    private void Overwrite(Node src, Node dest)
+    private void Overwrite(FileNode src, FileNode dest)
     {
-        fileSystem.SendOutput("OVERWRITING", false);
+        // Dest takes contents of src, src removed
+        dest.SetContents(src.GetContents());
+        fileSystem.RemoveNode(src.GetParent(), src);
+        
+        fileSystem.SendOutput("", false);
     }
 
-    private void Move(List<Node> src, DirectoryNode dest)
+    private void Move(List<Node> srcList, DirectoryNode dest)
     {
-        fileSystem.SendOutput("MOVING", false);
+
+        foreach (Node src in srcList)
+        {
+            src.GetParent().RemoveNeighbour(src);
+            src.SetParent(dest);
+        }
+        
+        fileSystem.SendOutput("", false);
     }
 }

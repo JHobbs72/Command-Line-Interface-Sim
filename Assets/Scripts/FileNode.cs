@@ -25,12 +25,12 @@ public class FileNode : Node
         return null;
     }
 
-    public void SetFileContents(string toFillFile)
+    public override void SetContents(string contents)
     {
-        _contents = toFillFile;
+        _contents = contents;
     }
 
-    public string GetFileContents()
+    public override string GetContents()
     {
         return _contents;
     }

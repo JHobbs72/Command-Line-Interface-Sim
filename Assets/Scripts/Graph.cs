@@ -58,6 +58,7 @@ public class Graph : ScriptableObject
     {
         Nodes.Add(node);
         parent.Neighbours.Add(node);
+        node.SetParent(parent);
         AssetDatabase.AddObjectToAsset(node, this);
         AssetDatabase.SaveAssets();
     }
