@@ -25,11 +25,14 @@ public class ECHO : MonoBehaviour
         }
 
         List<Tuple<string, string>> operatorAndDest = new List<Tuple<string, string>>();
+        List<int> toRemove = new List<int>();
         for (int i = 0; i < arguments.Length; i++)
         {
             if (arguments[i] == ">" || arguments[i] == ">>")
             {
                 operatorAndDest.Add(new Tuple<string, string>(arguments[i], arguments[i+1]));
+                toRemove.Add(i);
+                toRemove.Add(i + 1);
             }
         }
 
@@ -59,34 +62,59 @@ public class ECHO : MonoBehaviour
                 }
                 else
                 {
-                    Node dest = fileSystem.GetCurrentNode().SearchChildren(path[0]);
-                    if (dest == null)
+                    if (nodePath[^1].GetType() != typeof(FileNode))
                     {
-                        fileSystem.AddFileNode(fileSystem.GetCurrentNode(), path[0]);
-                        Node newFile = fileSystem.GetCurrentNode().SearchChildren(path[0]);
-                        destinations.Add(new Tuple<string, FileNode>(pair.Item1, (FileNode)newFile));
+                        fileSystem.SendOutput("Error - incorrect path", false);
+                        return;
                     }
-                    else
+                    destinations.Add(new Tuple<string, FileNode>(pair.Item1, (FileNode)nodePath[^1]));
+                }
+            }
+            else
+            {
+                Node dest = fileSystem.GetCurrentNode().SearchChildren(path[0]);
+                if (dest == null)
+                {
+                    fileSystem.AddFileNode(fileSystem.GetCurrentNode(), path[0]);
+                    Node newFile = fileSystem.GetCurrentNode().SearchChildren(path[0]);
+                    destinations.Add(new Tuple<string, FileNode>(pair.Item1, (FileNode)newFile));
+                }
+                else
+                {
+                    if (dest.GetType() != typeof(FileNode))
                     {
-                        if (dest.GetType() != typeof(FileNode))
-                        {
-                            fileSystem.SendOutput("Error", false);
-                            return;
-                        }
-                        destinations.Add(new Tuple<string, FileNode>(pair.Item1, (FileNode)dest));
+                        fileSystem.SendOutput("Error", false);
+                        return;
                     }
+                    destinations.Add(new Tuple<string, FileNode>(pair.Item1, (FileNode)dest));
                 }
             }
         }
 
-        List<int> toRemove = new List<int>();
+        List<string> contents = new List<string>();
         for (int i = 0; i < arguments.Length; i++)
         {
-            if (arguments[i] == ">" || arguments[i] == ">>")
+            if (!toRemove.Contains(i))
             {
-                toRemove.Add(i);
-                toRemove.Add(i + 1);
+                contents.Add(arguments[i]);
             }
         }
+
+        foreach (Tuple<string, FileNode> dest in destinations)
+        {
+            if (dest.Item1 == ">")
+            {
+                dest.Item2.SetContents(string.Join(' ', contents));
+            }
+            
+            if (dest.Item1 == ">>")
+            {
+                dest.Item2.SetContents(dest.Item2.GetContents() + "\n" + string.Join(' ', contents));
+            }
+            
+            // fileSystem.SendOutput("//" + dest.Item2.GetContents() + "//", false);
+        }
+        
+        fileSystem.SendOutput("", false);
     }
 }

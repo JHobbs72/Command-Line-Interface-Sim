@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-5709362876866489982
+--- !u!114 &-8963857290499474016
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Documents
   m_EditorClassIdentifier: 
   neighbours:
-  - {fileID: 2664082943180073873}
-  - {fileID: 8571298201125971452}
---- !u!114 &-4381800625564657244
+  - {fileID: 5099815274698434932}
+  - {fileID: 5824548090824245578}
+--- !u!114 &-3972258383278997223
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -25,8 +25,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
-  m_Name: file1.txt
+  m_Name: file.txt
   m_EditorClassIdentifier: 
+--- !u!114 &-2154840833091918119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
+  m_Name: UserA
+  m_EditorClassIdentifier: 
+  neighbours:
+  - {fileID: -8963857290499474016}
+  - {fileID: -3972258383278997223}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40,15 +55,14 @@ MonoBehaviour:
   m_Name: FileSystemGraph
   m_EditorClassIdentifier: 
   nodes:
-  - {fileID: 5748417562358417114}
-  - {fileID: -5709362876866489982}
-  - {fileID: 2664082943180073873}
-  - {fileID: 3101353722673994334}
-  - {fileID: -4381800625564657244}
-  - {fileID: 8571298201125971452}
-  - {fileID: 8498990711563387091}
-  - {fileID: 8456209399182087514}
---- !u!114 &2664082943180073873
+  - {fileID: -2154840833091918119}
+  - {fileID: -8963857290499474016}
+  - {fileID: 5099815274698434932}
+  - {fileID: 1200273422312117643}
+  - {fileID: 300071945969372483}
+  - {fileID: 5824548090824245578}
+  - {fileID: -3972258383278997223}
+--- !u!114 &300071945969372483
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -57,12 +71,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
-  m_Name: dir1
+  m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
+  m_Name: file1.txt
   m_EditorClassIdentifier: 
-  neighbours:
-  - {fileID: 3101353722673994334}
---- !u!114 &3101353722673994334
+--- !u!114 &1200273422312117643
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -75,8 +87,8 @@ MonoBehaviour:
   m_Name: dir2
   m_EditorClassIdentifier: 
   neighbours:
-  - {fileID: -4381800625564657244}
---- !u!114 &5748417562358417114
+  - {fileID: 300071945969372483}
+--- !u!114 &5099815274698434932
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -86,37 +98,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
-  m_Name: UserA
+  m_Name: dir1
   m_EditorClassIdentifier: 
   neighbours:
-  - {fileID: -5709362876866489982}
-  - {fileID: 8498990711563387091}
-  - {fileID: 8456209399182087514}
---- !u!114 &8456209399182087514
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
-  m_Name: file2.txt
-  m_EditorClassIdentifier: 
---- !u!114 &8498990711563387091
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
-  m_Name: file1.txt
-  m_EditorClassIdentifier: 
---- !u!114 &8571298201125971452
+  - {fileID: 1200273422312117643}
+--- !u!114 &5824548090824245578
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
