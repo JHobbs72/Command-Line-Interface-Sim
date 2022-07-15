@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class ECHO : MonoBehaviour
@@ -113,7 +111,6 @@ public class ECHO : MonoBehaviour
                 dest.Item2.SetContents(dest.Item2.GetContents() + "\n" + string.Join(' ', contents));
             }
             
-            fileSystem.SendOutput("//" + dest.Item2.GetContents() + "//", true);
         }
         
         fileSystem.SendOutput("", false);

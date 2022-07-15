@@ -18,7 +18,7 @@ EditorBuildSettings:
     path: Assets/Scenes/SectionFour.unity
     guid: 8feed3daf2031460bb928b1c9d883bd8
   - enabled: 1
-    path: Assets/Scenes/SectionOne.unity
+    path: Assets/Scenes/CLI.unity
     guid: c9d71ce7fb1524f44b1d5c489bea3fa9
   - enabled: 1
     path: Assets/Scenes/SectionThree.unity

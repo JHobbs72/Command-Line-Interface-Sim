@@ -15,6 +15,15 @@ public class CD : MonoBehaviour
 
     public void cd(string options)
     {
+        foreach (string opt in options.Split (' '))
+        {
+            if (opt.StartsWith('-'))
+            {
+                fileSystem.SendOutput("invalid arguments -", false);
+                return;
+            }
+        }
+        
         // Go to home directory
         if (options == "")
         {

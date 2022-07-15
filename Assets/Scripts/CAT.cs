@@ -7,12 +7,6 @@ public class CAT : MonoBehaviour
 {
 
     public GraphManager fileSystem;
-    
-    
-    /// <summary>
-    /// TESTING GIT
-    /// </summary>
-    /// <param name="input"></param>
 
     public void cat(string input)
     {
@@ -48,6 +42,11 @@ public class CAT : MonoBehaviour
         }
 
         ShowContents(arguments);
+    }
+
+    private List<Node> GetNodes(string[] input)
+    {
+        return null;
     }
 
     private void ShowContents(string[] arguments)
