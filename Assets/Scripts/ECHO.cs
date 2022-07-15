@@ -26,6 +26,7 @@ public class ECHO : MonoBehaviour
 
         List<Tuple<string, string>> operatorAndDest = new List<Tuple<string, string>>();
         List<int> toRemove = new List<int>();
+        
         for (int i = 0; i < arguments.Length; i++)
         {
             if (arguments[i] == ">" || arguments[i] == ">>")
@@ -112,7 +113,7 @@ public class ECHO : MonoBehaviour
                 dest.Item2.SetContents(dest.Item2.GetContents() + "\n" + string.Join(' ', contents));
             }
             
-            // fileSystem.SendOutput("//" + dest.Item2.GetContents() + "//", false);
+            fileSystem.SendOutput("//" + dest.Item2.GetContents() + "//", true);
         }
         
         fileSystem.SendOutput("", false);

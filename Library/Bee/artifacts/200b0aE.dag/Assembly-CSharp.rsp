@@ -367,6 +367,7 @@
 -r:"Library/Bee/artifacts/200b0aE.dag/UnityEditor.UI.ref.dll"
 -r:"Library/Bee/artifacts/200b0aE.dag/UnityEngine.UI.ref.dll"
 "Assets/Scripts/autoScroll.cs"
+"Assets/Scripts/CAT.cs"
 "Assets/Scripts/CD.cs"
 "Assets/Scripts/CMD.cs"
 "Assets/Scripts/DirectoryNode.cs"

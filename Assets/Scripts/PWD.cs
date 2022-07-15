@@ -13,8 +13,13 @@ public class PWD : MonoBehaviour
 
     public GraphManager fileSystem;
 
-    public void pwd(string options)
+    public void pwd(string input)
     {
+        if (!string.IsNullOrEmpty(input))
+        {
+            fileSystem.SendOutput("Invalid input: " + input, false);
+        }
+        
         List<Node> currentPath = fileSystem.GetCurrentPath();
         List<string> currentPathNames = new List<string>();
         foreach (Node node in currentPath)

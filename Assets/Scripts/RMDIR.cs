@@ -15,17 +15,13 @@ public class RMDIR : MonoBehaviour
     public GraphManager fileSystem;
     private char[] _options;
 
-    public void rmdir(string option)
+    public void rmdir(string input)
     {
-        if (option == "")
-        {
-            fileSystem.SendOutput("usage: rmdir [-p] directory ...", false);
-            return;
-        }
-        
-        Tuple<char[], string[]> commands = fileSystem.SeparateOptions(option, 2);
-        _options = commands.Item1;
-        string[] arguments = commands.Item2;
+        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "rmdir", new[] {'p', 'v'}, "rmdir usage");
+        if (command == null) { return; }
+
+        _options = command.Item1;
+        string[] arguments = command.Item2;
         
         // If no options, _options cannot be null for checks
         _options ??= new char[] { 'x' };

@@ -14,17 +14,14 @@ public class MV : MonoBehaviour
 
     public GraphManager fileSystem;
 
-    public void mv(string options)
+    public void mv(string input)
     {
-        if (options == "")
-        {
-            fileSystem.SendOutput("usage: mv [-f | -i | -n] [-v] source target \n" +
-                                  "           mv [-f | -i | -n] [-v] source ... directory", false);
-            return;
-        }
 
-        Tuple<char[], string[]> command = fileSystem.SeparateOptions(options, 4);
-
+        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "mv", new[] {'f', 'i', 'n', 'v'}, 
+            "usage: mv [-f | -i | -n] [-v] source target \n" +
+            "           mv [-f | -i | -n] [-v] source ... directory");
+        if (command == null) { return; }
+        
         if (command.Item2.Length < 2)
         {
             fileSystem.SendOutput("usage: mv [-f | -i | -n] [-v] source target \n" +

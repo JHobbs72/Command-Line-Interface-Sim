@@ -6,7 +6,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MKDIR : MonoBehaviour
@@ -15,31 +17,23 @@ public class MKDIR : MonoBehaviour
     private bool _pOption;
     private bool _vOption;
     
-    public void mkdir(string options)
+    public void mkdir(string input)
     {
-        // TODO catch only enter '-x' command(s)
-        if (options == "")
-        {
-            fileSystem.SendOutput("usage: mkdir [-pv] directory ...", false);
-            return;
-        }
-        
-        // Remove illegal characters from arguments
+        //     fileSystem.SendOutput("usage: mkdir [-pv] directory ...", false);
         // TODO Abstraction --> '{' '}' and ',' are allowed in certain conditions
         // TODO             --> for this purpose it's valid to remove them at all times  
-        string[] splitOptions = options.Split(' ');
+
+        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "mkdir", new[] { 'p', 'v' }, 
+            "usage: mkdir [-pv] directory ...");
+        if (command == null) { return; }
         
-        for (int i = 0; i < splitOptions.Length; i++)
+        char[] charOptions = command.Item1;
+        string[] arguments = command.Item2;
+        
+        for (int i = 0; i < arguments.Length; i++)
         {
-            splitOptions[i] = Regex.Replace(splitOptions[i], @"['\{},']+", "");
+            arguments[i] = Regex.Replace(arguments[i], @"['\{},']+", "");
         }
-
-        options = string.Join(' ', splitOptions);
-
-        // Separate '-x' options from remaining commands
-        Tuple<char[], string[]> commands = fileSystem.SeparateOptions(options, 2);
-        char[] charOptions = commands.Item1;
-        string[] arguments = commands.Item2;
 
         if (charOptions != null)
         {

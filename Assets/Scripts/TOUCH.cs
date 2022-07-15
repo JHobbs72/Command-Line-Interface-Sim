@@ -16,19 +16,14 @@ public class TOUCH : MonoBehaviour
 
     public GraphManager fileSystem;
 
-    public void touch(string options)
+    public void touch(string input)
     {
-        string[] files = options.Split(' ');
-        foreach (string file in files)
-        {
-            if (file.StartsWith('-'))
-            {
-                fileSystem.SendOutput("touch: illegal option \n usage: touch <file> ...", false);
-                return;
-            }
-        }
+        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "touch", new char[]{}, "touch usage");
+        if (command == null) { return; }
 
-        foreach (string file in files)
+        string[] arguments = command.Item2;
+
+        foreach (string file in arguments)
         {
             string[] splitPath = file.Split('/');
             

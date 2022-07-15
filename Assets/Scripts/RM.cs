@@ -17,19 +17,14 @@ public class RM : MonoBehaviour
     public GraphManager fileSystem;
     private char[] _options;
 
-    public void rm(string option)
+    public void rm(string input)
     {
-        if (option == "")
-        {
-            fileSystem.SendOutput("usage: rm [-f | -i] [-rv] file ... \n           unlink file", false);
-            return;
-        }
+        //     fileSystem.SendOutput("usage: rm [-f | -i] [-rv] file ... \n           unlink file", false);
+        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "rm", new[] {'f', 'i', 'r', 'v'}, "rm usage");
+        if (command == null) { return; }
         
-        // Separate '-x' options and remaining commands
-        // MaxLength = '-x -x -x -x'
-        Tuple<char[], string[]> commands = fileSystem.SeparateOptions(option, 4);
-        _options = commands.Item1;
-        string[] arguments = commands.Item2;
+        _options = command.Item1;
+        string[] arguments = command.Item2;
 
         // If options -i and -f are both given the second is used
         if (_options != null)

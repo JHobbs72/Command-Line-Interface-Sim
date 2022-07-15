@@ -14,7 +14,7 @@ public class CMD : MonoBehaviour
     // Directs commands to relevant methods, 'Command' method called when an
     // input is made
 
-    private List<GameObject> _listeners = new List<GameObject>();
+    private readonly List<GameObject> _listeners = new List<GameObject>();
     private GraphManager _fileSystem;
     private TMP_InputField _cmdIn;
     private outputText _output;
@@ -28,7 +28,7 @@ public class CMD : MonoBehaviour
         _cmdIn.onSubmit.AddListener(Command);
     }
 
-    public void AddLocalListener(GameObject listener)
+    private void AddLocalListener(GameObject listener)
     {
         if (!_listeners.Contains(listener))
         {
@@ -37,7 +37,7 @@ public class CMD : MonoBehaviour
     }
 
     // Split input into individual components then send the arguments to the correct root
-    public void Command(string input)
+    private void Command(string input)
     {
         if (input == "")
         {
@@ -46,7 +46,7 @@ public class CMD : MonoBehaviour
         }
         
         string[] commands = input.Split(new char[] { ' ' });
-        GameObject go = _listeners.Where(obj => obj.name == commands[0]).SingleOrDefault();
+        GameObject go = _listeners.SingleOrDefault(obj => obj.name == commands[0]);
         string[] options = commands.Skip(1).ToArray();
         string optionsString = string.Join(" ", options);
         
@@ -59,10 +59,11 @@ public class CMD : MonoBehaviour
         catch (NullReferenceException e)
         {
             _fileSystem.SendOutput("Command not found " + commands[0], false);
+            Debug.Log(e);
             return;
         }
         
-        GameObject cmd = _listeners.Where(obj => obj.name == "prevCmd").SingleOrDefault();
+        GameObject cmd = _listeners.SingleOrDefault(obj => obj.name == "prevCmd");
         try
         {
             cmd.SendMessage("PrevCmd", input, SendMessageOptions.RequireReceiver);
@@ -99,6 +100,8 @@ public class CMD : MonoBehaviour
         AddLocalListener(rm);
         GameObject echo = GameObject.Find("echo");
         AddLocalListener(echo);
+        GameObject cat = GameObject.Find("cat");
+        AddLocalListener(cat);
         AddLocalListener(gameObject);
     }
 }

@@ -130,46 +130,6 @@ public class GraphManager : MonoBehaviour
         _outputSource.SpecialOutput(content);
     }
 
-    // Separating '-x' options from the rest of the command - could be in '-xyz' or '-x -y -z' format or any combination
-    // with lenght up to maxLength
-    // Return char array of options (null if none) and string array with remaining, separated commands
-    // TODO can 'commands' (return string[]) be null? Should have length of 0 if not valid
-    public Tuple<char[], string[]> SeparateOptions(string input, int maxLength)
-    {
-        string[] commands = input.Split(' ');
-        List<string> opts = new List<string>();
-        // null if no options given, else character array of individual options
-        char[] finalOpts = null;
-
-        // OPTIONS DETECTION AND SEPARATION
-        // Does the command contain at least one option?
-        if (commands[0].StartsWith('-'))
-        {
-            // If yes add to options list and remove from rest of the command
-            opts.Add(commands[0]);
-            commands = commands.Skip(1).ToArray();
-            
-            // 'Longest' combination of options = '-x -x -x -x' with no file in between 
-            for (int i = 0; i < maxLength - 1; i++)
-            {
-                // Is the next part within given range an option?
-                if (commands[0].StartsWith('-'))
-                {
-                    // If yes add to options list and remove from rest of the command
-                    opts.Add(commands[0]);
-                    commands = commands.Skip(1).ToArray();
-                }
-            }
-
-            // Convert to string, remove '-' characters then convert to character array
-            string stringOpts = string.Join(',', opts);
-            stringOpts = stringOpts.Trim(new [] { '-' });
-            finalOpts = stringOpts.ToCharArray();
-        }
-
-        return Tuple.Create(finalOpts, commands);
-    }
-
     // Check validity of a path
     // Return null if invalid
     // Return list of nodes if valid
@@ -214,5 +174,83 @@ public class GraphManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    public Tuple<char[], string[]> SeparateAndValidate(string input, string rootCommand, char[] options, string usage)
+    {
+        if (string.IsNullOrEmpty(input))
+        {
+            SendOutput(usage, false);
+            return null;
+        }
+        
+        Tuple<bool, char[], string[]> command = SeparateOptions(input, options);
+
+        if (!command.Item1)
+        {
+            SendOutput(rootCommand + ": invalid option: -" + command.Item2[0] +  "\n" + usage, false);
+            return null;
+        }
+
+        char[] opts = command.Item2;
+        string[] arguments = command.Item3;
+
+        if (arguments == null || arguments.Length == 0)
+        {
+            SendOutput(rootCommand + ": \n" + usage, false);
+            return null;
+        }
+
+        return Tuple.Create(opts, arguments);
+    }
+    
+    // Separating '-x' options from the rest of the command - could be in '-xyz' or '-x -y -z' format or any combination
+    // with lenght up to maxLength
+    // Return char array of options (null if none) and string array with remaining, separated commands
+    private Tuple<bool, char[], string[]> SeparateOptions(string input, char[] allowedCharacters)
+    {
+        string[] commands = input.Split(' ');
+        List<string> opts = new List<string>();
+        // null if no options given, else character array of individual options
+        char[] finalOpts = null;
+
+        // OPTIONS DETECTION AND SEPARATION
+        // Does the command contain at least one option?
+        if (commands[0].StartsWith('-'))
+        {
+            // If yes add to options list and remove from rest of the command
+            opts.Add(commands[0]);
+            commands = commands.Skip(1).ToArray();
+            
+            // 'Longest' combination of options = '-x -x -x -x' with no file in between 
+            for (int i = 0; i < allowedCharacters.Length - 1; i++)
+            {
+                // Is the next part within given range an option?
+                if (commands[0].StartsWith('-'))
+                {
+                    // If yes add to options list and remove from rest of the command
+                    opts.Add(commands[0]);
+                    commands = commands.Skip(1).ToArray();
+                }
+            }
+
+            // Convert to string, remove '-' characters then convert to character array
+            string stringOpts = string.Join(',', opts);
+            stringOpts = stringOpts.Trim(new [] { '-' });
+            finalOpts = stringOpts.ToCharArray();
+        }
+
+        if (finalOpts != null)
+        {
+            foreach (char opt in finalOpts)
+            {
+                if (!allowedCharacters.Contains(opt))
+                {
+                    return Tuple.Create<bool, char[], string[]>(false, new char[]{opt}, null);
+                }
+            }
+        }
+        
+        return Tuple.Create(true, finalOpts, commands);
     }
 }
