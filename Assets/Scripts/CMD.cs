@@ -102,6 +102,8 @@ public class CMD : MonoBehaviour
         AddLocalListener(echo);
         GameObject cat = GameObject.Find("cat");
         AddLocalListener(cat);
+        GameObject file = GameObject.Find("file");
+        AddLocalListener(file);
         AddLocalListener(gameObject);
     }
 }
