@@ -14,16 +14,19 @@ public class LS : MonoBehaviour
     // Root command for 'list' - list contents of current directory
 
     public GraphManager fileSystem;
-    private bool _fOption = false;
-    private bool _multiple = false;
-    private bool _printCommand = true;
-    private bool _isLast = false;
+    private bool _fOption;
+    private bool _printCommand;
+    private bool _isLast;
 
     public void ls(string options)
     {
+        _fOption = false;
+        _printCommand = true;
+        _isLast = false;
+        
         if (options == "")
         {
-            GetNeighbourNames(fileSystem.GetCurrentNode().GetNeighbours(), _fOption, _multiple, null);
+            GetNeighbourNames(fileSystem.GetCurrentNode().GetNeighbours(), false, false, null);
             return;
         }
         
@@ -35,27 +38,28 @@ public class LS : MonoBehaviour
             arguments = arguments.Skip(1).ToArray();
         }
 
-        List<string> invalid = new List<string>();
+        // List<string> invalid = new List<string>();
         foreach (string str in arguments)
         {
             if (str.StartsWith('-'))
             {
-                fileSystem.SendOutput("Error - invalid option: " + str, false);
-                invalid.Add(str);
+                fileSystem.SendOutput("Error - invalid option: " + str + "\nls usage", false);
+                return;
+                // invalid.Add(str);
             }
         }
 
-        List<string> argList = arguments.ToList();
-        foreach (string str in invalid)
-        {
-            argList.Remove(str);
-        }
+        // List<string> argList = arguments.ToList();
+        // foreach (string str in invalid)
+        // {
+        //     argList.Remove(str);
+        // }
 
-        arguments = argList.ToArray();
+        // arguments = argList.ToArray();
         
         if (arguments.Length == 0)
         {
-            GetNeighbourNames(fileSystem.GetCurrentNode().GetNeighbours(), _fOption, _multiple, null);
+            GetNeighbourNames(fileSystem.GetCurrentNode().GetNeighbours(), _fOption, false, null);
             return;
         }
 
@@ -63,13 +67,11 @@ public class LS : MonoBehaviour
         {
             if (arguments[0] == "$HOME")
             {
-                GetNeighbourNames(fileSystem.GetRootNode().GetNeighbours(), _fOption, _multiple, null);
+                GetNeighbourNames(fileSystem.GetRootNode().GetNeighbours(), _fOption, false, null);
                 return;
             }
         }
-
-        _multiple = true;
-
+        
         foreach (string arg in arguments)
         {
             if (arg == arguments[^1])
@@ -87,7 +89,7 @@ public class LS : MonoBehaviour
                 }
                 else if (found.GetType() == typeof(DirectoryNode))
                 {
-                    GetNeighbourNames(found.GetNeighbours(), _fOption, _multiple, (DirectoryNode)found);
+                    GetNeighbourNames(found.GetNeighbours(), _fOption, true, (DirectoryNode)found);
                 }
                 else if (found.GetType() == typeof(FileNode))
                 {
@@ -101,7 +103,7 @@ public class LS : MonoBehaviour
                 {
                     if (validPath[^1].GetType() == typeof(DirectoryNode))
                     {
-                        GetNeighbourNames(validPath[^1].GetNeighbours(), _fOption, _multiple, (DirectoryNode)validPath[^2]);
+                        GetNeighbourNames(validPath[^1].GetNeighbours(), _fOption, true, (DirectoryNode)validPath[^2]);
                     }
                     else
                     {
@@ -143,11 +145,11 @@ public class LS : MonoBehaviour
 
             if (_isLast)
             {
-                fileSystem.SendSpecialOutput(parent.name + ": \n" + string.Join(' ', names) + "\n>>");
+                fileSystem.SendSpecialOutput(parent.name + ": \n" + string.Join(' ', names));
                 return;
             }
             
-            fileSystem.SendSpecialOutput(parent.name + ": \n" + string.Join(' ', names) + "\n \n");
+            fileSystem.SendSpecialOutput(parent.name + ": \n" + string.Join(' ', names) + "\n");
             return;
         }
         
