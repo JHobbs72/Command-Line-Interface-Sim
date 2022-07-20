@@ -45,6 +45,24 @@ public class CAT : MonoBehaviour
             }
         }
 
+        if (options == null && arguments.Length == 1 && arguments[0] == "*")
+        {
+            List<string> output = new List<string>();
+            foreach (Node node in fileSystem.GetCurrentNode().GetNeighbours())
+            {
+                if (node.GetType() == typeof(DirectoryNode))
+                {
+                    output.Add("cat: " + node.name + ": is a directory");
+                }
+                else
+                {
+                    output.Add(node.GetContents());
+                }
+            }
+            
+            fileSystem.SendOutput(string.Join('\n', output), false);
+        }
+
         if (arguments.Contains("<<"))
         {
             fileSystem.SendOutput("Error -> invalid argument '<<'", false);
@@ -55,11 +73,6 @@ public class CAT : MonoBehaviour
         {
             WriteToStdOut(arguments);
         }
-
-        // if (!arguments.Contains(">>") || !arguments.Contains(">") || !arguments.Contains("<"))
-        // {
-        //     WriteToStdOut(arguments);
-        // }
 
         if (arguments.Contains(">") || arguments.Contains(">>"))
         {
