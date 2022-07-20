@@ -34,6 +34,24 @@ public class LS : MonoBehaviour
             _fOption = true;
             arguments = arguments.Skip(1).ToArray();
         }
+
+        List<string> invalid = new List<string>();
+        foreach (string str in arguments)
+        {
+            if (str.StartsWith('-'))
+            {
+                fileSystem.SendOutput("Error - invalid option: " + str, false);
+                invalid.Add(str);
+            }
+        }
+
+        List<string> argList = arguments.ToList();
+        foreach (string str in invalid)
+        {
+            argList.Remove(str);
+        }
+
+        arguments = argList.ToArray();
         
         if (arguments.Length == 0)
         {
@@ -65,7 +83,7 @@ public class LS : MonoBehaviour
                 Node found = fileSystem.GetCurrentNode().SearchChildren(path[0]);
                 if (found == null)
                 {
-                    fileSystem.SendOutput("Error not exist", false);
+                    fileSystem.SendOutput("Error -- no such file or directory", false);
                 }
                 else if (found.GetType() == typeof(DirectoryNode))
                 {

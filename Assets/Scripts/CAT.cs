@@ -56,11 +56,16 @@ public class CAT : MonoBehaviour
                 }
                 else
                 {
-                    output.Add(node.GetContents());
+                    string contents = node.GetContents();
+                    if (contents != null)
+                    {
+                        output.Add(contents);
+                    }
                 }
             }
             
             fileSystem.SendOutput(string.Join('\n', output), false);
+            return;
         }
 
         if (arguments.Contains("<<"))
@@ -148,7 +153,11 @@ public class CAT : MonoBehaviour
                     return;
                 }
 
-                content.Add(node.GetContents());
+                string nodeContents = node.GetContents();
+                if (nodeContents != null)
+                {
+                    content.Add(nodeContents);
+                }
 
                 input.RemoveAt(op);
                 input.RemoveAt(op);
@@ -164,8 +173,11 @@ public class CAT : MonoBehaviour
                     return;
                 }
 
-                content.Add(node.GetContents());
-
+                string nodeContents = node.GetContents();
+                if (nodeContents != null)
+                {
+                    content.Add(nodeContents);
+                }
             }
         }
         
