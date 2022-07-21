@@ -383,6 +383,7 @@
 "Assets/Scripts/Node.cs"
 "Assets/Scripts/outputText.cs"
 "Assets/Scripts/previousCmd.cs"
+"Assets/Scripts/prompt.cs"
 "Assets/Scripts/PWD.cs"
 "Assets/Scripts/RM.cs"
 "Assets/Scripts/RMDIR.cs"

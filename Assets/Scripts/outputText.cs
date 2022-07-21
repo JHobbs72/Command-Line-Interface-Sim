@@ -11,13 +11,12 @@ public class outputText : MonoBehaviour
     // Adds output from system to user's 'display'
 
     private TextMeshProUGUI _output;
-    private autoScroll scroll;
+    private prompt _prompt;
 
     void Start()
     {
         _output = GetComponent<TextMeshProUGUI>();
-        _output.text = ">> ";
-        scroll = FindObjectOfType<autoScroll>();
+        _prompt = FindObjectOfType<prompt>();
     }
 
     public void AddOutput(string command, string content, bool flag)
@@ -34,6 +33,8 @@ public class outputText : MonoBehaviour
         {
             _output.text += "\n>> " + content;
         }
+        
+        _prompt.UpdatePrompt();
     }
     
     public void SpecialOutput(string content)

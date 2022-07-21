@@ -19,6 +19,7 @@ public class GraphManager : MonoBehaviour
     private List<Node> _currentPath;
     private outputText _outputSource;
     private string _currentCommand;
+    private prompt _prompt;
 
     void Start()
     {
@@ -45,6 +46,9 @@ public class GraphManager : MonoBehaviour
 
         _outputSource = FindObjectOfType<outputText>();
         _currentCommand = "";
+
+        _prompt = FindObjectOfType<prompt>();
+        _prompt.UpdatePrompt();
     }
     
     // Remove a node
