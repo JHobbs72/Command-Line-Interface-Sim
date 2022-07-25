@@ -21,15 +21,17 @@ public class FileNode : Node
     // Protects from error when trying to get children of a leaf node
     public override List<Node> GetNeighbours()
     {
-        _outputSource.SendOutput("Cannot get children on a leaf node", false);
+        _outputSource.SendOutput("Cannot get children of a file", false);
         return null;
     }
 
+    // Set the contents of the current node
     public override void SetContents(string contents)
     {
         _contents = contents;
     }
 
+    // Return the contents of the current node
     public override string GetContents()
     {
         return _contents;

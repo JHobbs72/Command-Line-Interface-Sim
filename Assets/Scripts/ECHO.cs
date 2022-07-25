@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class ECHO : MonoBehaviour
-{
+public class ECHO : MonoBehaviour {
+    
+    // Root command for 'echo'
+        // Writing to a file
 
     public GraphManager fileSystem;
     
@@ -12,10 +14,12 @@ public class ECHO : MonoBehaviour
     {
         string[] arguments = options.Split(' ');
         
+        // No '-x' options allowed
         foreach (string arg in arguments)
         {
             if (arg.StartsWith('-'))
             {
+                // TODO error message
                 fileSystem.SendOutput("Illegal option " + arg, false);
                 fileSystem.SendOutput("usage ...", true);
                 return;

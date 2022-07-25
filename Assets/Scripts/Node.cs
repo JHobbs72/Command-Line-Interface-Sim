@@ -12,6 +12,7 @@ public class Node : ScriptableObject
 
     private DirectoryNode _parent = null;
 
+    // Create node
     public static T Create<T>(string name)
        where T : Node
     {
@@ -19,30 +20,15 @@ public class Node : ScriptableObject
         node.name = name;
         return node;
     }
-
-    public virtual List<Node> GetNeighbours()
-    {
-        return null;
-    }
-
-    public virtual void SetContents(string contents)
-    {
-        return;
-    }
     
-    public virtual string GetContents()
-    {
-        return null;
-    }
+    public virtual List<Node> GetNeighbours() { return null; }
 
-    public void SetParent(DirectoryNode parent)
-    {
-        _parent = parent;
-    }
+    public virtual void SetContents(string contents) { }
+    
+    public virtual string GetContents() { return null; }
 
-    public DirectoryNode GetParent()
-    {
-        return _parent;
-    }
+    public void SetParent(DirectoryNode parent) { _parent = parent; }
+
+    public DirectoryNode GetParent() { return _parent; }
 
 }

@@ -11,8 +11,7 @@ using TMPro;
 
 public class CMD : MonoBehaviour
 {
-    // Directs commands to relevant methods, 'Command' method called when an
-    // input is made
+    // Directs commands to relevant methods, 'Command' method called when an input is made
 
     private readonly List<GameObject> _listeners = new List<GameObject>();
     private GraphManager _fileSystem;
@@ -39,19 +38,23 @@ public class CMD : MonoBehaviour
     // Split input into individual components then send the arguments to the correct root
     private void Command(string input)
     {
+        // If no command given output prompt
         if (input == "")
         {
             _output.EmptyOut();
             return;
         }
         
+        // Separate first element --> root command
         string[] commands = input.Split(new char[] { ' ' });
         GameObject go = _listeners.SingleOrDefault(obj => obj.name == commands[0]);
         string[] options = commands.Skip(1).ToArray();
         string optionsString = string.Join(" ", options);
         
+        // Set current command
         _fileSystem.SetCurrentCommand(input);
 
+        // Send message to all methods in current game object with the name of 'commands[0]' --> the root command
         try
         {
             go.SendMessage(commands[0], optionsString, SendMessageOptions.RequireReceiver);
@@ -63,6 +66,7 @@ public class CMD : MonoBehaviour
             return;
         }
         
+        // Send message to 'PrevCmd' --> send the whole command to enable to function of scrolling back to old commands
         GameObject cmd = _listeners.SingleOrDefault(obj => obj.name == "prevCmd");
         try
         {
@@ -75,7 +79,7 @@ public class CMD : MonoBehaviour
     }
 
     // Add 'root commands' - used to determine if the input should be forwarded
-    // and if so where to
+        // and if so where to
     private void AddListeners()
     {
         GameObject prevCmd = GameObject.Find("prevCmd");

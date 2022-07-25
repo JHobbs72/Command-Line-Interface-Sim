@@ -9,7 +9,7 @@ using UnityEngine;
 public class DirectoryNode : Node
 {
     // Inherits from object 'Node' - describes a node that can have child nodes
-    // In this context that must be a directory
+        // In this context that must be a directory
 
     [SerializeField]
     private List<Node> neighbours;
@@ -25,19 +25,19 @@ public class DirectoryNode : Node
         }
     }
 
-    // Important to check that this is being called on a <DirectoryNode> not a
-    // <Node>, to avoid erroneous results 
+    // Returns all neighbours of the current directory node
     public override List<Node> GetNeighbours()
     {
         return Neighbours;
     }
 
+    // Remove the given node from neighbours list
     public void RemoveNeighbour(Node node)
     {
         Neighbours.Remove(node);
     }
     
-    // Search children of 'parent' return the node if it exists else return null
+    // Search children of this node for a node named 'target', return the node if it exists else return null
     public Node SearchChildren(string target)
     {
         foreach (Node node in GetNeighbours())
