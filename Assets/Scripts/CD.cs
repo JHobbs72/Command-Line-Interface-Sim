@@ -13,9 +13,10 @@ public class CD : MonoBehaviour
 
     public GraphManager fileSystem;
 
-    public void cd(string options)
+    public void cd(string command)
     {
-        foreach (string opt in options.Split (' '))
+        // No options for this root command therefore anything starting with '-' is invalid
+        foreach (string opt in command.Split (' '))
         {
             if (opt.StartsWith('-'))
             {
@@ -25,9 +26,8 @@ public class CD : MonoBehaviour
         }
         
         // Go to home directory
-        if (options == "")
+        if (command == "")
         {
-            // TODO Go to root
             for (int i = 0; i < fileSystem.GetCurrentPath().Count; i++)
             {
                 fileSystem.StepBackInPath();
@@ -36,17 +36,21 @@ public class CD : MonoBehaviour
             fileSystem.SendOutput(string.Join('/',fileSystem.GetCurrentPath()), false);
         }
         
-        string[] arguments = options.Split(' ');
+        string[] arguments = command.Split(' ');
+        // Should only ever be one command, more than 1 = error
         if (arguments.Length > 1)
         {
+            // TODO error message
             fileSystem.SendOutput("Error 1", false);
             return;
         }
         
         string[] path = arguments[0].Split('/');
 
+        // If a single argument is given i.e. no path
         if (path.Length == 1)
         {
+            // If argument = '-' -- go to last visited directory
             if (path[0] == "-")
             {
                 // TODO go to previous dir
@@ -54,59 +58,26 @@ public class CD : MonoBehaviour
                 return;
             }
             
+            // If argument = '~' -- go to root
             if (path[0] == "~")
             {
-                // TODO go to home
-                fileSystem.SendOutput("Home dir ", false);
+                DirectoryNode root = fileSystem.GetRootNode();
+                fileSystem.SetCurrentNode(root);
+                fileSystem.SetNewPathFromOrigin(new List<Node> {root});
                 return;
             }
         }
 
-        List<Node> oldPath = fileSystem.GetCurrentPath();
-        bool validPath = CheckPath(fileSystem.GetCurrentNode(), path, 0);
+        // If a path is given, check and set if valid
+        List<Node> testPath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>()); 
         
-        if (!validPath)
+        if (testPath == null)
         {
-            fileSystem.SetNewPathFromOrigin(oldPath);
             return;
         }
         
+        fileSystem.SetNewPathFromOrigin(testPath);
+
         fileSystem.SendOutput("", false);
-    }
-
-    private bool CheckPath(DirectoryNode lcn, string[] path, int step)
-    {
-        if (step == path.Length)
-        {
-            return true;
-        }
-        
-        if (path[step] == "-")
-        {
-            fileSystem.SendOutput("Error --> path & error msg", false);
-            return false;
-        }
-
-        if (path[step] == "..") { return CheckPath(fileSystem.StepBackInPath(), path, step + 1); }
-
-        foreach (Node node in lcn.GetNeighbours())
-        {
-            if (node.name == path[step])
-            {
-                if (node.GetType() == typeof(DirectoryNode))
-                {
-                    fileSystem.SetCurrentNode((DirectoryNode)node);
-                    fileSystem.AddToCurrentPath((DirectoryNode)node);
-                    return CheckPath((DirectoryNode)node, path, step + 1);
-                }
-                
-                fileSystem.SendOutput("cd: not a directory: " + node.name, false);
-                return false;
-            }
-        }
-        
-        fileSystem.SendOutput("No such file or directory", false);
-        
-        return false;
     }
 }
