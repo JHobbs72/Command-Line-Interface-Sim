@@ -9,7 +9,7 @@ using UnityEngine;
 public class CD : MonoBehaviour
 {
     // Root command for 'change directory'
-    // Take '..', '<path>' or '<directory>' and move to the appropriate directory
+        // Take '..', '<path>' or '<directory>' and move to the appropriate directory
 
     public GraphManager fileSystem;
 
