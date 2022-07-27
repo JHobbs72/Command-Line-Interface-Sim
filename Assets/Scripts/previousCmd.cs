@@ -14,17 +14,18 @@ public class previousCmd : MonoBehaviour
     private int? _point = null;
     
     // List of previous commands
-    // Pointer
-    // up arrow moves pointer from back to front of list
-    // down arrow moves pointer other way
-    // Reset pointer on press enter (command 'submitted')
-    // Add command to end of list as it's 'submitted'
+        // Pointer
+        // up arrow moves pointer from back to front of list
+        // down arrow moves pointer other way
+        // Reset pointer on press enter (command 'submitted')
+        // Add command to end of list as it's 'submitted'
 
-    public void EmptyInput()
+    private void EmptyInput()
     {
         cmdIn.text = "";
     }
 
+    // Receives message form CMD.cs
     public void PrevCmd(string input)
     {
         // remove ""
@@ -79,6 +80,7 @@ public class previousCmd : MonoBehaviour
             }
         }
 
+        // Empty text box and active it so it's ready to type into
         if (Input.GetKeyDown(KeyCode.Return))
         {
             EmptyInput();

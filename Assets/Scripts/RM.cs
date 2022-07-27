@@ -12,14 +12,13 @@ using UnityEngine;
 
 public class RM : MonoBehaviour
 {
-    // Root command for 'remove' - remove a file
+    // Root command for 'remove' - remove a node
 
     public GraphManager fileSystem;
     private char[] _options;
 
     public void rm(string input)
     {
-        //     fileSystem.SendOutput("usage: rm [-f | -i] [-rv] file ... \n           unlink file", false);
         Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "rm", new[] {'f', 'i', 'r', 'v'}, "rm usage");
         if (command == null) { return; }
         
@@ -31,6 +30,7 @@ public class RM : MonoBehaviour
         {
             if (_options.Contains('i') && _options.Contains('f')) { _options = InteractAndForce(_options); }
         }
+        
         // No options
         else { _options = new char[]{'x'}; }
         
@@ -96,7 +96,7 @@ public class RM : MonoBehaviour
 
     private void RemoveSingle(DirectoryNode parent, Node target)
     {
-        // TODO if -i -v
+        // TODO if -i
 
         if (target.GetType() == typeof(DirectoryNode))
         {
@@ -161,6 +161,7 @@ public class RM : MonoBehaviour
         }
     }
 
+    // The order the options -i and -f are input changes which is used 
     private char[] InteractAndForce(char[] options)
     {
         int priority = Array.IndexOf(options, 'i') - Array.IndexOf(options, 'f');

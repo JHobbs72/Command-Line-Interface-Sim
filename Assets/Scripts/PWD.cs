@@ -9,7 +9,7 @@ using UnityEngine;
 public class PWD : MonoBehaviour
 {
     // Root command for 'print working directory'
-    // Display current file path - path from root node to current node
+        // Display current file path - path from root node to current node
 
     public GraphManager fileSystem;
 
@@ -17,6 +17,7 @@ public class PWD : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(input))
         {
+            // TODO error message
             fileSystem.SendOutput("Invalid input: " + input, false);
         }
         

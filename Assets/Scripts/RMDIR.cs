@@ -28,6 +28,7 @@ public class RMDIR : MonoBehaviour
         
         // TODO --> if arguments is empty i.e. only options 
         
+        // Iterate through arguments, check each exists
         foreach (string arg in arguments)
         {
             string[] splitArg = arg.Split('/');
@@ -48,7 +49,7 @@ public class RMDIR : MonoBehaviour
 
                 if (_options.Contains('p'))
                 {
-                    RemovePath(fileSystem.GetCurrentNode(), path, 1);
+                    RemovePath(path, 1);
                 }
                 else
                 {
@@ -61,7 +62,8 @@ public class RMDIR : MonoBehaviour
     }
 
     // Removes all nodes in a path (if empty) start from the least node i.e. starts at end of path and works backwards
-    private void RemovePath(DirectoryNode lcn, List<Node> path, int step)
+    // TODO Test
+    private void RemovePath(List<Node> path, int step)
     {
         for (int i = step; i < path.Count - 1; i++)
         {
@@ -86,6 +88,7 @@ public class RMDIR : MonoBehaviour
         }
     }
 
+    // Method to remove a single directory
     private void RemoveDir(DirectoryNode parent, string target)
     {
         // Don't need to check if target is a file - done in main method

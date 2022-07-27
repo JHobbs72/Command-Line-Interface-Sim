@@ -5,19 +5,22 @@ using UnityEngine;
 
 public class FILE : MonoBehaviour
 {
+    // Root command 'file' -- Show the type of each node
+    
     public GraphManager fileSystem;
 
     public void file(string input)
     {
         if (string.IsNullOrEmpty(input))
         {
+            // TODO usage
             fileSystem.SendOutput("file usage", false);
             return;
         }
 
         List<string> output = new List<string>();
-
         
+        // Display type of all nodes in current context
         if (input == "*")
         {
             List<Node> neighbours = fileSystem.GetCurrentNode().GetNeighbours();
@@ -25,11 +28,10 @@ public class FILE : MonoBehaviour
             {
                 output.Add(GetFileTypeOutput(node));
             }
-            
-            
         }
         else
         {
+            // Check arguments exist
             string[] arguments = input.Split(' ');
             foreach (string str in arguments)
             {
@@ -39,6 +41,7 @@ public class FILE : MonoBehaviour
                     List<Node> nodePath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
                     if (nodePath == null)
                     {
+                        // TODO error message
                         fileSystem.SendOutput("Error --> invalid path", false);
                         return;
                     }
@@ -50,6 +53,7 @@ public class FILE : MonoBehaviour
                     Node node = fileSystem.GetCurrentNode().SearchChildren(str);
                     if (node == null)
                     {
+                        // TODO error message
                         fileSystem.SendOutput("No such file or directory", false);
                         return;
                     }
@@ -61,6 +65,7 @@ public class FILE : MonoBehaviour
         fileSystem.SendOutput(string.Join('\n', output), false);
     }
 
+    // Method that takes a node that exists and returns the string to be output to the user
     private string GetFileTypeOutput(Node node)
     {
         if (node.GetType() == typeof(DirectoryNode))
@@ -73,6 +78,7 @@ public class FILE : MonoBehaviour
             return node.name + ": ASCII text";
         }
 
+        // Catch error
         return "No file?";
     }
 }
