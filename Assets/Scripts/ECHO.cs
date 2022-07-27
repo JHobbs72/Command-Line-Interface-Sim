@@ -10,6 +10,8 @@ public class ECHO : MonoBehaviour {
 
     public GraphManager fileSystem;
     
+    // TODO 'echo this' output = 'this'
+    
     public void echo(string options)
     {
         string[] arguments = options.Split(' ');
@@ -19,8 +21,7 @@ public class ECHO : MonoBehaviour {
         {
             if (arg.StartsWith('-'))
             {
-                // TODO error message
-                fileSystem.SendOutput("Illegal option " + arg, false);
+                fileSystem.SendOutput("echo: Illegal option " + arg, false);
                 fileSystem.SendOutput("usage: echo [text] [file ...]", true);
                 return;
             }
@@ -59,15 +60,14 @@ public class ECHO : MonoBehaviour {
                     List<Node> testPath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path.SkipLast(1).ToArray(), 0, new List<Node>());
                     if (testPath == null)
                     {
-                        // TODO error message
-                        fileSystem.SendOutput("Error - incorrect path", false);
+                        // TODO Don't need error message? is in checkPath?
+                        fileSystem.SendOutput("echo: invalid path", false);
                         return;
                     }
 
                     if (testPath[^1].GetType() != typeof(FileNode))
                     {
-                        // TODO error message
-                        fileSystem.SendOutput("Error - incorrect path", false);
+                        fileSystem.SendOutput("echo: not a directory: " + testPath[^1].name, false);
                         return;
                     }
                     destinations.Add(new Tuple<string, FileNode>(pair.Item1, (FileNode)testPath[^1]));
@@ -77,8 +77,7 @@ public class ECHO : MonoBehaviour {
                     // Last node in path must be a file node to write to it
                     if (nodePath[^1].GetType() != typeof(FileNode))
                     {
-                        // TODO error message
-                        fileSystem.SendOutput("Error - incorrect path", false);
+                        fileSystem.SendOutput("echo: not a directory: " + nodePath[^1].name, false);
                         return;
                     }
                     destinations.Add(new Tuple<string, FileNode>(pair.Item1, (FileNode)nodePath[^1]));
@@ -100,8 +99,7 @@ public class ECHO : MonoBehaviour {
                     // If node exists but is a directory node
                     if (dest.GetType() != typeof(FileNode))
                     {
-                        // TODO error message
-                        fileSystem.SendOutput("Error", false);
+                        fileSystem.SendOutput("echo: not a directory: " + dest.name, false);
                         return;
                     }
                     destinations.Add(new Tuple<string, FileNode>(pair.Item1, (FileNode)dest));

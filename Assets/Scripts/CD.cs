@@ -40,8 +40,7 @@ public class CD : MonoBehaviour
         // Should only ever be one command, more than 1 = error
         if (arguments.Length > 1)
         {
-            // TODO error message
-            fileSystem.SendOutput("Error 1", false);
+            fileSystem.SendOutput("cd: too many arguments", false);
             return;
         }
         

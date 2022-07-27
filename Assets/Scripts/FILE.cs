@@ -15,7 +15,6 @@ public class FILE : MonoBehaviour
     {
         if (string.IsNullOrEmpty(input))
         {
-            // TODO usage
             fileSystem.SendOutput("usage: file [file ...]", false);
             return;
         }
@@ -43,8 +42,8 @@ public class FILE : MonoBehaviour
                     List<Node> nodePath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
                     if (nodePath == null)
                     {
-                        // TODO error message
-                        fileSystem.SendOutput("Error --> invalid path", false);
+                        // TODO Don't need error message? is in checkPath?
+                        fileSystem.SendOutput("file: invalid path", false);
                         return;
                     }
 
@@ -55,8 +54,7 @@ public class FILE : MonoBehaviour
                     Node node = fileSystem.GetCurrentNode().SearchChildren(str);
                     if (node == null)
                     {
-                        // TODO error message
-                        fileSystem.SendOutput("No such file or directory", false);
+                        fileSystem.SendOutput("file: no such file or directory: " + str, false);
                         return;
                     }
                     output.Add(GetFileTypeOutput(node));

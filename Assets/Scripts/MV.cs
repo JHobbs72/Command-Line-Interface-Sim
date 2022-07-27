@@ -36,6 +36,8 @@ public class MV : MonoBehaviour
             // - If the node exists it's returned as item1 and item2 is null
             // If no node exists, item1 is null, item2 is the string name
         Tuple<Node, string> dest = GetDest(command.Item2[^1]);
+        // TODO TEST --> should dest ever be null? if dest doesn't exist it's always created? 
+        // TODO if not what is the error message?
         if (dest == null)
         {
             // Invalid destination
@@ -54,15 +56,14 @@ public class MV : MonoBehaviour
             // If the node doesn't exist
             if (dest.Item1 == null)
             {
-                // TODO error message
-                fileSystem.SendOutput("Not a directory 1", false);
+                // TODO error message --> get a file name to add to error message?
+                fileSystem.SendOutput("mv: no such file or directory", false);
                 return;
             }
             // Node should be a directory
             if (dest.Item1.GetType() == typeof(FileNode))
             {
-                // TODO error message
-                fileSystem.SendOutput("Not a directory 2", false);
+                fileSystem.SendOutput("mv: " + dest.Item1.name + ": is not a directory", false);
                 return;
             }
             
@@ -117,8 +118,7 @@ public class MV : MonoBehaviour
                     0, new List<Node>());
                 if (testPath == null)
                 {
-                    // TODO error message
-                    fileSystem.SendOutput("Error - invalid path", false);
+                    fileSystem.SendOutput("mv: " + dest[^1] + ": no such file or directory", false);
                     return null;
                 }
                 return new Tuple<Node, string>(null, dest[^1]);
@@ -157,8 +157,7 @@ public class MV : MonoBehaviour
                 List<Node> validPath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
                 if (validPath == null)
                 {
-                    // TODO error message
-                    fileSystem.SendOutput("Invalid source 1", false);
+                    fileSystem.SendOutput("mv: " + path[^1] + ": no such file or directory", false);
                 }
                 else
                 {
@@ -171,8 +170,7 @@ public class MV : MonoBehaviour
                 Node target = fileSystem.GetCurrentNode().SearchChildren(path[0]);
                 if (target == null)
                 {
-                    // TODO error message
-                    fileSystem.SendOutput("Invalid source 2", false);
+                    fileSystem.SendOutput("mv: " + path[0] + ": no such file or directory", false);
                 }
                 else
                 {

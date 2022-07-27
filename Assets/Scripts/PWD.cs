@@ -17,8 +17,7 @@ public class PWD : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(input))
         {
-            // TODO error message
-            fileSystem.SendOutput("Invalid input: " + input, false);
+            fileSystem.SendOutput("pwd: too many arguments", false);
         }
         
         List<Node> currentPath = fileSystem.GetCurrentPath();

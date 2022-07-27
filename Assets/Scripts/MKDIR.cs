@@ -106,8 +106,8 @@ public class MKDIR : MonoBehaviour
             // If the next node exists but is a file - error, invalid path
             else if (node.name == path[step] && node.GetType() == typeof(FileNode))
             {
-                // TODO error message
-                fileSystem.SendOutput("Invalid path", false);
+                // TODO TEST -- check path.SkipLast(path.Length - step) --> should show path up to the point of error
+                fileSystem.SendOutput("mkdir: " + string.Join('/', path.SkipLast(path.Length - step)) + ": Not a directory", false);
                 return;
             }
             // The next node doesn't exist, could be the last node in the path or an intermediate node that need to be created before continuing

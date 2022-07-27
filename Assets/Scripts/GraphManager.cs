@@ -169,8 +169,7 @@ public class GraphManager : MonoBehaviour
         {
             case -1:
                 // Node no found under this directory
-                // TODO --> error message
-                SendOutput("zsh: No Such file or directory: " + string.Join('/', validPath) + "/" + nextNode.name, false);
+                SendOutput("zsh: no such file or directory: " + string.Join('/', validPath) + "/" + path[step], false);
                 
                 return null;
             case 0:
@@ -192,8 +191,7 @@ public class GraphManager : MonoBehaviour
                     validPath.Add(nextNode);
                     return validPath;
                 }
-                // TODO --> error message
-                SendOutput("zsh: not a directory: " + string.Join('/', validPath) + "/" + nextNode.name, false);
+                SendOutput("zsh: not a directory: " + string.Join('/', validPath) + "/" + path[step], false);
                 
                 return null;
         }
@@ -222,8 +220,8 @@ public class GraphManager : MonoBehaviour
         // If the command is valid but no options are entered item one is an empty array
         if (command.Item1 == null)
         {
-            // TODO --> Error message
-            SendOutput(rootCommand + ": WHOOP 4 : " + command.Item2[0] + command.Item2[1] +  "\n" + usage, false);
+            // e.g. rm: illegal option: -- q    usage ...
+            SendOutput(rootCommand + ": " + command.Item2[1] + ": -- "+ command.Item2[0] +  "\n" + usage, false);
             return null;
         }
         
@@ -233,8 +231,7 @@ public class GraphManager : MonoBehaviour
         // If no arguments are given i.e. just options --> invalid command
         if (arguments == null || arguments.Length == 0)
         {
-            // TODO --> error message
-            SendOutput(rootCommand + ": WHOOP 5 : \n" + usage, false);
+            SendOutput(rootCommand + ": " + command.Item2[1] + ": -- "+ command.Item2[0] +  "\n" + usage, false);
             return null;
         }
 
@@ -244,7 +241,8 @@ public class GraphManager : MonoBehaviour
     // Separating '-x' options from the arguments - could be in '-xyz' or '-x -y -z' format or any combination
         // input = The string command submitted without the root command e.g. "[rm] -r thisDirectory"
         // allowedCharacters = Char array of valid options
-    // Return char array of options (null if none) and string array with arguments as a Tuple
+    // Return char array of options (empty array if none) and string array with arguments as a Tuple
+    // On invalid option --> return new Tuple, item1 as null item 2 as error message {invalid char, error message}
     private Tuple<char[], string[]> SeparateOptions(string input, char[] allowedCharacters)
     {
         string[] command = input.Split(' ');
@@ -285,15 +283,13 @@ public class GraphManager : MonoBehaviour
                 else
                 {
                     // TODO throws error if the same option is entered more than once? incorrect, just don't add to list
-                    // TODO --> error message
-                    return Tuple.Create((char[])null, new []{ch.ToString(), "WHOOP 1 -- Error --> no such file or directory"});
+                    return Tuple.Create((char[])null, new []{ch.ToString(), "no such file or directory"});
                 }
             }
             else
             {
                 // Invalid option, return a new Tuple -- item one = null, item two = error message with the option that caused the error
-                // TODO --> error message
-                return Tuple.Create((char[])null, new []{ch.ToString(), "WHOOP 2 -- Error --> invalid option"});
+                return Tuple.Create((char[])null, new []{ch.ToString(), "invalid option"});
             }
         }
 
@@ -305,8 +301,7 @@ public class GraphManager : MonoBehaviour
             // If any of the remaining elements start with '-' --> error
             if (str.StartsWith('-'))
             {
-                // TODO --> error message
-                return Tuple.Create((char[])null, new []{str, "WHOOP 3 -- Error --> no such file or directory"});
+                return Tuple.Create((char[])null, new []{str, "no such file or directory"});
             }
         }
 
