@@ -8,13 +8,15 @@ public class FILE : MonoBehaviour
     // Root command 'file' -- Show the type of each node
     
     public GraphManager fileSystem;
+    
+    // TODO argument starting with '-' error
 
     public void file(string input)
     {
         if (string.IsNullOrEmpty(input))
         {
             // TODO usage
-            fileSystem.SendOutput("file usage", false);
+            fileSystem.SendOutput("usage: file [file ...]", false);
             return;
         }
 

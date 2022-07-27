@@ -19,7 +19,7 @@ public class RM : MonoBehaviour
 
     public void rm(string input)
     {
-        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "rm", new[] {'f', 'i', 'r', 'v'}, "rm usage");
+        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "rm", new[] {'f', 'i', 'r', 'v'}, "usage: rm [-f | -i] [-rv] file ...");
         if (command == null) { return; }
         
         _options = command.Item1;

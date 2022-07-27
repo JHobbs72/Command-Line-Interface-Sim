@@ -17,7 +17,7 @@ public class RMDIR : MonoBehaviour
 
     public void rmdir(string input)
     {
-        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "rmdir", new[] {'p', 'v'}, "rmdir usage");
+        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "rmdir", new[] {'p', 'v'}, "usage: rmdir [-pv] directory ...");
         if (command == null) { return; }
 
         _options = command.Item1;

@@ -18,8 +18,7 @@ public class TOUCH : MonoBehaviour
 
     public void touch(string input)
     {
-        // TODO Usage
-        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "touch", new char[]{}, "touch usage");
+        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "touch", new char[]{}, "usage: touch file ...");
         
         if (command == null) { return; }
 

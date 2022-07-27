@@ -14,13 +14,14 @@ public class CAT : MonoBehaviour
     private bool _eOption = false;
     private bool _bOption = false;
     private bool _sOption = false;
+    private string _usage = "usage: cat [-nEbs] [file ...]";
 
     public void cat(string input)
     {
         // If no command entered display usage
-        if (string.IsNullOrEmpty(input)) { fileSystem.SendOutput("Cat usage", false); return; }
+        if (string.IsNullOrEmpty(input)) { fileSystem.SendOutput(_usage, false); return; }
         // Call function to separate options and arguments
-        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "cat", new[] {'n', 'E', 'b', 's'}, "Cat Usage...");
+        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "cat", new[] {'n', 'E', 'b', 's'}, _usage);
         if (command == null) { return; }
         
         char[] options = command.Item1;

@@ -21,8 +21,7 @@ public class ECHO : MonoBehaviour {
             {
                 // TODO error message
                 fileSystem.SendOutput("Illegal option " + arg, false);
-                // TODO usage
-                fileSystem.SendOutput("usage ...", true);
+                fileSystem.SendOutput("usage: echo [text] [file ...]", true);
                 return;
             }
         }
