@@ -18,6 +18,7 @@ public class PWD : MonoBehaviour
         if (!string.IsNullOrEmpty(input))
         {
             fileSystem.SendOutput("pwd: too many arguments", false);
+            return;
         }
         
         List<Node> currentPath = fileSystem.GetCurrentPath();
