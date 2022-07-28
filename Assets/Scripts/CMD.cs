@@ -63,7 +63,6 @@ public class CMD : MonoBehaviour
         {
             _fileSystem.SendOutput("Command not found " + commands[0], false);
             Debug.Log(e);
-            return;
         }
         
         // Send message to 'PrevCmd' --> send the whole command to enable to function of scrolling back to old commands

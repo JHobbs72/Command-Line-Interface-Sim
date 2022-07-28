@@ -10,7 +10,7 @@ using TMPro;
 public class previousCmd : MonoBehaviour
 {
     public TMP_InputField cmdIn;
-    private List<string> _cmds = new List<string>();
+    private readonly List<string> _cmds = new List<string>();
     private int? _point = null;
     
     // List of previous commands
