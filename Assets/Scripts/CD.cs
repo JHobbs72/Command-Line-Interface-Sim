@@ -26,14 +26,13 @@ public class CD : MonoBehaviour
         }
         
         // Go to home directory
-        if (command == "")
+        if (command is "" or null)
         {
-            for (int i = 0; i < fileSystem.GetCurrentPath().Count; i++)
-            {
-                fileSystem.StepBackInPath();
-            }
+            List<Node> newPath = new List<Node> { fileSystem.GetRootNode() };
+            fileSystem.SetNewPathFromOrigin(newPath);
             
-            fileSystem.SendOutput(string.Join('/',fileSystem.GetCurrentPath()), false);
+            fileSystem.SendOutput("", false);
+            return;
         }
         
         if (command == "..")

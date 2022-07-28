@@ -15,12 +15,12 @@ public class GraphManager : MonoBehaviour
 
     private Graph _graph;
     private DirectoryNode _currentNode;
-    public List<Node> _currentPath;
+    private List<Node> _currentPath;
     private outputText _outputSource;
     private string _currentCommand;
     private prompt _prompt;
 
-    void Start()
+    private void Start()
     {
         _graph = Graph.Create("FileSystemGraph");
 
@@ -66,10 +66,10 @@ public class GraphManager : MonoBehaviour
     }
 
     // Add a directory node
-    public DirectoryNode AddDirectoryNode(DirectoryNode parent, string name)
+    public DirectoryNode AddDirectoryNode(DirectoryNode parent, string newName)
     {
         // Create the new directory node, call method in graph.cs and return the node
-        DirectoryNode newDir = Node.Create<DirectoryNode>(name);
+        DirectoryNode newDir = Node.Create<DirectoryNode>(newName);
         _graph.AddNode(parent, newDir);
         return newDir;
     }
@@ -99,7 +99,7 @@ public class GraphManager : MonoBehaviour
     }
 
     // Append node to current path --> traversing into next directory
-    public void AddToCurrentPath(DirectoryNode directory)
+    private void AddToCurrentPath(DirectoryNode directory)
     {
         _currentPath.Add(directory);
     }
@@ -110,7 +110,7 @@ public class GraphManager : MonoBehaviour
         _currentPath = path;
         SetCurrentNode((DirectoryNode)path[^1]);
     }
-
+    
     // One step back in current path through file system
     public DirectoryNode StepBackInPath()
     {
