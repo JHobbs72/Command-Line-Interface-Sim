@@ -15,7 +15,7 @@ public class GraphManager : MonoBehaviour
 
     private Graph _graph;
     private DirectoryNode _currentNode;
-    private List<Node> _currentPath;
+    public List<Node> _currentPath;
     private outputText _outputSource;
     private string _currentCommand;
     private prompt _prompt;
@@ -114,10 +114,12 @@ public class GraphManager : MonoBehaviour
     // One step back in current path through file system
     public DirectoryNode StepBackInPath()
     {
+        Debug.Log(string.Join('/', _currentPath));
         if (_currentPath.Count > 1)
         {
             _currentPath.RemoveAt(_currentPath.Count - 1);
             SetCurrentNode((DirectoryNode)_currentPath[^1]);
+            Debug.Log(string.Join('/', _currentPath));
             return (DirectoryNode)_currentPath[^1];
         }
         
@@ -156,8 +158,32 @@ public class GraphManager : MonoBehaviour
         // else isLast = false
         bool isLast = step == path.Length - 1;
 
+        
         // Look for next node in given path in children of the local current node (the current directory)
-        Node nextNode = lcn.SearchChildren(path[step]);
+        Node nextNode;
+        if (path[step] == "..")
+        {
+            nextNode = lcn.GetParent();
+            if (nextNode == null)
+            {
+                nextNode = GetRootNode();
+            }
+            
+            if (validPath.Count > 0)
+            {
+                validPath.RemoveAt(validPath.Count - 1);
+            }
+            
+            if (validPath.Count > 0)
+            {
+                validPath.RemoveAt(validPath.Count - 1);
+            }
+        }
+        else
+        {
+            nextNode = lcn.SearchChildren(path[step]);
+        }
+        
         
         // Scenario indicates whether the node being searched for exists & what type it is
         int scenario = -1;
@@ -169,8 +195,20 @@ public class GraphManager : MonoBehaviour
         {
             case -1:
                 // Node no found under this directory
-                SendOutput("zsh: no such file or directory: " + string.Join('/', validPath) + "/" + path[step], false);
-                
+                if (validPath.Count > 0)
+                {
+                    List<string> pathAsNames = new List<string>();
+                    foreach (Node node in validPath)
+                    {
+                        pathAsNames.Add(node.name);
+                    }
+                    SendOutput("zsh: no such file or directory: " + string.Join('/', pathAsNames) + "/" + path[step], false);
+                }
+                else
+                {
+                    SendOutput("zsh: no such file or directory: " + path[step], false);
+                }
+
                 return null;
             case 0:
                 // Node found & is a directory
@@ -191,7 +229,21 @@ public class GraphManager : MonoBehaviour
                     validPath.Add(nextNode);
                     return validPath;
                 }
-                SendOutput("zsh: not a directory: " + string.Join('/', validPath) + "/" + path[step], false);
+
+                if (validPath.Count > 0)
+                {
+                    List<string> pathAsNames = new List<string>();
+                    foreach (Node node in validPath)
+                    {
+                        pathAsNames.Add(node.name);
+                    }
+                    SendOutput("zsh: not a directory: " + string.Join('/', pathAsNames) + "/" + path[step], false);
+                }
+                else
+                {
+                    SendOutput("zsh: not a directory: " + path[step], false);
+                }
+                
                 
                 return null;
         }
@@ -205,6 +257,7 @@ public class GraphManager : MonoBehaviour
         // options = The options allowed under this root command as char array e.g. [f, i, r, v]
         // usage = The string to be displayed if the command is invalid, showing the format and valid options of the current root command
     // Returns the options given and the arguments given as a Tuple if valid or null on error
+        // Options returned will be valid and without duplicates, arguments should be checked by the root command that called this method
     public Tuple<char[], string[]> SeparateAndValidate(string input, string rootCommand, char[] options, string usage)
     {
         if (string.IsNullOrEmpty(input))
@@ -221,7 +274,14 @@ public class GraphManager : MonoBehaviour
         if (command.Item1 == null)
         {
             // e.g. rm: illegal option: -- q    usage ...
-            SendOutput(rootCommand + ": " + command.Item2[1] + ": -- "+ command.Item2[0] +  "\n" + usage, false);
+            if (command.Item2.Length < 2)
+            {
+                SendOutput(usage, false);
+            }
+            else
+            {
+                SendOutput(rootCommand + ": " + command.Item2[1] + ": -- "+ command.Item2[0] +  "\n" + usage, false);
+            }
             return null;
         }
         
@@ -231,7 +291,7 @@ public class GraphManager : MonoBehaviour
         // If no arguments are given i.e. just options --> invalid command
         if (arguments == null || arguments.Length == 0)
         {
-            SendOutput(rootCommand + ": " + command.Item2[1] + ": -- "+ command.Item2[0] +  "\n" + usage, false);
+            SendOutput(usage, false);
             return null;
         }
 
@@ -252,20 +312,19 @@ public class GraphManager : MonoBehaviour
         List<char> validAndPresent = new List<char>();
 
         // Select elements of the command that start with '-' and add it's characters to the candidate list
-        // TODO --> adds '-' character? incorrect
-        // TODO --> adds even if options come after the arguments? incorrect, should only add up to the first argument, error on any others
         foreach (string str in command)
         {
             if (str.StartsWith('-'))
             {
                 count++;
-                foreach (char character in str)
+                foreach (char character in str.Skip(1))
                 {
                     candidateCharacters.Add(character);
                 }
             }
             else
             {
+                // Breaks at first arguments that doesn't start with '-'
                 break;
             }
         }
@@ -280,11 +339,6 @@ public class GraphManager : MonoBehaviour
                     // Option is in the command and is valid --> add to valid list
                     validAndPresent.Add(ch);
                 }
-                else
-                {
-                    // TODO throws error if the same option is entered more than once? incorrect, just don't add to list
-                    return Tuple.Create((char[])null, new []{ch.ToString(), "no such file or directory"});
-                }
             }
             else
             {
@@ -293,9 +347,12 @@ public class GraphManager : MonoBehaviour
             }
         }
 
-        // Remove first 'count' number of items from the command
+        // Remove first 'count' number of items from the command (the options)
             // count = the number of elements that are options
-        command.ToList().RemoveRange(0, Math.Min(count, command.Length));
+        List<string> commList = command.ToList();
+        commList.RemoveRange(0, Math.Min(count, command.Length));
+        command = commList.ToArray();
+        
         foreach (string str in command)
         {
             // If any of the remaining elements start with '-' --> error

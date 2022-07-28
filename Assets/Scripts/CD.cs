@@ -36,6 +36,13 @@ public class CD : MonoBehaviour
             fileSystem.SendOutput(string.Join('/',fileSystem.GetCurrentPath()), false);
         }
         
+        if (command == "..")
+        {
+            fileSystem.StepBackInPath();
+
+            return;
+        }
+        
         string[] arguments = command.Split(' ');
         // Should only ever be one command, more than 1 = error
         if (arguments.Length > 1)
@@ -66,13 +73,20 @@ public class CD : MonoBehaviour
                 return;
             }
         }
-
+        
         // If a path is given, check and set if valid
         List<Node> testPath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>()); 
         
         if (testPath == null)
         {
             return;
+        }
+
+        DirectoryNode lp = testPath[0].GetParent();
+        while (lp != null)
+        {
+            testPath.Insert(0, lp);
+            lp = testPath[0].GetParent();
         }
         
         fileSystem.SetNewPathFromOrigin(testPath);
