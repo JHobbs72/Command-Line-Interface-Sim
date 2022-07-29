@@ -43,6 +43,7 @@ public class LS : MonoBehaviour
         {
             if (str.StartsWith('-'))
             {
+                // TODO Usage
                 fileSystem.SendOutput("Error - invalid option: " + str + "\nls usage", false);
                 return;
             }

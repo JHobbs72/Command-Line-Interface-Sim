@@ -38,7 +38,7 @@ public class CD : MonoBehaviour
         if (command == "..")
         {
             fileSystem.StepBackInPath();
-
+            fileSystem.SendOutput("", false);
             return;
         }
         
@@ -78,6 +78,12 @@ public class CD : MonoBehaviour
         
         if (testPath == null)
         {
+            return;
+        }
+
+        if (testPath[^1].GetType() == typeof(FileNode))
+        {
+            fileSystem.SendOutput("cd: not a directory: " + testPath[^1].name, false);
             return;
         }
 

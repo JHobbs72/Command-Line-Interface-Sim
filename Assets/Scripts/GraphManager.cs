@@ -114,12 +114,10 @@ public class GraphManager : MonoBehaviour
     // One step back in current path through file system
     public DirectoryNode StepBackInPath()
     {
-        Debug.Log(string.Join('/', _currentPath));
         if (_currentPath.Count > 1)
         {
             _currentPath.RemoveAt(_currentPath.Count - 1);
             SetCurrentNode((DirectoryNode)_currentPath[^1]);
-            Debug.Log(string.Join('/', _currentPath));
             return (DirectoryNode)_currentPath[^1];
         }
         
@@ -158,10 +156,14 @@ public class GraphManager : MonoBehaviour
         // else isLast = false
         bool isLast = step == path.Length - 1;
 
-        
+
         // Look for next node in given path in children of the local current node (the current directory)
         Node nextNode;
-        if (path[step] == "..")
+        if (step == 0 && path[0] == "~")
+        {
+            nextNode = GetRootNode();
+        }
+        else if (path[step] == "..")
         {
             nextNode = lcn.GetParent();
             if (nextNode == null)
@@ -183,6 +185,7 @@ public class GraphManager : MonoBehaviour
         {
             nextNode = lcn.SearchChildren(path[step]);
         }
+        
         
         
         // Scenario indicates whether the node being searched for exists & what type it is
