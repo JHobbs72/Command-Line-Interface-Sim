@@ -46,6 +46,8 @@ public class outputText : MonoBehaviour
     public void SpecialOutput(string content)
     {
         _output.text += content;
+        
+        _prompt.UpdatePrompt();
     }
 
     // Called after the command has been entered to empty the text box ready for the next command
