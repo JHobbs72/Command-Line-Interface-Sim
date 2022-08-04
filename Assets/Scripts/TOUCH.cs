@@ -32,7 +32,8 @@ public class TOUCH : MonoBehaviour
             if (splitPath.Length > 1)
             {
                 // If is a path
-                List<Node> validPath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), splitPath.SkipLast(1).ToArray(), 0, new List<Node>());
+                Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), splitPath.SkipLast(1).ToArray(), 0, new List<Node>(), false);
+                List<Node> validPath = toCheck.Item1;
                 if (validPath != null && validPath[^1].GetType() == typeof(DirectoryNode))
                 {
                     // Check there's not a file or directory that already exists with that name

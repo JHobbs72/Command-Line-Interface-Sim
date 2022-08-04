@@ -67,7 +67,8 @@ public class MKDIR : MonoBehaviour
                 else
                 {
                     // Check the path, if valid create the dir at the end
-                    List<Node> validPath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path.SkipLast(1).ToArray(), 0, new List<Node>());
+                    Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path.SkipLast(1).ToArray(), 0, new List<Node>(), false);
+                    List<Node> validPath = toCheck.Item1;
                     if (validPath[^1].GetType() == typeof(DirectoryNode))
                     {
                         AddDir((DirectoryNode)validPath[^1], path[^1]);

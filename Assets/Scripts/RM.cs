@@ -42,7 +42,8 @@ public class RM : MonoBehaviour
             if (path.Length > 1)
             {
                 // Check all nodes in path are valid
-                List<Node> validPath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
+                Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>(), false);
+                List<Node> validPath = toCheck.Item1; 
                 // Invalid path 
                 if (validPath == null) { return; }
                 

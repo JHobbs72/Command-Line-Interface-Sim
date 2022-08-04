@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting.Dependencies.NCalc;
@@ -39,7 +40,8 @@ public class FILE : MonoBehaviour
                 string[] path = str.Split('/');
                 if (path.Length > 1)
                 {
-                    List<Node> nodePath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
+                    Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>(), false);
+                    List<Node> nodePath = toCheck.Item1;
                     if (nodePath == null)
                     {
                         // TODO Don't need error message? is in checkPath?

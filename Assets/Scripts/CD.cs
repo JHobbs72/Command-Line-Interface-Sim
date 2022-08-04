@@ -3,6 +3,7 @@
  * Date : July 2022
  */
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,7 +21,7 @@ public class CD : MonoBehaviour
         {
             if (opt.StartsWith('-'))
             {
-                fileSystem.SendOutput("invalid arguments -", false);
+                fileSystem.SendOutput("cd: " + opt + ": illegal argument", false);
                 return;
             }
         }
@@ -56,6 +57,7 @@ public class CD : MonoBehaviour
         if (path.Length == 1)
         {
             // If argument = '-' -- go to last visited directory
+            // TODO will never get here as error thrown on any argument starting with '-'?
             if (path[0] == "-")
             {
                 // TODO go to previous dir
@@ -69,12 +71,15 @@ public class CD : MonoBehaviour
                 DirectoryNode root = fileSystem.GetRootNode();
                 fileSystem.SetCurrentNode(root);
                 fileSystem.SetNewPathFromOrigin(new List<Node> {root});
+                fileSystem.SendOutput("", false);
                 return;
             }
         }
         
         // If a path is given, check and set if valid
-        List<Node> testPath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>()); 
+        Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>(), false);
+
+        List<Node> testPath = toCheck.Item1;
         
         if (testPath == null)
         {

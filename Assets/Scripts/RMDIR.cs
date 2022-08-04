@@ -34,7 +34,8 @@ public class RMDIR : MonoBehaviour
             string[] splitArg = arg.Split('/');
             if (splitArg.Length > 1)
             {
-                List<Node> path = fileSystem.CheckPath(fileSystem.GetCurrentNode(), splitArg, 0, new List<Node>());
+                Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), splitArg, 0, new List<Node>(), false);
+                List<Node> path = toCheck.Item1;
                 if (path == null)
                 {
                     // Error message already printed

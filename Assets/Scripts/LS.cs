@@ -3,6 +3,7 @@
  * Date : July 2022
  */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -13,158 +14,99 @@ public class LS : MonoBehaviour
 
     public GraphManager fileSystem;
     private bool _fOption;
-    private bool _printCommand;
-    private bool _isLast;
 
-    public void ls(string options)
+    public void ls(string input)
     {
         _fOption = false;
-        _printCommand = true;
-        _isLast = false;
+        List<string> listCommand = input.Split(' ').ToList();
+        List<char> candidateOptions = new List<char>();
+        List<string> output = new List<string>();
+        int count = 0;
         
-        // If no arguments or options are given, display all neighbours of current directory
-        if (options == "")
-        {
-            GetNeighbourNames(fileSystem.GetCurrentNode().GetNeighbours(), false, false, null);
-            return;
-        }
-        
-        string[] arguments = options.Split(' ');
-        
-        // Only option available on ls command
-        if (arguments[0] == "-F")
-        {
-            _fOption = true;
-            arguments = arguments.Skip(1).ToArray();
-        }
-
-        // No other arguments should start with '-'
-        foreach (string str in arguments)
+        foreach (string str in listCommand)
         {
             if (str.StartsWith('-'))
             {
-                // TODO Usage
-                fileSystem.SendOutput("Error - invalid option: " + str + "\nls usage", false);
-                return;
-            }
-        }
-
-        // If the only argument was the '-F' option continue as if no arguments were given
-        if (arguments.Length == 0)
-        {
-            GetNeighbourNames(fileSystem.GetCurrentNode().GetNeighbours(), _fOption, false, null);
-            return;
-        }
-
-        // If there's one argument and it's "$HOME", display the neighbours of the root directory
-        if (arguments.Length == 1)
-        {
-            if (arguments[0] == "$HOME")
-            {
-                GetNeighbourNames(fileSystem.GetRootNode().GetNeighbours(), _fOption, false, null);
-                return;
-            }
-        }
-        
-        // For any other arguments
-        foreach (string arg in arguments)
-        {
-            if (arg == arguments[^1])
-            {
-                _isLast = true;
-            }
-            
-            // Check if argument is a path
-            string[] path = arg.Split('/');
-            if (path.Length == 1)
-            {
-                // If it's not a path
-                Node found = fileSystem.GetCurrentNode().SearchChildren(path[0]);
-                if (found == null)
+                foreach (char op in str.Remove('-'))
                 {
-                    // Directory doesn't exist under this node
-                    fileSystem.SendOutput("Error -- no such file or directory", false);
+                    candidateOptions.Add(op);
                 }
-                else if (found.GetType() == typeof(DirectoryNode))
-                {
-                    // If it is found and is a directory - display it's neighbours
-                    GetNeighbourNames(found.GetNeighbours(), _fOption, true, (DirectoryNode)found);
-                }
-                else if (found.GetType() == typeof(FileNode))
-                {
-                    // If it's found and is a file - print it's name
-                    fileSystem.SendOutput(found.name, false);
-                }
+                count++;
             }
             else
             {
-                // If it's a path
-                List<Node> validPath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
-                if (validPath != null)
+                break;
+            }
+        }
+        
+        string[] candidateArguments = listCommand.Skip(count).ToArray();
+        
+        foreach (char op in candidateOptions)
+        {
+            if (op == 'F')
+            {
+                _fOption = true;
+            }
+            else
+            {
+                fileSystem.SendOutput("ls: -- " + op + ": illegal option", false);
+                break;
+            }
+        }
+        
+        foreach (string str in candidateArguments)
+        {
+            if (candidateArguments.Length == 0)
+            {
+                break;
+            }
+        
+            if (candidateArguments.Length == 1)
+            {
+                if (str == "$HOME")
                 {
-                    if (validPath[^1].GetType() == typeof(DirectoryNode))
-                    {
-                        // If path is valid and the last node is a directory node - display it's neighbours
-                        // TODO test -- should 'validPath[^2]' below be '...^1'?
-                        GetNeighbourNames(validPath[^1].GetNeighbours(), _fOption, true, (DirectoryNode)validPath[^2]);
-                    }
-                    else
-                    {
-                        // If path is valid and the last node is a file node - display it's name
-                        fileSystem.SendOutput(validPath[^1].name, false);
-                    }
+                    // Return opts and args
+                    break;
+                }
+            }
+
+            string[] pathToCheck = str.Split('/');
+            Debug.Log(string.Join('/', pathToCheck));
+            Tuple<List<Node>, string> path = fileSystem.CheckPath(fileSystem.GetCurrentNode(), pathToCheck, 0, new List<Node>(), false);
+            Debug.Log(string.Join('/', path.Item1));
+
+            List<char?> test = new List<char?> { 'a', 'b' };
+            test.Add(null);
+            test.Add('c');
+            test.Add('d');
+            Debug.Log("-----------");
+            Debug.Log(string.Join('-', test));
+            Debug.Log("-----------");
+
+            if (path.Item2 == null)
+            {
+                // valid path
+                Debug.Log("VALID");
+            }
+            else
+            {
+                List<string> names = new List<string>();
+                foreach (Node node in path.Item1)
+                {
+                    names.Add(node.name);
+                }
+                
+                if (path.Item1.Count > 0)
+                {
+                    fileSystem.SendOutput("ls: " + string.Join('/', names) + "/" + pathToCheck[path.Item1.Count] + ": " + path.Item2, false);
                 }
                 else
                 {
-                    // Invalid path
-                    fileSystem.SendOutput("Error --> invalid path", false);
+                    // Fails on first element in path
+                    fileSystem.SendOutput("ls: " + pathToCheck[0] + ": " + path.Item2, false);
                 }
+                
             }
         }
-    }
-
-    // Method to get the names of neighbours and display them
-        // neighbours = neighbours of the node in question as a list of nodes
-        // fOption = bool, dictates whether the '-F' options has been applied or not
-        // multiple = bool, dictates whether there's more than one argument (affects output)
-        // parent = the parent node of the given node
-    private void GetNeighbourNames(List<Node> neighbours, bool fOption, bool multiple, DirectoryNode parent)
-    {
-        List<string> names = new List<string>();
-
-        foreach (Node node in neighbours)
-        {
-            if (node.GetType() == typeof(DirectoryNode) && fOption)
-            {
-                // If -F --> add '/' to the end of directories names
-                names.Add(node.name + '/');
-            }
-            else
-            {
-                names.Add(node.name);
-            }
-        }
-
-        // Change output based on whether one or multiple arguments were given
-        if (multiple)
-        {
-            if (_printCommand)
-            {
-                fileSystem.SendOutput(parent.name + ": \n" + string.Join(' ', names) + "\n \n", false);
-                _printCommand = false;
-                return;
-            }
-
-            if (_isLast)
-            {
-                fileSystem.SendSpecialOutput(parent.name + ": \n" + string.Join(' ', names));
-                return;
-            }
-            
-            fileSystem.SendSpecialOutput(parent.name + ": \n" + string.Join(' ', names) + "\n");
-            return;
-        }
-        
-        fileSystem.SendOutput(string.Join(' ', names), false);
     }
 }

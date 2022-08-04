@@ -7,7 +7,7 @@ using UnityEngine;
 public class CAT : MonoBehaviour
 {
     // Root command for 'cat' 
-        // Display contents in file, write text to file, write from one file to another
+        // Display contents in file, write from one file to another
     
     public GraphManager fileSystem;
     private bool _nOption = false;
@@ -174,6 +174,7 @@ public class CAT : MonoBehaviour
         // Command cannot start with any of these operators
         if (input[0] == ">" || input[0] == ">>" || input[^1] == ">" || input[^1] == ">>")
         {
+            // TODO error message
             fileSystem.SendOutput("Error --> parse error", false);
             return;
         }
@@ -197,7 +198,7 @@ public class CAT : MonoBehaviour
                 return;
             }
             
-            // Creat new tuple of the node that's been found and the operator then add to the list
+            // Create new tuple of the node that's been found and the operator then add to the list
             destinations.Add(new Tuple<FileNode, string>(dest, input[op]));
             // Remove operand and operator e.g: > file2.txt
             input.RemoveAt(op);
@@ -254,14 +255,17 @@ public class CAT : MonoBehaviour
         if (path.Length > 1)
         {
             // Call CheckPath
-            List<Node> nodePath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
+            Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>(), false);
+            List<Node> nodePath = toCheck.Item1;
             if (nodePath == null)
             {
                 // If the path fails check again but without the last element
-                List<Node> testPath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path.SkipLast(1).ToArray(), 0, new List<Node>());
+                Tuple<List<Node>, string> toCheck2 = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path.SkipLast(1).ToArray(), 0, new List<Node>(), false);
+                List<Node> testPath = toCheck2.Item1;
                 if (testPath == null)
                 {
                     // If path fails still --> invalid path
+                    // TODO error message
                     fileSystem.SendOutput("Error - invalid path", false);
                     return null;
                 }
@@ -274,15 +278,17 @@ public class CAT : MonoBehaviour
                     {
                         fileSystem.AddFileNode((DirectoryNode)testPath[^1], path[^1]);
                         // return the new node
-                        return (FileNode)fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>())[^1];
+                        return (FileNode)fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>(), false).Item1[^1];
                     }
                 
                     // If the last element in testPath is not a directory, cannot make a child of it
+                    // TODO error message
                     fileSystem.SendOutput("Error --> invalid path", false);
                     return null;
                 }
                 
                 // If the target node is a source and doesn't exist -> error
+                // TODO error message
                 fileSystem.SendOutput("Error --> invalid path", false);
                 return null;
             }
@@ -294,6 +300,7 @@ public class CAT : MonoBehaviour
             }
             
             // If the last node's a directory it cannot be a source or destination under the cat command
+            // TODO error message
             fileSystem.SendOutput("Error --> is Directory", false);
             return null;
         }

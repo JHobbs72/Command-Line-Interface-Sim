@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8246666197658677455
+--- !u!114 &-7337119309435222481
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -13,34 +13,8 @@ MonoBehaviour:
   m_Name: dir1
   m_EditorClassIdentifier: 
   neighbours:
-  - {fileID: 7782192854766136236}
---- !u!114 &-8076208622658512843
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
-  m_Name: newDir
-  m_EditorClassIdentifier: 
-  neighbours:
-  - {fileID: 8427880450283047698}
---- !u!114 &-7441154653022000147
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
-  m_Name: file2.txt
-  m_EditorClassIdentifier: 
---- !u!114 &-7237314803019869352
+  - {fileID: 1089506097268803333}
+--- !u!114 &-4342898481293459225
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -53,9 +27,9 @@ MonoBehaviour:
   m_Name: Documents
   m_EditorClassIdentifier: 
   neighbours:
-  - {fileID: -8246666197658677455}
-  - {fileID: -7441154653022000147}
---- !u!114 &-4920585154645972139
+  - {fileID: -7337119309435222481}
+  - {fileID: -3287761497103455432}
+--- !u!114 &-3287761497103455432
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -64,13 +38,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
-  m_Name: UserA
+  m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
+  m_Name: file2.txt
   m_EditorClassIdentifier: 
-  neighbours:
-  - {fileID: -7237314803019869352}
-  - {fileID: -8076208622658512843}
---- !u!114 &-1460835280665462418
+--- !u!114 &-1085516835351057813
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -95,15 +66,13 @@ MonoBehaviour:
   m_Name: FileSystemGraph
   m_EditorClassIdentifier: 
   nodes:
-  - {fileID: -4920585154645972139}
-  - {fileID: -7237314803019869352}
-  - {fileID: -8246666197658677455}
-  - {fileID: 7782192854766136236}
-  - {fileID: -1460835280665462418}
-  - {fileID: -7441154653022000147}
-  - {fileID: -8076208622658512843}
-  - {fileID: 8427880450283047698}
---- !u!114 &7782192854766136236
+  - {fileID: 4549902361947975241}
+  - {fileID: -4342898481293459225}
+  - {fileID: -7337119309435222481}
+  - {fileID: 1089506097268803333}
+  - {fileID: -1085516835351057813}
+  - {fileID: -3287761497103455432}
+--- !u!114 &1089506097268803333
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -116,8 +85,8 @@ MonoBehaviour:
   m_Name: dir2
   m_EditorClassIdentifier: 
   neighbours:
-  - {fileID: -1460835280665462418}
---- !u!114 &8427880450283047698
+  - {fileID: -1085516835351057813}
+--- !u!114 &4549902361947975241
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -126,6 +95,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
-  m_Name: newFile.txt
+  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
+  m_Name: UserA
   m_EditorClassIdentifier: 
+  neighbours:
+  - {fileID: -4342898481293459225}

@@ -3,6 +3,7 @@
  * Date : July 2022
  */
 
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -149,15 +150,18 @@ public class GraphManager : MonoBehaviour
         // path = The path being checked
         // step = How far through the path the check is i.e. once step == path.length path is fully visited
         // validPath = The path so far, valid nodes added to it as they're checked
-    // Return valid path: null if invalid, return list of nodes if valid
-    public List<Node> CheckPath(DirectoryNode lcn, string[] path, int step, List<Node> validPath)
+        // createNonExisting = mkdir only - for '-p' option
+    // Return Tuple<Node list, string>: 
+        // Node list = the valid path up to, not including, any invalid node if there is one
+        // string = the error message, if there is one (null if not), describing why the path is invalid
+    public Tuple<List<Node>, string?> CheckPath(DirectoryNode lcn, string[] path, int step, List<Node> validPath, bool createNonExisting)
     {
         // If step == path lenght isLast = true
         // else isLast = false
         bool isLast = step == path.Length - 1;
 
-
-        // Look for next node in given path in children of the local current node (the current directory)
+        // Look for the next node in the path - in children of the local current node (the current directory) or the
+            // root node, or the lcn's parent (directory above)
         Node nextNode;
         if (step == 0 && path[0] == "~")
         {
@@ -171,6 +175,7 @@ public class GraphManager : MonoBehaviour
                 nextNode = GetRootNode();
             }
             
+            // If the path is long enough remove the last two nodes as stepping back in path
             if (validPath.Count > 0)
             {
                 validPath.RemoveAt(validPath.Count - 1);
@@ -186,9 +191,7 @@ public class GraphManager : MonoBehaviour
             nextNode = lcn.SearchChildren(path[step]);
         }
         
-        
-        
-        // Scenario indicates whether the node being searched for exists & what type it is
+        // Scenario indicates whether the next node exists and what type it is
         int scenario = -1;
         if (nextNode == null) { scenario = -1; }
         else if (nextNode.GetType() == typeof(DirectoryNode)) { scenario = 0; }
@@ -196,64 +199,56 @@ public class GraphManager : MonoBehaviour
 
         switch (scenario)
         {
+            // Node no found under this directory
             case -1:
-                // Node no found under this directory
-                if (validPath.Count > 0)
+                // Create parent directory/directories (mkdir only)
+                if (createNonExisting)
                 {
-                    List<string> pathAsNames = new List<string>();
-                    foreach (Node node in validPath)
-                    {
-                        pathAsNames.Add(node.name);
-                    }
-                    SendOutput("zsh: no such file or directory: " + string.Join('/', pathAsNames) + "/" + path[step], false);
+                    AddDirectoryNode(lcn, path[step]);
+                    // TODO then...???
                 }
                 else
                 {
-                    SendOutput("zsh: no such file or directory: " + path[step], false);
+                    // Return the path that is valid so far
+                    return new Tuple<List<Node>, string?>(validPath, "No such file or directory");
                 }
 
-                return null;
+                break;
+                
+            // Node found & is a directory
             case 0:
-                // Node found & is a directory
+                // If is last node - add to valid path and return valid path
                 if (isLast)
                 {
                     validPath.Add(nextNode);
                     
-                    return validPath;
+                    return new Tuple<List<Node>, string?>(validPath, null);
                 }
+                
+                // If is not last node - add to valid path and call self to continue
                 validPath.Add(nextNode);
                 
-                return CheckPath((DirectoryNode)nextNode, path, step + 1, validPath);
+                return CheckPath((DirectoryNode)nextNode, path, step + 1, validPath, createNonExisting);
+            
             case 1:
                 // Node found & is a file
-                //      If it is a file node it must be the last in the path else the path is in valid
+                //      If it is a file node it must be the last in the path else the path is invalid
                 if (isLast)
                 {
                     validPath.Add(nextNode);
-                    return validPath;
+                    return new Tuple<List<Node>, string?>(validPath, null);
                 }
 
-                if (validPath.Count > 0)
-                {
-                    List<string> pathAsNames = new List<string>();
-                    foreach (Node node in validPath)
-                    {
-                        pathAsNames.Add(node.name);
-                    }
-                    SendOutput("zsh: not a directory: " + string.Join('/', pathAsNames) + "/" + path[step], false);
-                }
-                else
-                {
-                    SendOutput("zsh: not a directory: " + path[step], false);
-                }
-                
-                
-                return null;
+                // Not the end of the path - invalid path - return path so far (the valid part) and the error
+                return new Tuple<List<Node>, string?>(validPath, "not a directory");
+            
         }
 
         return null;
     }
 
+    // TODO - rewrite to make more efficient - can't need two functions
+    // TODO - Check validity of arguments at the same time? - check paths etc
     // Split a command into '-x' options from arguments and valid each component ready for processing
         // input = The command string submitted without the root e.g. "[rm] -r thisDirectory"
         // rootCommand = The string root command, name of file this method has been called from e.g. rm
@@ -261,6 +256,102 @@ public class GraphManager : MonoBehaviour
         // usage = The string to be displayed if the command is invalid, showing the format and valid options of the current root command
     // Returns the options given and the arguments given as a Tuple if valid or null on error
         // Options returned will be valid and without duplicates, arguments should be checked by the root command that called this method
+        
+    public Tuple<char[], Node[], string[]> Validate(string input, char[] allowedOptions, string rootCommand, string usage)
+    {
+        // To be returned
+        List<char> options = new List<char>();
+        List<Node> arguments = new List<Node>();
+        List<string> errorMessages = new List<string>();
+        
+        // ---
+
+        List<string> command = input.Split(' ').ToList();
+        List<char> candidateOptions = new List<char>();
+        int count = 0;
+
+        foreach (string str in command)
+        {
+            if (str.StartsWith('-'))
+            {
+                count++;
+                
+                if (str.Length == 1)
+                {
+                    candidateOptions.Add(str.ToCharArray()[0]);
+                }
+                else
+                {
+                    foreach (char ch in str.Skip(1))
+                    {
+                        candidateOptions.Add(ch);
+                    }
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        command = command.Skip(count).ToList();
+
+        foreach (char ch in candidateOptions)
+        {
+            if (allowedOptions.Contains(ch))
+            {
+                // Add valid option to options to be returned - ignore duplicates
+                if (!options.Contains(ch))
+                {
+                    options.Add(ch);
+                }
+            }
+            else
+            {
+                // Add error message to list to be returned
+                errorMessages.Add(rootCommand + ": -- " + ch + ": illegal option");
+            }
+        }
+
+        foreach (string str in command)
+        {
+            if (str.StartsWith('-'))
+            {
+                errorMessages.Add(rootCommand + ": " + str + ": No such file or directory");
+            }
+            else
+            {
+                string[] toCheck = str.Split('/');
+                Tuple<List<Node>, string?> path = CheckPath(GetCurrentNode(), toCheck, 0, new List<Node>(), false);
+                if (path.Item2 == null)
+                {
+                    arguments.Add(path.Item1[^1]);
+                }
+                else
+                {
+                    // Construct and add relevant error message to list
+                    List<string> names = new List<string>();
+                    foreach (Node node in path.Item1)
+                    {
+                        names.Add(node.name);
+                    }
+                    
+                    if (path.Item1.Count > 0)
+                    {
+                        errorMessages.Add("ls: " + string.Join('/', names) + "/" + toCheck[path.Item1.Count] + ": " + path.Item2);
+                    }
+                    else
+                    {
+                        // Fails on first element in path
+                        errorMessages.Add("ls: " + toCheck[0] + ": " + path.Item2);
+                    }
+                }
+            }
+        }
+        
+        return new Tuple<char[], Node[], string[]>(options.ToArray(), arguments.ToArray(), errorMessages.ToArray());
+    }
+    
     public Tuple<char[], string[]> SeparateAndValidate(string input, string rootCommand, char[] options, string usage)
     {
         if (string.IsNullOrEmpty(input))
@@ -346,7 +437,7 @@ public class GraphManager : MonoBehaviour
             else
             {
                 // Invalid option, return a new Tuple -- item one = null, item two = error message with the option that caused the error
-                return Tuple.Create((char[])null, new []{ch.ToString(), "invalid option"});
+                return Tuple.Create((char[])null, new []{ch.ToString(), "illegal option"});
             }
         }
 
@@ -361,7 +452,7 @@ public class GraphManager : MonoBehaviour
             // If any of the remaining elements start with '-' --> error
             if (str.StartsWith('-'))
             {
-                return Tuple.Create((char[])null, new []{str, "no such file or directory"});
+                return Tuple.Create((char[])null, new []{str, "No such file or directory"});
             }
         }
 

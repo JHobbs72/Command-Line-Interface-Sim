@@ -17,18 +17,18 @@ public class MV : MonoBehaviour
 
     public void mv(string input)
     {
-
-        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "mv", new[] {'f', 'i', 'n', 'v'}, 
-            "usage: mv [-f | -i | -n] [-v] source target \n" +
-            "           mv [-f | -i | -n] [-v] source ... directory");
+        // TODO -v option
+        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "mv", new[] {'v'}, 
+            "usage: mv [-v] source target \n" +
+            "           mv [-v] source ... directory");
         
         if (command == null) { return; }
         
         // Must have a source and a destination
         if (command.Item2.Length < 2)
         {
-            fileSystem.SendOutput("usage: mv [-f | -i | -n] [-v] source target \n" +
-                                  "           mv [-f | -i | -n] [-v] source ... directory", false);
+            fileSystem.SendOutput("usage: mv [-v] source target \n" +
+                                  "           mv [-v] source ... directory", false);
             return;
         }
 
@@ -111,11 +111,13 @@ public class MV : MonoBehaviour
         if (dest.Length > 1)
         {
             // Check path
-            List<Node> destPath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), dest, 0, new List<Node>());
+            Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), dest, 0, new List<Node>(), false);
+            List<Node> destPath = toCheck.Item1;
             if (destPath == null)
             {
-                List<Node> testPath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), dest.SkipLast(1).ToArray(),
-                    0, new List<Node>());
+                Tuple<List<Node>, string> toCheck2 = fileSystem.CheckPath(fileSystem.GetCurrentNode(), dest.SkipLast(1).ToArray(),
+                    0, new List<Node>(), false);
+                List <Node> testPath = toCheck2.Item1;
                 if (testPath == null)
                 {
                     fileSystem.SendOutput("mv: " + dest[^1] + ": no such file or directory", false);
@@ -154,7 +156,8 @@ public class MV : MonoBehaviour
             if (path.Length > 1)
             {
                 // Check path
-                List<Node> validPath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
+                Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>(), false);
+                List<Node> validPath = toCheck.Item1;
                 if (validPath == null)
                 {
                     fileSystem.SendOutput("mv: " + path[^1] + ": no such file or directory", false);
