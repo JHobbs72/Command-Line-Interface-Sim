@@ -246,28 +246,32 @@ public class GraphManager : MonoBehaviour
 
         return null;
     }
-
-    // TODO - rewrite to make more efficient - can't need two functions
-    // TODO - Check validity of arguments at the same time? - check paths etc
-    // Split a command into '-x' options from arguments and valid each component ready for processing
+    
+    // Split a command into '-x' options and arguments and validate each option ready for processing by the root command
         // input = The command string submitted without the root e.g. "[rm] -r thisDirectory"
-        // rootCommand = The string root command, name of file this method has been called from e.g. rm
-        // options = The options allowed under this root command as char array e.g. [f, i, r, v]
-        // usage = The string to be displayed if the command is invalid, showing the format and valid options of the current root command
-    // Returns the options given and the arguments given as a Tuple if valid or null on error
-        // Options returned will be valid and without duplicates, arguments should be checked by the root command that called this method
-        
-    public Tuple<char[], Node[], string[]> Validate(string input, char[] allowedOptions, string rootCommand, string usage)
+        // allowed options = The options allowed by the root command that called this function
+        // rootCommand = the root command that called this function
+    // Returns a Tuple -- <List of characters, List of string, List of Tuples<string, string>>
+        // List of characters --> the valid options
+        // List of string --> command without options (unvalidated arguments)
+        // List of tuples<string, string> --> list of error messages and the option that caused the error
+
+    public Tuple<List<char>, List<string>, List<Tuple<string, string>>> ValidateOptions(string input, char[] allowedOptions, string rootCommand)
     {
-        // To be returned
+        // To be returned as a tuple
         List<char> options = new List<char>();
-        List<Node> arguments = new List<Node>();
-        List<string> errorMessages = new List<string>();
-        
+        List<string> arguments = new List<string>();
+        List<Tuple<string, string>> errorMessages = new List<Tuple<string, string>>();
         // ---
 
+        // Split the input on spaces for processing
         List<string> command = input.Split(' ').ToList();
         List<char> candidateOptions = new List<char>();
+        
+        // count - the number of elements that start with a '-' before the first element with out a '-' at the start
+        // i.e. the number of options in the command
+            // e.g. -a -b file -c
+            // count = 2
         int count = 0;
 
         foreach (string str in command)
@@ -276,6 +280,7 @@ public class GraphManager : MonoBehaviour
             {
                 count++;
                 
+                // Add the options in the command to the list of options to be checked
                 if (str.Length == 1)
                 {
                     candidateOptions.Add(str.ToCharArray()[0]);
@@ -290,10 +295,12 @@ public class GraphManager : MonoBehaviour
             }
             else
             {
+                // If the element doesn't start with '-' --> stop iterating through
                 break;
             }
         }
 
+        // Remove options from the command -- left with just the arguments
         command = command.Skip(count).ToList();
 
         foreach (char ch in candidateOptions)
@@ -309,22 +316,42 @@ public class GraphManager : MonoBehaviour
             else
             {
                 // Add error message to list to be returned
-                errorMessages.Add(rootCommand + ": -- " + ch + ": illegal option");
+                errorMessages.Add(new Tuple<string, string>(ch.ToString(), rootCommand + ": -- " + ch + ": illegal option"));
             }
         }
 
-        foreach (string str in command)
+        // return validated options and arguments with any error messages
+        return new Tuple<List<char>, List<string>, List<Tuple<string, string>>>(options, arguments, errorMessages);
+    }
+
+    // Validate arguments
+        // candidates = the arguments to be validated 
+        // rootCommand = the root command that called this function
+    // Returns a Tuple -- <List of Nodes, List of Tuples<string, string>>
+        // List of Nodes --> the valid arguments
+        // List of tuples<string, string> --> list of error messages and the option that caused the error
+    public Tuple<List<Node>, List<Tuple<string, string>>> ValidateArgs(List<string> candidates, string rootCommand)
+    {
+        List<Node> arguments = new List<Node>();
+        List<Tuple<string, string>> errorMessages = new List<Tuple<string, string>>();
+
+        foreach (string str in candidates)
         {
+            // No file or directory should start with '-'
             if (str.StartsWith('-'))
             {
-                errorMessages.Add(rootCommand + ": " + str + ": No such file or directory");
+                errorMessages.Add(new Tuple<string, string>(str,
+                    rootCommand + ": " + str + ": No such file or directory"));
             }
             else
             {
+                // Check argument, path or single node can e passed to CheckPath()
                 string[] toCheck = str.Split('/');
                 Tuple<List<Node>, string?> path = CheckPath(GetCurrentNode(), toCheck, 0, new List<Node>(), false);
+
                 if (path.Item2 == null)
                 {
+                    // If valid argument the single node or last node in path is added to the arguments list
                     arguments.Add(path.Item1[^1]);
                 }
                 else
@@ -335,128 +362,22 @@ public class GraphManager : MonoBehaviour
                     {
                         names.Add(node.name);
                     }
-                    
+
                     if (path.Item1.Count > 0)
                     {
-                        errorMessages.Add("ls: " + string.Join('/', names) + "/" + toCheck[path.Item1.Count] + ": " + path.Item2);
+                        errorMessages.Add(new Tuple<string, string>(toCheck[path.Item1.Count], "ls: " +
+                            string.Join('/', names) + "/" + toCheck[path.Item1.Count] + ": " + path.Item2));
                     }
                     else
                     {
                         // Fails on first element in path
-                        errorMessages.Add("ls: " + toCheck[0] + ": " + path.Item2);
+                        errorMessages.Add(
+                            new Tuple<string, string>(toCheck[0], "ls: " + toCheck[0] + ": " + path.Item2));
                     }
                 }
             }
         }
-        
-        return new Tuple<char[], Node[], string[]>(options.ToArray(), arguments.ToArray(), errorMessages.ToArray());
-    }
-    
-    public Tuple<char[], string[]> SeparateAndValidate(string input, string rootCommand, char[] options, string usage)
-    {
-        if (string.IsNullOrEmpty(input))
-        {
-            SendOutput(usage, false);
-            return null;
-        }
-        
-        // Call to do the separation of options and arguments
-        Tuple<char[], string[]> command = SeparateOptions(input, options);
 
-        // If the command is invalid the first item in the tuple is set to null, the second item is the relevant error message
-        // If the command is valid but no options are entered item one is an empty array
-        if (command.Item1 == null)
-        {
-            // e.g. rm: illegal option: -- q    usage ...
-            if (command.Item2.Length < 2)
-            {
-                SendOutput(usage, false);
-            }
-            else
-            {
-                SendOutput(rootCommand + ": " + command.Item2[1] + ": -- "+ command.Item2[0] +  "\n" + usage, false);
-            }
-            return null;
-        }
-        
-        char[] opts = command.Item1;
-        string[] arguments = command.Item2;
-
-        // If no arguments are given i.e. just options --> invalid command
-        if (arguments == null || arguments.Length == 0)
-        {
-            SendOutput(usage, false);
-            return null;
-        }
-
-        return Tuple.Create(opts, arguments);
-    }
-    
-    // Separating '-x' options from the arguments - could be in '-xyz' or '-x -y -z' format or any combination
-        // input = The string command submitted without the root command e.g. "[rm] -r thisDirectory"
-        // allowedCharacters = Char array of valid options
-    // Return char array of options (empty array if none) and string array with arguments as a Tuple
-    // On invalid option --> return new Tuple, item1 as null item 2 as error message {invalid char, error message}
-    private Tuple<char[], string[]> SeparateOptions(string input, char[] allowedCharacters)
-    {
-        string[] command = input.Split(' ');
-        int count = 0;
-        // Two lists used to contain the option characters entered and the valid options
-        List<char> candidateCharacters = new List<char>();
-        List<char> validAndPresent = new List<char>();
-
-        // Select elements of the command that start with '-' and add it's characters to the candidate list
-        foreach (string str in command)
-        {
-            if (str.StartsWith('-'))
-            {
-                count++;
-                foreach (char character in str.Skip(1))
-                {
-                    candidateCharacters.Add(character);
-                }
-            }
-            else
-            {
-                // Breaks at first arguments that doesn't start with '-'
-                break;
-            }
-        }
-
-        // Compare candidate characters (those in the command) to allowed characters
-        foreach (char ch in candidateCharacters)
-        {
-            if (allowedCharacters.Contains(ch))
-            {
-                if (!validAndPresent.Contains(ch))
-                {
-                    // Option is in the command and is valid --> add to valid list
-                    validAndPresent.Add(ch);
-                }
-            }
-            else
-            {
-                // Invalid option, return a new Tuple -- item one = null, item two = error message with the option that caused the error
-                return Tuple.Create((char[])null, new []{ch.ToString(), "illegal option"});
-            }
-        }
-
-        // Remove first 'count' number of items from the command (the options)
-            // count = the number of elements that are options
-        List<string> commList = command.ToList();
-        commList.RemoveRange(0, Math.Min(count, command.Length));
-        command = commList.ToArray();
-        
-        foreach (string str in command)
-        {
-            // If any of the remaining elements start with '-' --> error
-            if (str.StartsWith('-'))
-            {
-                return Tuple.Create((char[])null, new []{str, "No such file or directory"});
-            }
-        }
-
-        // Return valid options and commands
-        return Tuple.Create(validAndPresent.ToArray(), command);
+        return new Tuple<List<Node>, List<Tuple<string, string>>>(arguments, errorMessages);
     }
 }

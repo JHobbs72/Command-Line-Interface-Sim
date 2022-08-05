@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7337119309435222481
+--- !u!114 &-8122428830621714021
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -13,8 +13,20 @@ MonoBehaviour:
   m_Name: dir1
   m_EditorClassIdentifier: 
   neighbours:
-  - {fileID: 1089506097268803333}
---- !u!114 &-4342898481293459225
+  - {fileID: -2552946120447345735}
+--- !u!114 &-2640721944019098553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
+  m_Name: file2.txt
+  m_EditorClassIdentifier: 
+--- !u!114 &-2588277523135447729
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -27,9 +39,9 @@ MonoBehaviour:
   m_Name: Documents
   m_EditorClassIdentifier: 
   neighbours:
-  - {fileID: -7337119309435222481}
-  - {fileID: -3287761497103455432}
---- !u!114 &-3287761497103455432
+  - {fileID: -8122428830621714021}
+  - {fileID: -2640721944019098553}
+--- !u!114 &-2552946120447345735
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -38,21 +50,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
-  m_Name: file2.txt
+  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
+  m_Name: dir2
   m_EditorClassIdentifier: 
---- !u!114 &-1085516835351057813
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
-  m_Name: file1.txt
-  m_EditorClassIdentifier: 
+  neighbours:
+  - {fileID: 4892501819001718783}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -66,27 +68,13 @@ MonoBehaviour:
   m_Name: FileSystemGraph
   m_EditorClassIdentifier: 
   nodes:
-  - {fileID: 4549902361947975241}
-  - {fileID: -4342898481293459225}
-  - {fileID: -7337119309435222481}
-  - {fileID: 1089506097268803333}
-  - {fileID: -1085516835351057813}
-  - {fileID: -3287761497103455432}
---- !u!114 &1089506097268803333
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d07c4f6692c534d3f9eb228a84a13ae0, type: 3}
-  m_Name: dir2
-  m_EditorClassIdentifier: 
-  neighbours:
-  - {fileID: -1085516835351057813}
---- !u!114 &4549902361947975241
+  - {fileID: 4362953702405215948}
+  - {fileID: -2588277523135447729}
+  - {fileID: -8122428830621714021}
+  - {fileID: -2552946120447345735}
+  - {fileID: 4892501819001718783}
+  - {fileID: -2640721944019098553}
+--- !u!114 &4362953702405215948
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -99,4 +87,16 @@ MonoBehaviour:
   m_Name: UserA
   m_EditorClassIdentifier: 
   neighbours:
-  - {fileID: -4342898481293459225}
+  - {fileID: -2588277523135447729}
+--- !u!114 &4892501819001718783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b965762ee98a64f0a87dde9ed522196f, type: 3}
+  m_Name: file1.txt
+  m_EditorClassIdentifier: 

@@ -21,29 +21,43 @@ public class MKDIR : MonoBehaviour
     
     public void mkdir(string input)
     {
-        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "mkdir", new[] { 'p', 'v' }, 
-            "usage: mkdir [-pv] directory ...");
+        Tuple<List<char>, List<Node>, List<Tuple<string, string>>> command = fileSystem.Validate(input, new[] { 'p', 'v' }, "mkdir");
         
-        if (command == null) { return; }
+        List<char> options = command.Item1;
+        List<Node> arguments = command.Item2;
+        List<Tuple<string, string>> caught = command.Item3;
         
-        char[] charOptions = command.Item1;
-        string[] arguments = command.Item2;
+        // TODO if arguments != null --> already exists
+        
+        // TODO input = mkdir -existingDirectory
+            // will create a directory called existingDirectory
+            // Must check at point of creating for existing directory
+
+        List<string> toCreate = new List<string>();
+        
+        foreach (Tuple<string, string> tuple in caught)
+        {
+            if (tuple.Item2.Contains("No such file or directory"))
+            {
+                toCreate.Add(tuple.Item1);
+            }
+        }
         
         // Remove illegal characters -- Abstraction --> '{' '}' and ',' are allowed in certain conditions. For this purpose it's valid to remove them at all times  
-        for (int i = 0; i < arguments.Length; i++)
+        for (int i = 0; i < toCreate.Count; i++)
         {
-            arguments[i] = Regex.Replace(arguments[i], @"['\{},']+", "");
+            toCreate[i] = Regex.Replace(toCreate[i], @"['\{},']+-", "");
         }
 
         // Set option flags
-        if (charOptions != null)
+        if (options != null)
         {
-            if (charOptions.Contains('p')) { _pOption = true; }
-            if (charOptions.Contains('v')) { _vOption = true; }
+            if (options.Contains('p')) { _pOption = true; }
+            if (options.Contains('v')) { _vOption = true; }
         }
         
         // If no arguments given
-        if (arguments.Length == 0)
+        if (toCreate.Count == 0)
         {
             fileSystem.SendOutput("usage: mkdir [-pv] directory ...", false);
             return;
