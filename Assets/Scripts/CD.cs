@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CD : MonoBehaviour
@@ -38,8 +39,14 @@ public class CD : MonoBehaviour
         
         if (command == "..")
         {
-            fileSystem.StepBackInPath();
-            fileSystem.SendOutput("", false);
+            if (fileSystem.GetCurrentPath().Count > 1)
+            {
+                fileSystem.SetNewPathFromOrigin(fileSystem.GetCurrentPath().SkipLast(1).ToList());
+                fileSystem.SendOutput("", false);
+                return;
+            }
+            
+            fileSystem.SendOutput("At root", false);
             return;
         }
         
@@ -81,8 +88,9 @@ public class CD : MonoBehaviour
 
         List<Node> testPath = toCheck.Item1;
         
-        if (testPath == null)
+        if (toCheck.Item2 != null)
         {
+            fileSystem.SendOutput(toCheck.Item2, false);
             return;
         }
 

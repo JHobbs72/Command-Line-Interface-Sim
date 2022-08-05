@@ -16,12 +16,20 @@ public class MKDIR : MonoBehaviour
     public GraphManager fileSystem;
     private bool _pOption;
     private bool _vOption;
-    private List<string> toOutput;
+    private List<string> _toOutput;
+    private string _usage = "usage: mkdir [-pv] directory ...";
     
     public void mkdir(string input)
     {
         _pOption = false;
         _vOption = false;
+        
+        // If no arguments given
+        if (string.IsNullOrEmpty(input))
+        {
+            fileSystem.SendOutput(_usage, false);
+            return;
+        }
         
         Tuple<List<char>, List<string>, List<Tuple<string, string>>> command = fileSystem.ValidateOptions(input,
             new[] { 'p', 'v' }, "mkdir");
@@ -30,13 +38,14 @@ public class MKDIR : MonoBehaviour
         List<string> arguments = command.Item2;
         List<Tuple<string, string>> caughtErrors = command.Item3;
 
-        toOutput = new List<string>();
+        _toOutput = new List<string>();
 
         if (caughtErrors != null)
         {
             if (caughtErrors.Count > 0)
             {
-                fileSystem.SendOutput(caughtErrors[0].Item2, false);
+                fileSystem.SendOutput(caughtErrors[0].Item2 + "\n" + _usage, false);
+                return;
             }
         }
 
@@ -57,7 +66,7 @@ public class MKDIR : MonoBehaviour
         // If no arguments given
         if (arguments.Count == 0)
         {
-            fileSystem.SendOutput("usage: mkdir [-pv] directory ...", false);
+            fileSystem.SendOutput(_usage, false);
             return;
         }
 
@@ -73,25 +82,43 @@ public class MKDIR : MonoBehaviour
             foreach (string arg in arguments)
             {
                 List<string> path = arg.Split('/').ToList();
-                Tuple<List<Node>, string> validPath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), 
-                    path.SkipLast(1).ToArray(), 0, new List<Node>());
-                if (validPath.Item2 == null)
+
+                if (path.Count > 1)
                 {
-                    if (validPath.Item1[^1].GetType() == typeof(DirectoryNode))
-                    {
-                        AddDir((DirectoryNode)validPath.Item1[^1], path[^1]);
-                    }
+                    Tuple<List<Node>, string> validPath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path.SkipLast(1).ToArray(), 0, new List<Node>());
                     
-                    toOutput.Add("mkdir: " + string.Join('/', validPath.Item1) + ": Not a directory");
+                    if (validPath.Item2 == null)
+                    {
+                        if (validPath.Item1[^1].GetType() == typeof(DirectoryNode))
+                        {
+                            AddDir((DirectoryNode)validPath.Item1[^1], path[^1]);
+                        }
+                        else
+                        {
+                            List<string> names = new List<string>();
+                            foreach (Node node in validPath.Item1)
+                            {
+                                names.Add(node.name);
+                            }
+                            _toOutput.Add("mkdir: " + string.Join('/', names) + ": Not a directory");
+                        }
+                    }
+                    else
+                    {
+                        _toOutput.Add(validPath.Item2);
+                    }
                 }
                 else
                 {
-                    toOutput.Add(validPath.Item2);
+                    AddDir(fileSystem.GetCurrentNode(), path[0]);
                 }
+                
+                
+                
             }
         }
         
-        fileSystem.SendOutput(string.Join('\n', toOutput), false);
+        fileSystem.SendOutput(string.Join('\n', _toOutput), false);
     }
 
     // Method to create a new directory
@@ -105,15 +132,16 @@ public class MKDIR : MonoBehaviour
             if (node.name == newNode)
             {
                 // Check if a node with that name exists already
-                toOutput.Add("mkdir: " + newNode + ": File exists");
+                _toOutput.Add("mkdir: " + newNode + ": File exists");
                 return null;
             }
         }
 
         DirectoryNode created = fileSystem.AddDirectoryNode(parent, newNode);
+        
         if (_vOption)
         {
-            toOutput.Add("mkdir: created directory '" + newNode + "'");
+            _toOutput.Add("mkdir: created directory '" + newNode + "'");
         }
 
         return created;
@@ -145,7 +173,7 @@ public class MKDIR : MonoBehaviour
             else if (node.name == path[step] && node.GetType() == typeof(FileNode))
             {
                 // TODO TEST -- check path.SkipLast(path.Length - step) --> should show path up to the point of error
-                toOutput.Add("mkdir: " + string.Join('/', path.SkipLast(path.Length - step)) + ": Not a directory");
+                _toOutput.Add("mkdir: " + string.Join('/', path.SkipLast(path.Length - step)) + ": Not a directory");
                 return;
             }
             // The next node doesn't exist, could be the last node in the path or an intermediate node that need to be

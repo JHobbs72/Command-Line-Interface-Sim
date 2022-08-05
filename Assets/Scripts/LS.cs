@@ -16,6 +16,7 @@ public class LS : MonoBehaviour
     private bool _fOption;
     private List<string> _toOutput;
     private bool _multipleArgs;
+    private string _usage = "ls [-F] [file]";
 
     public void ls(string input)
     {
@@ -31,16 +32,20 @@ public class LS : MonoBehaviour
         }
         
         Tuple<List<char>, List<string>, List<Tuple<string, string>>> command = fileSystem.ValidateOptions(input,
-            new[] { 'a', 'b' }, "ls");
+            new[] { 'F' }, "ls");
+
+        if (command.Item1.Contains('F'))
+        {
+            _fOption = true;
+        }
 
         if (command.Item3 != null)
         {
-            // TODO - print error
             foreach (Tuple<string, string> tuple in command.Item3)
             {
                 if (tuple.Item2.Contains("illegal option"))
                 {
-                    fileSystem.SendOutput(tuple.Item2, false);
+                    fileSystem.SendOutput(tuple.Item2 + "\n" + _usage, false);
                     return;
                 }
             }
@@ -117,7 +122,10 @@ public class LS : MonoBehaviour
                 }
                 else
                 {
-                    _toOutput.Add(neighbours[0].name);
+                    foreach (Node neighbour in neighbours)
+                    {
+                        _toOutput.Add(neighbour.name);
+                    }
                 }
             }
         }

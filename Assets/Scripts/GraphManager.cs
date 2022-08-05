@@ -14,12 +14,12 @@ public class GraphManager : MonoBehaviour
     // Create and manage the graph file structure.
         // Includes all helper functions called from multiple files.
 
-    private Graph _graph;
-    private DirectoryNode _currentNode;
-    private List<Node> _currentPath;
-    private outputText _outputSource;
-    private string _currentCommand;
-    private prompt _prompt;
+    private Graph _graph = null!;
+    private DirectoryNode _currentNode = null!;
+    private List<Node> _currentPath = null!;
+    private outputText _outputSource = null!;
+    private string _currentCommand = null!;
+    private prompt _prompt = null!;
 
     private void Start()
     {
@@ -111,20 +111,6 @@ public class GraphManager : MonoBehaviour
         _currentPath = path;
         SetCurrentNode((DirectoryNode)path[^1]);
     }
-    
-    // One step back in current path through file system
-    public DirectoryNode StepBackInPath()
-    {
-        if (_currentPath.Count > 1)
-        {
-            _currentPath.RemoveAt(_currentPath.Count - 1);
-            SetCurrentNode((DirectoryNode)_currentPath[^1]);
-            return (DirectoryNode)_currentPath[^1];
-        }
-        
-        SendOutput("At root", false);
-        return null;
-    }
 
     // Store the last command entered
     public void SetCurrentCommand(string command)
@@ -138,12 +124,6 @@ public class GraphManager : MonoBehaviour
         // Call method in outputText.cs
         _outputSource.AddOutput(_currentCommand, content, flag);
     }
-    
-    // Directly sends content to output for full flexibility
-    public void SendSpecialOutput(string content)
-    {
-        _outputSource.SpecialOutput(content);
-    }
 
     // Check validity of a path
         // lcn = The directory currently being visited
@@ -155,12 +135,17 @@ public class GraphManager : MonoBehaviour
         // string = the error message, if there is one (null if not), describing why the path is invalid
     public Tuple<List<Node>, string?> CheckPath(DirectoryNode lcn, string[] path, int step, List<Node> validPath)
     {
+        // Remove null values
+        List<string> listPath = path.ToList();
+        listPath.RemoveAll(string.IsNullOrEmpty);
+        path = listPath.ToArray();
+
         // If step == path lenght isLast = true
         // else isLast = false
         bool isLast = step == path.Length - 1;
 
         // Look for the next node in the path - in children of the local current node (the current directory) or the
-            // root node, or the lcn's parent (directory above)
+            // root node, or the LCNs parent (directory above)
         Node nextNode;
         if (step == 0 && path[0] == "~")
         {
@@ -208,22 +193,22 @@ public class GraphManager : MonoBehaviour
                 // If is last node - add to valid path and return valid path
                 if (isLast)
                 {
-                    validPath.Add(nextNode);
+                    validPath.Add(nextNode!);
                     
                     return new Tuple<List<Node>, string?>(validPath, null);
                 }
                 
                 // If is not last node - add to valid path and call self to continue
-                validPath.Add(nextNode);
+                validPath.Add(nextNode!);
                 
-                return CheckPath((DirectoryNode)nextNode, path, step + 1, validPath);
+                return CheckPath((DirectoryNode)nextNode!, path, step + 1, validPath);
             
             case 1:
                 // Node found & is a file
                 //      If it is a file node it must be the last in the path else the path is invalid
                 if (isLast)
                 {
-                    validPath.Add(nextNode);
+                    validPath.Add(nextNode!);
                     return new Tuple<List<Node>, string?>(validPath, null);
                 }
 
@@ -232,7 +217,7 @@ public class GraphManager : MonoBehaviour
             
         }
 
-        return null;
+        return null!;
     }
     
     // Split a command into '-x' options and arguments and validate each option ready for processing by the root command
