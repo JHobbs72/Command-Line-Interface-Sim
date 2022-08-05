@@ -15,11 +15,20 @@ public class LS : MonoBehaviour
     public GraphManager fileSystem;
     private bool _fOption;
     private List<string> _toOutput;
+    private bool _multipleArgs;
 
     public void ls(string input)
     {
         _fOption = false;
         _toOutput = new List<string>();
+        _multipleArgs = false;
+
+        if (string.IsNullOrEmpty(input))
+        {
+            ListNeighbours(fileSystem.GetCurrentNode(), false);
+            fileSystem.SendOutput(string.Join('\n', _toOutput), false);
+            return;
+        }
         
         Tuple<List<char>, List<string>, List<Tuple<string, string>>> command = fileSystem.ValidateOptions(input,
             new[] { 'a', 'b' }, "ls");
@@ -39,11 +48,16 @@ public class LS : MonoBehaviour
 
         if (command.Item2 == null || command.Item2.Count == 0)
         {
-            ListNeighbours(fileSystem.GetCurrentNode());
+            ListNeighbours(fileSystem.GetCurrentNode(), false);
         }
         else
         {
             Tuple<List<Node>, List<Tuple<string, string>>> arguments = fileSystem.ValidateArgs(command.Item2, "ls");
+
+            if (arguments.Item1.Count > 1)
+            {
+                _multipleArgs = true;
+            }
             
             if (arguments.Item2 != null)
             {
@@ -51,7 +65,7 @@ public class LS : MonoBehaviour
                 {
                     if (tuple.Item1 == "$HOME")
                     {
-                        ListNeighbours(fileSystem.GetRootNode());
+                        ListNeighbours(fileSystem.GetRootNode(), _multipleArgs);
                     }
                     else
                     {
@@ -62,14 +76,14 @@ public class LS : MonoBehaviour
             
             foreach (Node node in arguments.Item1)
             {
-                ListNeighbours(node);
+                ListNeighbours(node, _multipleArgs);
             }
         }
         
         fileSystem.SendOutput(string.Join('\n', _toOutput), false);
     }
 
-    private void ListNeighbours(Node node)
+    private void ListNeighbours(Node node, bool multipleArguments)
     {
         if (node.GetType() == typeof(FileNode))
         {
@@ -77,11 +91,12 @@ public class LS : MonoBehaviour
         }
         else
         {
-            if (node.GetNeighbours().Count > 1)
+            List<Node> neighbours = node.GetNeighbours();
+            if (multipleArguments)
             {
                 string output = node.name + ": \n";
                 
-                foreach (Node neighbour in node.GetNeighbours())
+                foreach (Node neighbour in neighbours)
                 {
                     if (_fOption)
                     {
@@ -98,11 +113,11 @@ public class LS : MonoBehaviour
             {
                 if (_fOption)
                 {
-                    _toOutput.Add(node.name + "/");
+                    _toOutput.Add(neighbours[0].name + "/");
                 }
                 else
                 {
-                    _toOutput.Add(node.name);
+                    _toOutput.Add(neighbours[0].name);
                 }
             }
         }
