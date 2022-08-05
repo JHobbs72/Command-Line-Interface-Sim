@@ -19,7 +19,7 @@ public class LS : MonoBehaviour
     {
         Debug.Log("--------------");
         Debug.Log(input);
-        Tuple<List<char>, List<Node>, List<string>> command = fileSystem.Validate(input, new[] { 'a', 'b' }, "ls");
+        Tuple<List<char>, List<string>, List<Tuple<string, string>>> command = fileSystem.ValidateOptions(input, new[] { 'a', 'b' }, "ls");
         
         Debug.Log("options " + string.Join('-', command.Item1));
         Debug.Log("arguments " + string.Join('-', command.Item2));

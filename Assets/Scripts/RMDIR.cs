@@ -17,11 +17,10 @@ public class RMDIR : MonoBehaviour
 
     public void rmdir(string input)
     {
-        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "rmdir", new[] {'p', 'v'}, "usage: rmdir [-pv] directory ...");
-        if (command == null) { return; }
+        Tuple<List<char>, List<string>, List<Tuple<string, string>>> command = fileSystem.ValidateOptions(input, new[] {'p', 'v'}, "rmdir");
 
-        _options = command.Item1;
-        string[] arguments = command.Item2;
+        _options = command.Item1.ToArray();
+        List<string> arguments = command.Item2;
         
         // If no options, _options cannot be null for checks
         _options ??= new char[] { 'x' };
@@ -34,9 +33,10 @@ public class RMDIR : MonoBehaviour
             string[] splitArg = arg.Split('/');
             if (splitArg.Length > 1)
             {
-                Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), splitArg, 0, new List<Node>(), false);
+                Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), splitArg, 0, new List<Node>());
                 List<Node> path = toCheck.Item1;
-                if (path == null)
+                
+                if (toCheck.Item2 != null)
                 {
                     // Error message already printed
                     return;

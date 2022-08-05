@@ -21,38 +21,35 @@ public class CAT : MonoBehaviour
         // If no command entered display usage
         if (string.IsNullOrEmpty(input)) { fileSystem.SendOutput(_usage, false); return; }
         // Call function to separate options and arguments
-        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "cat", new[] {'n', 'E', 'b', 's'}, _usage);
-        if (command == null) { return; }
+        Tuple<List<char>, List<string>, List<Tuple<string, string>>> command = fileSystem.ValidateOptions(input, new[] {'n', 'E', 'b', 's'}, "cat");
         
-        char[] options = command.Item1;
-        string[] arguments = command.Item2;
+        char[] options = command.Item1.ToArray();
+        List<string> arguments = command.Item2;
         
         // If any valid options are given, set the bool variables as such
-        if (options != null)
+        if (options.Contains('E'))
         {
-            if (options.Contains('E'))
-            {
-                _eOption = true;
-            }
-
-            if (options.Contains('n'))
-            {
-                _nOption = true;
-            }
-            
-            if (options.Contains('b'))
-            {
-                _bOption = true;
-            }
-
-            if (options.Contains('s'))
-            {
-                _sOption = true;
-            }
+            _eOption = true;
         }
 
+        if (options.Contains('n'))
+        {
+            _nOption = true;
+        }
+            
+        if (options.Contains('b'))
+        {
+            _bOption = true;
+        }
+
+        if (options.Contains('s'))
+        {
+            _sOption = true; 
+        }
+        
+
         // If command == "cat *" display contents of all files under current node
-        if (options == null && arguments.Length == 1 && arguments[0] == "*")
+        if (options.Length == 0 && arguments.Count == 1 && arguments[0] == "*")
         {
             List<string> output = new List<string>();
             foreach (Node node in fileSystem.GetCurrentNode().GetNeighbours())
@@ -86,13 +83,13 @@ public class CAT : MonoBehaviour
         // If arguments contains '<' or DOESN'T contain any of '>>' '>' '<' then write contents of arguments to standard output
         if (arguments.Contains("<") || !arguments.Contains(">>") || !arguments.Contains(">") || !arguments.Contains("<"))
         {
-            WriteToStdOut(arguments);
+            WriteToStdOut(arguments.ToArray());
         }
 
         // If arguments contains '>' or '>>' write contents to a file
         if (arguments.Contains(">") || arguments.Contains(">>"))
         {
-            WriteToFile(arguments);
+            WriteToFile(arguments.ToArray());
         }
     }
 
@@ -255,12 +252,12 @@ public class CAT : MonoBehaviour
         if (path.Length > 1)
         {
             // Call CheckPath
-            Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>(), false);
+            Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
             List<Node> nodePath = toCheck.Item1;
             if (nodePath == null)
             {
                 // If the path fails check again but without the last element
-                Tuple<List<Node>, string> toCheck2 = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path.SkipLast(1).ToArray(), 0, new List<Node>(), false);
+                Tuple<List<Node>, string> toCheck2 = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path.SkipLast(1).ToArray(), 0, new List<Node>());
                 List<Node> testPath = toCheck2.Item1;
                 if (testPath == null)
                 {
@@ -278,7 +275,7 @@ public class CAT : MonoBehaviour
                     {
                         fileSystem.AddFileNode((DirectoryNode)testPath[^1], path[^1]);
                         // return the new node
-                        return (FileNode)fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>(), false).Item1[^1];
+                        return (FileNode)fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>()).Item1[^1];
                     }
                 
                     // If the last element in testPath is not a directory, cannot make a child of it

@@ -40,7 +40,7 @@ public class FILE : MonoBehaviour
                 string[] path = str.Split('/');
                 if (path.Length > 1)
                 {
-                    Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>(), false);
+                    Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
                     List<Node> nodePath = toCheck.Item1;
                     if (nodePath == null)
                     {

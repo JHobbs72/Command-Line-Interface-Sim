@@ -18,11 +18,9 @@ public class TOUCH : MonoBehaviour
 
     public void touch(string input)
     {
-        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "touch", new char[]{}, "usage: touch file ...");
+        Tuple<List<char>, List<string>, List<Tuple<string, string>>> command = fileSystem.ValidateOptions(input, new char[]{}, "touch");
         
-        if (command == null) { return; }
-
-        string[] arguments = command.Item2;
+        List<string> arguments = command.Item2;
 
         // iterate through each argument, check the path or check for name
         foreach (string file in arguments)
@@ -32,7 +30,8 @@ public class TOUCH : MonoBehaviour
             if (splitPath.Length > 1)
             {
                 // If is a path
-                Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), splitPath.SkipLast(1).ToArray(), 0, new List<Node>(), false);
+                Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), 
+                    splitPath.SkipLast(1).ToArray(), 0, new List<Node>());
                 List<Node> validPath = toCheck.Item1;
                 if (validPath != null && validPath[^1].GetType() == typeof(DirectoryNode))
                 {

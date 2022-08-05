@@ -53,12 +53,12 @@ public class ECHO : MonoBehaviour {
             // If the destination is a path
             if (path.Length > 1)
             {
-                Tuple<List<Node>, string> nodePathToCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>(), false);
+                Tuple<List<Node>, string> nodePathToCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
                 List<Node> nodePath = nodePathToCheck.Item1;
                 if (nodePath == null)
                 {
                     // TODO TEST --> is having 'testPath' right? Looks like if the last node in 'nodePath' is invalid it's ignored and use the second last? Meant to create a new node of the last?
-                    Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path.SkipLast(1).ToArray(), 0, new List<Node>(), false);
+                    Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path.SkipLast(1).ToArray(), 0, new List<Node>());
                     List<Node> testPath = toCheck.Item1;
                     if (testPath == null)
                     {

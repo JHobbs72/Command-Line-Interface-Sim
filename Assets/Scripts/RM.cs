@@ -19,11 +19,10 @@ public class RM : MonoBehaviour
 
     public void rm(string input)
     {
-        Tuple<char[], string[]> command = fileSystem.SeparateAndValidate(input, "rm", new[] {'f', 'i', 'r', 'v'}, "usage: rm [-f | -i] [-rv] file ...");
-        if (command == null) { return; }
+        Tuple<List<char>, List<string>, List<Tuple<string, string>>> command = fileSystem.ValidateOptions(input, new[] {'f', 'i', 'r', 'v'}, "rm");
         
-        _options = command.Item1;
-        string[] arguments = command.Item2;
+        _options = command.Item1.ToArray();
+        List<string> arguments = command.Item2;
 
         // If options -i and -f are both given the second is used
         if (_options != null)
@@ -42,10 +41,11 @@ public class RM : MonoBehaviour
             if (path.Length > 1)
             {
                 // Check all nodes in path are valid
-                Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>(), false);
+                Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
                 List<Node> validPath = toCheck.Item1; 
+                
                 // Invalid path 
-                if (validPath == null) { return; }
+                if (toCheck.Item2 != null) { return; }
                 
                 // If path is valid and -r option used --> remove all nodes in path
                 if (_options.Contains('r'))

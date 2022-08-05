@@ -77,7 +77,7 @@ public class CD : MonoBehaviour
         }
         
         // If a path is given, check and set if valid
-        Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>(), false);
+        Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
 
         List<Node> testPath = toCheck.Item1;
         
