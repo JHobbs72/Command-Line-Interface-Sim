@@ -150,11 +150,10 @@ public class GraphManager : MonoBehaviour
         // path = The path being checked
         // step = How far through the path the check is i.e. once step == path.length path is fully visited
         // validPath = The path so far, valid nodes added to it as they're checked
-        // createNonExisting = mkdir only - for '-p' option
     // Return Tuple<Node list, string>: 
         // Node list = the valid path up to, not including, any invalid node if there is one
         // string = the error message, if there is one (null if not), describing why the path is invalid
-    public Tuple<List<Node>, string?> CheckPath(DirectoryNode lcn, string[] path, int step, List<Node> validPath, bool createNonExisting)
+    public Tuple<List<Node>, string?> CheckPath(DirectoryNode lcn, string[] path, int step, List<Node> validPath)
     {
         // If step == path lenght isLast = true
         // else isLast = false
@@ -201,20 +200,9 @@ public class GraphManager : MonoBehaviour
         {
             // Node no found under this directory
             case -1:
-                // Create parent directory/directories (mkdir only)
-                if (createNonExisting)
-                {
-                    AddDirectoryNode(lcn, path[step]);
-                    // TODO then...???
-                }
-                else
-                {
-                    // Return the path that is valid so far
-                    return new Tuple<List<Node>, string?>(validPath, "No such file or directory");
-                }
-
-                break;
-                
+                // Return the path that is valid so far
+                return new Tuple<List<Node>, string?>(validPath, "No such file or directory");
+            
             // Node found & is a directory
             case 0:
                 // If is last node - add to valid path and return valid path
@@ -228,7 +216,7 @@ public class GraphManager : MonoBehaviour
                 // If is not last node - add to valid path and call self to continue
                 validPath.Add(nextNode);
                 
-                return CheckPath((DirectoryNode)nextNode, path, step + 1, validPath, createNonExisting);
+                return CheckPath((DirectoryNode)nextNode, path, step + 1, validPath);
             
             case 1:
                 // Node found & is a file
@@ -260,7 +248,6 @@ public class GraphManager : MonoBehaviour
     {
         // To be returned as a tuple
         List<char> options = new List<char>();
-        List<string> arguments = new List<string>();
         List<Tuple<string, string>> errorMessages = new List<Tuple<string, string>>();
         // ---
 
@@ -321,16 +308,17 @@ public class GraphManager : MonoBehaviour
         }
 
         // return validated options and arguments with any error messages
-        return new Tuple<List<char>, List<string>, List<Tuple<string, string>>>(options, arguments, errorMessages);
+        return new Tuple<List<char>, List<string>, List<Tuple<string, string>>>(options, command, errorMessages);
     }
 
     // Validate arguments
         // candidates = the arguments to be validated 
         // rootCommand = the root command that called this function
+        // createNonExisting = mkdir only - for '-p' option on mkdir
     // Returns a Tuple -- <List of Nodes, List of Tuples<string, string>>
         // List of Nodes --> the valid arguments
         // List of tuples<string, string> --> list of error messages and the option that caused the error
-    public Tuple<List<Node>, List<Tuple<string, string>>> ValidateArgs(List<string> candidates, string rootCommand)
+    public Tuple<List<Node>, List<Tuple<string, string>>> ValidateArgs(List<string> candidates, string rootCommand, bool createNonExisting)
     {
         List<Node> arguments = new List<Node>();
         List<Tuple<string, string>> errorMessages = new List<Tuple<string, string>>();
@@ -347,7 +335,7 @@ public class GraphManager : MonoBehaviour
             {
                 // Check argument, path or single node can e passed to CheckPath()
                 string[] toCheck = str.Split('/');
-                Tuple<List<Node>, string?> path = CheckPath(GetCurrentNode(), toCheck, 0, new List<Node>(), false);
+                Tuple<List<Node>, string?> path = CheckPath(GetCurrentNode(), toCheck, 0, new List<Node>());
 
                 if (path.Item2 == null)
                 {
