@@ -14,98 +14,97 @@ public class LS : MonoBehaviour
 
     public GraphManager fileSystem;
     private bool _fOption;
+    private List<string> _toOutput;
 
     public void ls(string input)
     {
-        Debug.Log("--------------");
-        Debug.Log(input);
-        Tuple<List<char>, List<string>, List<Tuple<string, string>>> command = fileSystem.ValidateOptions(input, new[] { 'a', 'b' }, "ls");
-        
-        Debug.Log("options " + string.Join('-', command.Item1));
-        Debug.Log("arguments " + string.Join('-', command.Item2));
-        Debug.Log("errors " + string.Join('-', command.Item3));
-        Debug.Log("--------------");
-
         _fOption = false;
-        List<string> listCommand = input.Split(' ').ToList();
-        List<char> candidateOptions = new List<char>();
-        List<string> output = new List<string>();
-        int count = 0;
+        _toOutput = new List<string>();
         
-        // foreach (string str in listCommand)
-        // {
-        //     if (str.StartsWith('-'))
-        //     {
-        //         foreach (char op in str.Remove('-'))
-        //         {
-        //             candidateOptions.Add(op);
-        //         }
-        //         count++;
-        //     }
-        //     else
-        //     {
-        //         break;
-        //     }
-        // }
+        Tuple<List<char>, List<string>, List<Tuple<string, string>>> command = fileSystem.ValidateOptions(input,
+            new[] { 'a', 'b' }, "ls");
+
+        if (command.Item3 != null)
+        {
+            // TODO - print error
+            foreach (Tuple<string, string> tuple in command.Item3)
+            {
+                if (tuple.Item2.Contains("illegal option"))
+                {
+                    fileSystem.SendOutput(tuple.Item2, false);
+                    return;
+                }
+            }
+        }
+
+        if (command.Item2 == null || command.Item2.Count == 0)
+        {
+            ListNeighbours(fileSystem.GetCurrentNode());
+        }
+        else
+        {
+            Tuple<List<Node>, List<Tuple<string, string>>> arguments = fileSystem.ValidateArgs(command.Item2, "ls");
+            
+            if (arguments.Item2 != null)
+            {
+                foreach (Tuple<string, string> tuple in arguments.Item2)
+                {
+                    if (tuple.Item1 == "$HOME")
+                    {
+                        ListNeighbours(fileSystem.GetRootNode());
+                    }
+                    else
+                    {
+                        _toOutput.Insert(0, tuple.Item2);
+                    }
+                }
+            }
+            
+            foreach (Node node in arguments.Item1)
+            {
+                ListNeighbours(node);
+            }
+        }
         
-        // string[] candidateArguments = listCommand.Skip(count).ToArray();
-        //
-        // foreach (char op in candidateOptions)
-        // {
-        //     if (op == 'F')
-        //     {
-        //         _fOption = true;
-        //     }
-        //     else
-        //     {
-        //         fileSystem.SendOutput("ls: -- " + op + ": illegal option", false);
-        //         break;
-        //     }
-        // }
-        //
-        // foreach (string str in candidateArguments)
-        // {
-        //     if (candidateArguments.Length == 0)
-        //     {
-        //         break;
-        //     }
-        //
-        //     if (candidateArguments.Length == 1)
-        //     {
-        //         if (str == "$HOME")
-        //         {
-        //             // Return opts and args
-        //             break;
-        //         }
-        //     }
-        //
-        //     string[] pathToCheck = str.Split('/');
-        //     Tuple<List<Node>, string> path = fileSystem.CheckPath(fileSystem.GetCurrentNode(), pathToCheck, 0, new List<Node>(), false);
-        //
-        //     if (path.Item2 == null)
-        //     {
-        //         // valid path
-        //         Debug.Log("VALID");
-        //     }
-        //     else
-        //     {
-        //         List<string> names = new List<string>();
-        //         foreach (Node node in path.Item1)
-        //         {
-        //             names.Add(node.name);
-        //         }
-        //         
-        //         if (path.Item1.Count > 0)
-        //         {
-        //             fileSystem.SendOutput("ls: " + string.Join('/', names) + "/" + pathToCheck[path.Item1.Count] + ": " + path.Item2, false);
-        //         }
-        //         else
-        //         {
-        //             // Fails on first element in path
-        //             fileSystem.SendOutput("ls: " + pathToCheck[0] + ": " + path.Item2, false);
-        //         }
-        //         
-        //     }
-        // }
+        fileSystem.SendOutput(string.Join('\n', _toOutput), false);
+    }
+
+    private void ListNeighbours(Node node)
+    {
+        if (node.GetType() == typeof(FileNode))
+        {
+            _toOutput.Add(node.name);
+        }
+        else
+        {
+            if (node.GetNeighbours().Count > 1)
+            {
+                string output = node.name + ": \n";
+                
+                foreach (Node neighbour in node.GetNeighbours())
+                {
+                    if (_fOption)
+                    {
+                        output += neighbour.name + "/" + "\n";
+                    }
+                    else
+                    {
+                        output += neighbour.name + "\n";
+                    }
+                }
+                _toOutput.Add(output);
+            }
+            else
+            {
+                if (_fOption)
+                {
+                    _toOutput.Add(node.name + "/");
+                }
+                else
+                {
+                    _toOutput.Add(node.name);
+                }
+            }
+        }
     }
 }

@@ -318,7 +318,7 @@ public class GraphManager : MonoBehaviour
     // Returns a Tuple -- <List of Nodes, List of Tuples<string, string>>
         // List of Nodes --> the valid arguments
         // List of tuples<string, string> --> list of error messages and the option that caused the error
-    public Tuple<List<Node>, List<Tuple<string, string>>> ValidateArgs(List<string> candidates, string rootCommand, bool createNonExisting)
+    public Tuple<List<Node>, List<Tuple<string, string>>> ValidateArgs(List<string> candidates, string rootCommand)
     {
         List<Node> arguments = new List<Node>();
         List<Tuple<string, string>> errorMessages = new List<Tuple<string, string>>();
