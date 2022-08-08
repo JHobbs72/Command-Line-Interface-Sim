@@ -5,9 +5,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using UnityEditor;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RM : MonoBehaviour
@@ -15,133 +13,125 @@ public class RM : MonoBehaviour
     // Root command for 'remove' - remove a node
 
     public GraphManager fileSystem;
-    private char[] _options;
+    private bool _rOption;
+    private bool _vOption;
+    private const string Usage = "rm [-rv] file ...";
+    private List<string> _toOutput;
 
     public void rm(string input)
     {
-        Tuple<List<char>, List<string>, List<Tuple<string, string>>> command = fileSystem.ValidateOptions(input, new[] {'f', 'i', 'r', 'v'}, "rm");
+        _rOption = false;
+        _vOption = false;
+        _toOutput = new List<string>(); 
         
-        _options = command.Item1.ToArray();
-        List<string> arguments = command.Item2;
-
-        // If options -i and -f are both given the second is used
-        if (_options != null)
+        if (string.IsNullOrEmpty(input))
         {
-            if (_options.Contains('i') && _options.Contains('f')) { _options = InteractAndForce(_options); }
+            fileSystem.SendOutput(Usage, false);
+            return;
         }
         
-        // No options
-        else { _options = new char[]{'x'}; }
-        
-        foreach (string arg in arguments)
-        {
-            string[] path = arg.Split('/');
+        Tuple<List<char>, List<string>, List<Tuple<string, string>>> command = fileSystem.ValidateOptions(input, new[] {'r', 'v'}, "rm");
 
-            // Argument is path
-            if (path.Length > 1)
+        if (command.Item1.Contains('r'))
+        {
+            _rOption = true;
+        }
+        
+        if (command.Item1.Contains('v'))
+        {
+            _vOption = true;
+        }
+
+        if (command.Item3.Count > 0)
+        {
+            fileSystem.SendOutput(command.Item3[0].Item2 + '\n' + Usage, false);
+            return;
+        }
+
+        if (command.Item2.Count < 1)
+        {
+            fileSystem.SendOutput(Usage, false);
+            return;
+        }
+
+        Tuple<List<Node>, List<Tuple<string, string>>> arguments = fileSystem.ValidateArgs(command.Item2, "rm");
+
+        foreach (Tuple<string, string> error in arguments.Item2)
+        {
+            _toOutput.Add(error.Item2);
+        }
+
+        if (arguments.Item1.Count > 0)
+        {
+            foreach (Node node in arguments.Item1)
             {
-                // Check all nodes in path are valid
-                Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
-                List<Node> validPath = toCheck.Item1; 
-                
-                // Invalid path 
-                if (toCheck.Item2 != null) { return; }
-                
-                // If path is valid and -r option used --> remove all nodes in path
-                if (_options.Contains('r'))
+                if (_rOption)
                 {
-                    RecursiveRemove((DirectoryNode)validPath[^2], validPath[^1]);
-                }
-                
-                // If valid path, no -r option and final node is a FileNode --> remove last node
-                else if (validPath[^1].GetType() == typeof(FileNode))
-                {
-                    RemoveSingle((DirectoryNode)validPath[^2], validPath[^1]);
-                }
-                
-                // If valid path, no -r option and final node is a DirectoryNode --> error
-                else if (validPath[^1].GetType() == typeof(DirectoryNode)) { fileSystem.SendOutput("rm: " + validPath[^1] + ": is a directory", false); }
-                
-            }
-            // Argument is a single Node 
-            else
-            {
-                Node target = fileSystem.GetCurrentNode().SearchChildren(path[0]);
-                // If it's a valid FileNode --> remove
-                if (target.GetType() == typeof(FileNode))
-                {
-                    RemoveSingle(fileSystem.GetCurrentNode(), target);
-                }
-                else if (target.GetType() == typeof(DirectoryNode))
-                {
-                    // If it's a valid DirectoryNode and -r option used --> remove
-                    if (_options.Contains('r'))
-                    {
-                        RecursiveRemove(fileSystem.GetCurrentNode(), target);
-                    }
-                    else
-                    {
-                        // Valid DirectoryNode but no -r option --> error
-                        fileSystem.SendOutput("rm: " + target.name + ": is a directory", false);
-                    }
+                    RecursiveRemove(node);
                 }
                 else
                 {
-                    // Not a valid node
-                    fileSystem.SendOutput("rm: " + path[0] + ": No such file or directory", false);
+                    RemoveSingle(node);
                 }
             }
         }
-        fileSystem.SendOutput("", false);
+        else
+        {
+            fileSystem.SendOutput(_toOutput.Count > 0 ? string.Join('\n', _toOutput) : Usage, false);
+            return;
+        }
+        
+        fileSystem.SendOutput(string.Join('\n', _toOutput), false);
     }
 
-    private void RemoveSingle(DirectoryNode parent, Node target)
+    private void RemoveSingle(Node target)
     {
-        // TODO if -i
-
+        // IS a Directory Node
         if (target.GetType() == typeof(DirectoryNode))
         {
-            // If is directory that has children and -r option NOT applied
-            if (target.GetNeighbours().Count > 0 && !_options.Contains('r'))
+            // '-r' option not applied
+            if (!_rOption)
             {
-                fileSystem.SendOutput("rm: " + target.name + ": is a directory", false);
+                _toOutput.Insert(0, "rm: " + target.name + ": is a directory");
             }
-            // If is directory that has children and -r option IS applied
-            else if (target.GetNeighbours().Count > 0 && _options.Contains('r'))
-            {
-                RecursiveRemove(parent, target);
-            }
-            // If is empty directory
+            // '-r' option applied
             else
             {
-                fileSystem.RemoveNode(parent, target);
-                if (_options.Contains('v'))
+                // Has neighbours
+                if (target.GetNeighbours().Count > 0)
                 {
-                    fileSystem.SendOutput(target.name, true);
+                    RecursiveRemove(target);
+                }
+                // No neighbours
+                else
+                {
+                    fileSystem.RemoveNode(target.GetParent(), target);
+                    if (_vOption)
+                    {
+                        _toOutput.Add(target.name);
+                    }
                 }
             }
         }
         // If is FileNode
-        else if (target.GetType() == typeof(FileNode))
+        else 
         {
-            fileSystem.RemoveNode(parent, target);
-            if (_options.Contains('v'))
+            fileSystem.RemoveNode(target.GetParent(), target);
+            if (_vOption)
             {
-                fileSystem.SendOutput(target.name, true);
+                _toOutput.Add(target.name);
             }
         }
     }
 
-    private void RecursiveRemove(DirectoryNode parent, Node current)
+    private void RecursiveRemove(Node current)
     {
         // If the argument is a FileNode
         if (current.GetType() == typeof(FileNode))
         {
-            RemoveSingle(parent, current); return;
+            RemoveSingle(current); return;
         }
         
-        // TODO if -i
-
         // If the argument is a DirectoryNode
         List<Node> neighbours = current.GetNeighbours();
 
@@ -150,35 +140,11 @@ public class RM : MonoBehaviour
         {
             foreach (Node node in new List<Node>(neighbours))
             {
-                RecursiveRemove((DirectoryNode)current, node);
+                RecursiveRemove(node);
             }
         }
         
         // If the directory has no children
-        fileSystem.RemoveNode(parent, current);
-        if (_options.Contains('v'))
-        {
-            fileSystem.SendOutput(current.name, true);
-        }
-    }
-
-    // The order the options -i and -f are input changes which is used 
-    private char[] InteractAndForce(char[] options)
-    {
-        int priority = Array.IndexOf(options, 'i') - Array.IndexOf(options, 'f');
-        if (priority > 0)
-        {
-            // -i is after -f so use -i
-            List<char> charList = options.ToList();
-            charList.Remove('f');
-            return charList.ToArray();
-        }
-        else
-        {
-            // -f is after -i so use -f
-            List<char> charList = options.ToList();
-            charList.Remove('i');
-            return charList.ToArray();
-        }
+        RemoveSingle(current);
     }
 }
