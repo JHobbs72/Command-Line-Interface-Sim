@@ -302,7 +302,7 @@ public class GraphManager : MonoBehaviour
         // createNonExisting = mkdir only - for '-p' option on mkdir
     // Returns a Tuple -- <List of Nodes, List of Tuples<string, string>>
         // List of Nodes --> the valid arguments
-        // List of tuples<string, string> --> list of error messages and the option that caused the error
+        // List of tuples<string, string> --> list of error messages and the argument that caused the error
     public Tuple<List<Node>, List<Tuple<string, string>>> ValidateArgs(List<string> candidates, string rootCommand)
     {
         List<Node> arguments = new List<Node>();

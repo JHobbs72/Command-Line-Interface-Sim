@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 
@@ -9,17 +10,27 @@ public class FILE : MonoBehaviour
     // Root command 'file' -- Show the type of each node
     
     public GraphManager fileSystem;
-    
-    // TODO argument starting with '-' error
+    private string _usage = "usage: file [file ...]";
 
     public void file(string input)
     {
         if (string.IsNullOrEmpty(input))
         {
-            fileSystem.SendOutput("usage: file [file ...]", false);
+            fileSystem.SendOutput(_usage, false);
             return;
         }
 
+        // Catch any invalid arguments starting with '-'
+        foreach (string str in input.Split(' '))
+        {
+            if (str.StartsWith('-'))
+            {
+                fileSystem.SendOutput("file: " + str + ": invalid option" + "\n" + _usage, false);
+                return;
+            }
+        }
+
+        // Initialize list of strings to be output when execution is complete
         List<string> output = new List<string>();
         
         // Display type of all nodes in current context
@@ -33,37 +44,24 @@ public class FILE : MonoBehaviour
         }
         else
         {
-            // Check arguments exist
-            string[] arguments = input.Split(' ');
-            foreach (string str in arguments)
-            {
-                string[] path = str.Split('/');
-                if (path.Length > 1)
-                {
-                    Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
-                    List<Node> nodePath = toCheck.Item1;
-                    if (nodePath == null)
-                    {
-                        // TODO Don't need error message? is in checkPath?
-                        fileSystem.SendOutput("file: invalid path", false);
-                        return;
-                    }
+            // Find each arguments and add type to output list
+            List<string> arguments = input.Split(' ').ToList();
 
-                    output.Add(GetFileTypeOutput(nodePath[^1]));
-                }
-                else
-                {
-                    Node node = fileSystem.GetCurrentNode().SearchChildren(str);
-                    if (node == null)
-                    {
-                        fileSystem.SendOutput("file: no such file or directory: " + str, false);
-                        return;
-                    }
-                    output.Add(GetFileTypeOutput(node));
-                }
+            Tuple<List<Node>, List<Tuple<string, string>>> validArgs = fileSystem.ValidateArgs(arguments, "file");
+
+            foreach (Node arg in validArgs.Item1)
+            {
+                output.Add(GetFileTypeOutput(arg));
             }
+
+            foreach (Tuple<string, string> error in validArgs.Item2)
+            {
+                output.Add(error.Item2);
+            }
+
         }
-        
+
+        // Join all output messages and display
         fileSystem.SendOutput(string.Join('\n', output), false);
     }
 
