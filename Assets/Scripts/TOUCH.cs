@@ -24,7 +24,7 @@ public class TOUCH : MonoBehaviour
 
         if (string.IsNullOrEmpty(input))
         {
-            fileSystem.SendOutput(_usage, false);
+            fileSystem.SendOutput(_usage);
             return;
         }
         
@@ -32,7 +32,7 @@ public class TOUCH : MonoBehaviour
 
         if (command.Item3.Count > 0)
         {
-            fileSystem.SendOutput(command.Item3[0].Item2 + "\n" + _usage, false);
+            fileSystem.SendOutput(command.Item3[0].Item2 + "\n" + _usage);
             return;
         }
 
@@ -85,7 +85,7 @@ public class TOUCH : MonoBehaviour
             }
         }
         
-        fileSystem.SendOutput(string.Join('\n', _toOutput), false);
+        fileSystem.SendOutput(string.Join('\n', _toOutput));
     }
 
     // Method to check if a node already exists with the given name (target) under the directory parent

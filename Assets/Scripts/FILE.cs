@@ -16,7 +16,7 @@ public class FILE : MonoBehaviour
     {
         if (string.IsNullOrEmpty(input))
         {
-            fileSystem.SendOutput(_usage, false);
+            fileSystem.SendOutput(_usage);
             return;
         }
 
@@ -25,7 +25,7 @@ public class FILE : MonoBehaviour
         {
             if (str.StartsWith('-'))
             {
-                fileSystem.SendOutput("file: " + str + ": invalid option" + "\n" + _usage, false);
+                fileSystem.SendOutput("file: " + str + ": invalid option" + "\n" + _usage);
                 return;
             }
         }
@@ -62,7 +62,7 @@ public class FILE : MonoBehaviour
         }
 
         // Join all output messages and display
-        fileSystem.SendOutput(string.Join('\n', output), false);
+        fileSystem.SendOutput(string.Join('\n', output));
     }
 
     // Method that takes a node that exists and returns the string to be output to the user

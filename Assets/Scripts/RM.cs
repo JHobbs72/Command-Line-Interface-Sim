@@ -26,7 +26,7 @@ public class RM : MonoBehaviour
         
         if (string.IsNullOrEmpty(input))
         {
-            fileSystem.SendOutput(Usage, false);
+            fileSystem.SendOutput(Usage);
             return;
         }
         
@@ -44,13 +44,13 @@ public class RM : MonoBehaviour
 
         if (command.Item3.Count > 0)
         {
-            fileSystem.SendOutput(command.Item3[0].Item2 + '\n' + Usage, false);
+            fileSystem.SendOutput(command.Item3[0].Item2 + '\n' + Usage);
             return;
         }
 
         if (command.Item2.Count < 1)
         {
-            fileSystem.SendOutput(Usage, false);
+            fileSystem.SendOutput(Usage);
             return;
         }
 
@@ -77,11 +77,11 @@ public class RM : MonoBehaviour
         }
         else
         {
-            fileSystem.SendOutput(_toOutput.Count > 0 ? string.Join('\n', _toOutput) : Usage, false);
+            fileSystem.SendOutput(_toOutput.Count > 0 ? string.Join('\n', _toOutput) : Usage);
             return;
         }
         
-        fileSystem.SendOutput(string.Join('\n', _toOutput), false);
+        fileSystem.SendOutput(string.Join('\n', _toOutput));
     }
 
     private void RemoveSingle(Node target)

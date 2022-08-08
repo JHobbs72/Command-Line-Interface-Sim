@@ -22,7 +22,7 @@ public class CD : MonoBehaviour
         {
             if (opt.StartsWith('-'))
             {
-                fileSystem.SendOutput("cd: " + opt + ": illegal argument", false);
+                fileSystem.SendOutput("cd: " + opt + ": illegal argument");
                 return;
             }
         }
@@ -33,7 +33,7 @@ public class CD : MonoBehaviour
             List<Node> newPath = new List<Node> { fileSystem.GetRootNode() };
             fileSystem.SetNewPathFromOrigin(newPath);
             
-            fileSystem.SendOutput("", false);
+            fileSystem.SendOutput("");
             return;
         }
         
@@ -42,11 +42,11 @@ public class CD : MonoBehaviour
             if (fileSystem.GetCurrentPath().Count > 1)
             {
                 fileSystem.SetNewPathFromOrigin(fileSystem.GetCurrentPath().SkipLast(1).ToList());
-                fileSystem.SendOutput("", false);
+                fileSystem.SendOutput("");
                 return;
             }
             
-            fileSystem.SendOutput("At root", false);
+            fileSystem.SendOutput("At root");
             return;
         }
         
@@ -54,7 +54,7 @@ public class CD : MonoBehaviour
         // Should only ever be one command, more than 1 = error
         if (arguments.Length > 1)
         {
-            fileSystem.SendOutput("cd: too many arguments", false);
+            fileSystem.SendOutput("cd: too many arguments");
             return;
         }
         
@@ -68,7 +68,7 @@ public class CD : MonoBehaviour
             if (path[0] == "-")
             {
                 // TODO go to previous dir
-                fileSystem.SendOutput("Previous dir ", false);
+                fileSystem.SendOutput("Previous dir ");
                 return;
             }
             
@@ -78,7 +78,7 @@ public class CD : MonoBehaviour
                 DirectoryNode root = fileSystem.GetRootNode();
                 fileSystem.SetCurrentNode(root);
                 fileSystem.SetNewPathFromOrigin(new List<Node> {root});
-                fileSystem.SendOutput("", false);
+                fileSystem.SendOutput("");
                 return;
             }
         }
@@ -90,13 +90,13 @@ public class CD : MonoBehaviour
         
         if (toCheck.Item2 != null)
         {
-            fileSystem.SendOutput(toCheck.Item2, false);
+            fileSystem.SendOutput(toCheck.Item2);
             return;
         }
 
         if (testPath[^1].GetType() == typeof(FileNode))
         {
-            fileSystem.SendOutput("cd: not a directory: " + testPath[^1].name, false);
+            fileSystem.SendOutput("cd: not a directory: " + testPath[^1].name);
             return;
         }
 
@@ -109,6 +109,6 @@ public class CD : MonoBehaviour
         
         fileSystem.SetNewPathFromOrigin(testPath);
 
-        fileSystem.SendOutput("", false);
+        fileSystem.SendOutput("");
     }
 }

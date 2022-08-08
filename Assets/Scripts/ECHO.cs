@@ -21,13 +21,13 @@ public class ECHO : MonoBehaviour {
         foreach (string arg in arguments)
         {
             if (!arg.StartsWith('-')) continue;
-            fileSystem.SendOutput("echo: illegal option " + arg + "\n" + Usage, false);
+            fileSystem.SendOutput("echo: illegal option " + arg + "\n" + Usage);
             return;
         }
 
         if (arguments.Contains("<"))
         {
-            fileSystem.SendOutput("echo: illegal arguments '<'" + "\n" + Usage, false);
+            fileSystem.SendOutput("echo: illegal arguments '<'" + "\n" + Usage);
             return;
         }
         
@@ -36,7 +36,7 @@ public class ECHO : MonoBehaviour {
             // WRITING
             if (arguments[^1] == ">" || arguments[^1] == ">>")
             {
-                fileSystem.SendOutput("zsh: parse error near end line", false);
+                fileSystem.SendOutput("zsh: parse error near end line");
                 return;
             }
             
@@ -82,7 +82,7 @@ public class ECHO : MonoBehaviour {
                                 else
                                 {
                                     // Invalid path -- last is DIRECTORY
-                                    fileSystem.SendOutput("echo: " + string.Join('/', splitPath) + ": is a directory", false);
+                                    fileSystem.SendOutput("echo: " + string.Join('/', splitPath) + ": is a directory");
                                     return;
                                 }
                             }
@@ -90,7 +90,7 @@ public class ECHO : MonoBehaviour {
                         else
                         {
                             // INVALID path --> ends in directory
-                            fileSystem.SendOutput("echo: " + string.Join('/', splitPath) + ": is a directory", false);
+                            fileSystem.SendOutput("echo: " + string.Join('/', splitPath) + ": is a directory");
                             return;
                         }
                     }
@@ -98,7 +98,7 @@ public class ECHO : MonoBehaviour {
                     {
                         // If path is not valid --> no such file or directory
                         // TODO full correct error message?
-                        fileSystem.SendOutput(path.Item2, false);
+                        fileSystem.SendOutput(path.Item2);
                         return;
                     }
                     // Skip over dest node next to the operand '>' or '>>'
@@ -126,14 +126,14 @@ public class ECHO : MonoBehaviour {
                 }
             }
             
-            fileSystem.SendOutput("", false);
+            fileSystem.SendOutput("");
 
         }
         else
         {
-            fileSystem.SendOutput("echo " + input, false);
+            fileSystem.SendOutput("echo " + input);
         }
         
-        fileSystem.SendOutput("", false);
+        fileSystem.SendOutput("");
     }
 }

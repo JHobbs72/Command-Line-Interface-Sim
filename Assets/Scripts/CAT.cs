@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -19,7 +18,7 @@ public class CAT : MonoBehaviour
     public void cat(string input)
     {
         // If no command entered display usage
-        if (string.IsNullOrEmpty(input)) { fileSystem.SendOutput(_usage, false); return; }
+        if (string.IsNullOrEmpty(input)) { fileSystem.SendOutput(_usage); return; }
         // Call function to separate options and arguments
         Tuple<List<char>, List<string>, List<Tuple<string, string>>> command = fileSystem.ValidateOptions(input, new[] {'n', 'E', 'b', 's'}, "cat");
         
@@ -68,14 +67,14 @@ public class CAT : MonoBehaviour
                 }
             }
             
-            fileSystem.SendOutput(string.Join('\n', output), false);
+            fileSystem.SendOutput(string.Join('\n', output));
             return;
         }
 
         // Invalid command
         if (arguments.Contains("<<"))
         {
-            fileSystem.SendOutput("Error -> invalid argument '<<'", false);
+            fileSystem.SendOutput("Error -> invalid argument '<<'");
             return;
         }
 
@@ -172,7 +171,7 @@ public class CAT : MonoBehaviour
         if (input[0] == ">" || input[0] == ">>" || input[^1] == ">" || input[^1] == ">>")
         {
             // TODO error message
-            fileSystem.SendOutput("Error --> parse error", false);
+            fileSystem.SendOutput("Error --> parse error");
             return;
         }
 
@@ -212,7 +211,7 @@ public class CAT : MonoBehaviour
             if (source == null)
             {
                 // TODO doubling up error message?
-                fileSystem.SendOutput("Error --> No such file or directory", false);
+                fileSystem.SendOutput("Error --> No such file or directory");
                 return;
             }
             
@@ -241,7 +240,7 @@ public class CAT : MonoBehaviour
             }
         }
         
-        fileSystem.SendOutput("", false);
+        fileSystem.SendOutput("");
     }
 
     // Method to return a Node when given a string name or path
@@ -263,7 +262,7 @@ public class CAT : MonoBehaviour
                 {
                     // If path fails still --> invalid path
                     // TODO error message
-                    fileSystem.SendOutput("Error - invalid path", false);
+                    fileSystem.SendOutput("Error - invalid path");
                     return null;
                 }
 
@@ -280,13 +279,13 @@ public class CAT : MonoBehaviour
                 
                     // If the last element in testPath is not a directory, cannot make a child of it
                     // TODO error message
-                    fileSystem.SendOutput("Error --> invalid path", false);
+                    fileSystem.SendOutput("Error --> invalid path");
                     return null;
                 }
                 
                 // If the target node is a source and doesn't exist -> error
                 // TODO error message
-                fileSystem.SendOutput("Error --> invalid path", false);
+                fileSystem.SendOutput("Error --> invalid path");
                 return null;
             }
 
@@ -298,7 +297,7 @@ public class CAT : MonoBehaviour
             
             // If the last node's a directory it cannot be a source or destination under the cat command
             // TODO error message
-            fileSystem.SendOutput("Error --> is Directory", false);
+            fileSystem.SendOutput("Error --> is Directory");
             return null;
         }
         
@@ -358,6 +357,6 @@ public class CAT : MonoBehaviour
             output[^1] += "$";
         }
         
-        fileSystem.SendOutput(string.Join('\n', output), false);
+        fileSystem.SendOutput(string.Join('\n', output));
     }
 }

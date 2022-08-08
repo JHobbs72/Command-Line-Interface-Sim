@@ -68,7 +68,7 @@ public class Graph : ScriptableObject
     {
         if (target.GetType() == typeof(DirectoryNode) && target.GetNeighbours().Count > 0)
         {
-            _outputSource.SendOutput("zsh: " + target.name + ": Directory not empty", false);
+            _outputSource.SendOutput("zsh: " + target.name + ": Directory not empty");
             return;
         }
         

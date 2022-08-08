@@ -17,7 +17,7 @@ public class PWD : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(input))
         {
-            fileSystem.SendOutput("pwd: too many arguments", false);
+            fileSystem.SendOutput("pwd: too many arguments");
             return;
         }
         
@@ -28,6 +28,6 @@ public class PWD : MonoBehaviour
             currentPathNames.Add(node.name);
         }
         
-        fileSystem.SendOutput(string.Join('/', currentPathNames), false);
+        fileSystem.SendOutput(string.Join('/', currentPathNames));
     }
 }

@@ -27,7 +27,7 @@ public class LS : MonoBehaviour
         if (string.IsNullOrEmpty(input))
         {
             ListNeighbours(fileSystem.GetCurrentNode(), false);
-            fileSystem.SendOutput(string.Join('\n', _toOutput), false);
+            fileSystem.SendOutput(string.Join('\n', _toOutput));
             return;
         }
         
@@ -45,7 +45,7 @@ public class LS : MonoBehaviour
             {
                 if (tuple.Item2.Contains("illegal option"))
                 {
-                    fileSystem.SendOutput(tuple.Item2 + "\n" + _usage, false);
+                    fileSystem.SendOutput(tuple.Item2 + "\n" + _usage);
                     return;
                 }
             }
@@ -85,7 +85,7 @@ public class LS : MonoBehaviour
             }
         }
         
-        fileSystem.SendOutput(string.Join('\n', _toOutput), false);
+        fileSystem.SendOutput(string.Join('\n', _toOutput));
     }
 
     private void ListNeighbours(Node node, bool multipleArguments)

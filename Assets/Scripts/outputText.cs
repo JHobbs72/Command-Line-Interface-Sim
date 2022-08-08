@@ -23,30 +23,17 @@ public class outputText : MonoBehaviour
         // command = The full command the user entered
         // content = The result of executing that command to be displayed
         // flag = Boolean value dictating whether or not to display the command -- more flexibility 
-    public void AddOutput(string command, string content, bool flag)
+    public void AddOutput(string command, string content)
     {
-        if (content.Length == 0 && !flag)
+        if (content.Length == 0)
         {
             _output.text += "\n>> " + command;
         }
-        else if (content.Length > 0 && !flag)
+        else if (content.Length > 0)
         {
             _output.text += "\n>> " + command + "\n" + content;
         }
-        else if (flag)
-        {
-            _output.text += "\n>> " + content;
-        }
-        
-        _prompt.UpdatePrompt();
-    }
-    
-    // Method called from GraphManager.cs
-        // Directly outputs content to standard out without any command or '>>' prompt for full flexibility of output
-    public void SpecialOutput(string content)
-    {
-        _output.text += content;
-        
+
         _prompt.UpdatePrompt();
     }
 

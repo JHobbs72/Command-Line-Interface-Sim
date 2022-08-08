@@ -26,7 +26,7 @@ public class MV : MonoBehaviour
         {
             fileSystem.SendOutput("mv: not enough arguments" +
                                   "usage: mv [-v] source target \n" +
-                                  "           mv [-v] source ... directory", false);
+                                  "           mv [-v] source ... directory");
             return;
         }
 
@@ -40,7 +40,7 @@ public class MV : MonoBehaviour
         {
             // Invalid destination
             // TODO error message
-            fileSystem.SendOutput("Error in dest", false);
+            fileSystem.SendOutput("Error in dest");
             return;
         }
 
@@ -55,13 +55,13 @@ public class MV : MonoBehaviour
             if (dest.Item1 == null)
             {
                 // TODO error message --> get a file name to add to error message?
-                fileSystem.SendOutput("mv: no such file or directory", false);
+                fileSystem.SendOutput("mv: no such file or directory");
                 return;
             }
             // Node should be a directory
             if (dest.Item1.GetType() == typeof(FileNode))
             {
-                fileSystem.SendOutput("mv: " + dest.Item1.name + ": is not a directory", false);
+                fileSystem.SendOutput("mv: " + dest.Item1.name + ": is not a directory");
                 return;
             }
             
@@ -117,14 +117,14 @@ public class MV : MonoBehaviour
                 Node destinationNode = lastValid.SearchChildren(dest[^1]);
                 if (destinationNode == null)
                 {
-                    fileSystem.SendOutput("mv: " + dest[^1] + ": no such file or directory", false);
+                    fileSystem.SendOutput("mv: " + dest[^1] + ": no such file or directory");
                     return null;
                 }
                 
                 return new Tuple<Node, string>(destinationNode, null);
             }
             
-            fileSystem.SendOutput(path.Item2, false);
+            fileSystem.SendOutput(path.Item2);
             return null;
 
         }
@@ -159,7 +159,7 @@ public class MV : MonoBehaviour
                 List<Node> validPath = toCheck.Item1;
                 if (validPath == null)
                 {
-                    fileSystem.SendOutput("mv: " + path[^1] + ": no such file or directory", false);
+                    fileSystem.SendOutput("mv: " + path[^1] + ": no such file or directory");
                 }
                 else
                 {
@@ -172,7 +172,7 @@ public class MV : MonoBehaviour
                 Node target = fileSystem.GetCurrentNode().SearchChildren(path[0]);
                 if (target == null)
                 {
-                    fileSystem.SendOutput("mv: " + path[0] + ": no such file or directory", false);
+                    fileSystem.SendOutput("mv: " + path[0] + ": no such file or directory");
                 }
                 else
                 {
@@ -189,7 +189,7 @@ public class MV : MonoBehaviour
     {
         src.name = dest;
         
-        fileSystem.SendOutput("", false);
+        fileSystem.SendOutput("");
     }
 
     // Method to overwrite one file with another
@@ -200,7 +200,7 @@ public class MV : MonoBehaviour
         dest.SetContents(src.GetContents());
         fileSystem.RemoveNode(src.GetParent(), src);
         
-        fileSystem.SendOutput("", false);
+        fileSystem.SendOutput("");
     }
 
     // Method to move multiple nodes to a new directory
@@ -213,6 +213,6 @@ public class MV : MonoBehaviour
             src.SetParent(dest);
         }
         
-        fileSystem.SendOutput("", false);
+        fileSystem.SendOutput("");
     }
 }

@@ -27,7 +27,7 @@ public class MKDIR : MonoBehaviour
         // If no arguments given
         if (string.IsNullOrEmpty(input))
         {
-            fileSystem.SendOutput(_usage, false);
+            fileSystem.SendOutput(_usage);
             return;
         }
         
@@ -44,7 +44,7 @@ public class MKDIR : MonoBehaviour
         {
             if (caughtErrors.Count > 0)
             {
-                fileSystem.SendOutput(caughtErrors[0].Item2 + "\n" + _usage, false);
+                fileSystem.SendOutput(caughtErrors[0].Item2 + "\n" + _usage);
                 return;
             }
         }
@@ -66,7 +66,7 @@ public class MKDIR : MonoBehaviour
         // If no arguments given
         if (arguments.Count == 0)
         {
-            fileSystem.SendOutput(_usage, false);
+            fileSystem.SendOutput(_usage);
             return;
         }
 
@@ -118,7 +118,7 @@ public class MKDIR : MonoBehaviour
             }
         }
         
-        fileSystem.SendOutput(string.Join('\n', _toOutput), false);
+        fileSystem.SendOutput(string.Join('\n', _toOutput));
     }
 
     // Method to create a new directory

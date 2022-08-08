@@ -119,10 +119,10 @@ public class GraphManager : MonoBehaviour
     }
     
     // Normal output -- includes '>>' and new line
-    public void SendOutput(string content, bool flag)
+    public void SendOutput(string content)
     {
         // Call method in outputText.cs
-        _outputSource.AddOutput(_currentCommand, content, flag);
+        _outputSource.AddOutput(_currentCommand, content);
     }
 
     // Check validity of a path

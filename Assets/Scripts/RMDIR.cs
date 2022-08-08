@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class RMDIR : MonoBehaviour
@@ -27,7 +26,7 @@ public class RMDIR : MonoBehaviour
         // No input
         if (string.IsNullOrEmpty(input))
         {
-            fileSystem.SendOutput(_usage, false);
+            fileSystem.SendOutput(_usage);
             return;
         }
         
@@ -36,14 +35,14 @@ public class RMDIR : MonoBehaviour
         // Illegal option
         if (command.Item3.Count > 0)
         {
-            fileSystem.SendOutput("rmdir: " + command.Item3[0].Item2, false);
+            fileSystem.SendOutput("rmdir: " + command.Item3[0].Item2);
             return;
         }
 
         // No arguments
         if (command.Item2.Count < 1)
         {
-            fileSystem.SendOutput(_usage, false);
+            fileSystem.SendOutput(_usage);
             return;
         }
 
@@ -74,7 +73,7 @@ public class RMDIR : MonoBehaviour
                 {
                     if (path.Item1[^1].GetType() == typeof(FileNode))
                     {
-                        fileSystem.SendOutput("rmdir: " + path.Item1[^1].name + ": Not a directory", false);
+                        fileSystem.SendOutput("rmdir: " + path.Item1[^1].name + ": Not a directory");
                         return;
                     }
 
@@ -94,7 +93,7 @@ public class RMDIR : MonoBehaviour
             }
         }
         
-        fileSystem.SendOutput(string.Join('\n', _toOutput), false);
+        fileSystem.SendOutput(string.Join('\n', _toOutput));
     }
 
     // Removes all nodes in a path (if empty) start from the least node i.e. starts at end of path and works backwards
@@ -140,7 +139,6 @@ public class RMDIR : MonoBehaviour
 
         if (_vOption)
         {
-            fileSystem.SendOutput(targetNode.name, true);
             _toOutput.Insert(0, targetNode.name);
         }
     }
