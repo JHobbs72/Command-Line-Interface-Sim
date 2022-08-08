@@ -7,134 +7,133 @@ public class ECHO : MonoBehaviour {
     
     // Root command for 'echo'
         // Writing to a file
+        // Writing back to STD out
 
     public GraphManager fileSystem;
-    
-    // TODO 'echo this' output = 'this'
-    
-    public void echo(string options)
+    private const string Usage = "usage: echo [text] [file ...]";
+    private string _toOutput;
+
+    public void echo(string input)
     {
-        string[] arguments = options.Split(' ');
+        string[] arguments = input.Split(' ');
         
         // No '-x' options allowed
         foreach (string arg in arguments)
         {
-            if (arg.StartsWith('-'))
+            if (!arg.StartsWith('-')) continue;
+            fileSystem.SendOutput("echo: illegal option " + arg + "\n" + Usage, false);
+            return;
+        }
+
+        if (arguments.Contains("<"))
+        {
+            fileSystem.SendOutput("echo: illegal arguments '<'" + "\n" + Usage, false);
+            return;
+        }
+        
+        if (arguments.Contains(">"))
+        {
+            // WRITING
+            if (arguments[^1] == ">" || arguments[^1] == ">>")
             {
-                fileSystem.SendOutput("echo: Illegal option " + arg, false);
-                fileSystem.SendOutput("usage: echo [text] [file ...]", true);
+                fileSystem.SendOutput("zsh: parse error near end line", false);
                 return;
             }
-        }
+            
+            List<Tuple<string, FileNode>> dests = new List<Tuple<string, FileNode>>();
+            List<string> content = new List<string>();
 
-        // Initialise list of tuples to store the name of the file to be written to and whether the text is to append or overwrite
-        List<Tuple<string, string>> operatorAndDest = new List<Tuple<string, string>>();
-        // List of elements to be removed = operators and file to be written to - left with just the text to write
-        List<int> toRemove = new List<int>();
-        
-        // Iterate through the command separating text from operators from destination files
-        for (int i = 0; i < arguments.Length; i++)
-        {
-            if (arguments[i] == ">" || arguments[i] == ">>")
+            for (int i = 0; i < arguments.Length; i++)
             {
-                operatorAndDest.Add(new Tuple<string, string>(arguments[i], arguments[i+1]));
-                toRemove.Add(i);
-                toRemove.Add(i + 1);
-            }
-        }
-
-        // Initialize list of operators and destination file nodes
-        List<Tuple<string, FileNode>> destinations = new List<Tuple<string, FileNode>>();
-
-        // Iterate through each destination, check the node specified exists and add to destinations list
-        foreach (Tuple<string, string> pair in operatorAndDest)
-        {
-            string[] path = pair.Item2.Split('/');
-            // If the destination is a path
-            if (path.Length > 1)
-            {
-                Tuple<List<Node>, string> nodePathToCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
-                List<Node> nodePath = nodePathToCheck.Item1;
-                if (nodePath == null)
+                // Arg after '>' or '>>' will be a destination
+                if (arguments[i] == ">" || arguments[i] == ">>")
                 {
-                    // TODO TEST --> is having 'testPath' right? Looks like if the last node in 'nodePath' is invalid it's ignored and use the second last? Meant to create a new node of the last?
-                    Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path.SkipLast(1).ToArray(), 0, new List<Node>());
-                    List<Node> testPath = toCheck.Item1;
-                    if (testPath == null)
+                    string[] splitPath = arguments[i + 1].Split('/');
+                    // TODO is single --> not a path
+                    
+                    // Check path (not including last node in path)
+                    Tuple<List<Node>, string> path = fileSystem.CheckPath(fileSystem.GetCurrentNode(), splitPath.SkipLast(1).ToArray(), 0, new List<Node>());
+                    
+                    // Valid path (not including last node)
+                    if (path.Item2 == null)
                     {
-                        // TODO Don't need error message? is in checkPath?
-                        fileSystem.SendOutput("echo: invalid path", false);
+                        // Is last node a Directory
+                        if (path.Item1[^1].GetType() == typeof(DirectoryNode))
+                        {
+                            // Search for last node in full path
+                            DirectoryNode penNode = (DirectoryNode)path.Item1[^1];
+                            Node destNode = penNode.SearchChildren(splitPath[^1]);
+                            
+                            if (destNode == null)
+                            {
+                                // If Last node doesn't exist --> create it and add to destinations
+                                fileSystem.AddFileNode(penNode, splitPath[^1]);
+                                
+                                dests.Add(new Tuple<string, FileNode>(arguments[i], (FileNode)penNode.SearchChildren(splitPath[^1])));
+                            }
+                            else
+                            {
+                                // If it does exist is it a FileNode?
+                                if (destNode.GetType() == typeof(FileNode))
+                                {
+                                    // If it is add to destinations
+                                    dests.Add(new Tuple<string, FileNode>(arguments[i], (FileNode)destNode));
+                                }
+                                else
+                                {
+                                    // Invalid path -- last is DIRECTORY
+                                    fileSystem.SendOutput("echo: " + string.Join('/', splitPath) + ": is a directory", false);
+                                    return;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // INVALID path --> ends in directory
+                            fileSystem.SendOutput("echo: " + string.Join('/', splitPath) + ": is a directory", false);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        // If path is not valid --> no such file or directory
+                        // TODO full correct error message?
+                        fileSystem.SendOutput(path.Item2, false);
                         return;
                     }
-
-                    if (testPath[^1].GetType() != typeof(FileNode))
-                    {
-                        fileSystem.SendOutput("echo: not a directory: " + testPath[^1].name, false);
-                        return;
-                    }
-                    destinations.Add(new Tuple<string, FileNode>(pair.Item1, (FileNode)testPath[^1]));
+                    // Skip over dest node next to the operand '>' or '>>'
+                    i++; 
                 }
                 else
                 {
-                    // Last node in path must be a file node to write to it
-                    if (nodePath[^1].GetType() != typeof(FileNode))
-                    {
-                        fileSystem.SendOutput("echo: not a directory: " + nodePath[^1].name, false);
-                        return;
-                    }
-                    destinations.Add(new Tuple<string, FileNode>(pair.Item1, (FileNode)nodePath[^1]));
+                    content.Add(arguments[i]);
                 }
             }
-            else
+
+            string finalContent = string.Join(' ', content);
+
+            foreach (Tuple<string, FileNode> dest in dests)
             {
-                // If the destination is a single node
-                Node dest = fileSystem.GetCurrentNode().SearchChildren(path[0]);
-                if (dest == null)
+                if (dest.Item1 == ">")
                 {
-                    // If the last node doesn't exist one is created before adding to destinations list
-                    fileSystem.AddFileNode(fileSystem.GetCurrentNode(), path[0]);
-                    Node newFile = fileSystem.GetCurrentNode().SearchChildren(path[0]);
-                    destinations.Add(new Tuple<string, FileNode>(pair.Item1, (FileNode)newFile));
+                    // Overwrite
+                    dest.Item2.SetContents(finalContent);
                 }
                 else
                 {
-                    // If node exists but is a directory node
-                    if (dest.GetType() != typeof(FileNode))
-                    {
-                        fileSystem.SendOutput("echo: not a directory: " + dest.name, false);
-                        return;
-                    }
-                    destinations.Add(new Tuple<string, FileNode>(pair.Item1, (FileNode)dest));
+                    // Append
+                    dest.Item2.SetContents(dest.Item2.GetContents() + "\n" + finalContent);
                 }
             }
-        }
-
-        // Gather together the text to be written to each file
-        List<string> contents = new List<string>();
-        for (int i = 0; i < arguments.Length; i++)
-        {
-            if (!toRemove.Contains(i))
-            {
-                contents.Add(arguments[i]);
-            }
-        }
-
-        // Write the contents to the relevant files, operators dictate appending or overwriting
-        foreach (Tuple<string, FileNode> dest in destinations)
-        {
-            if (dest.Item1 == ">")
-            {
-                dest.Item2.SetContents(string.Join(' ', contents));
-            }
             
-            if (dest.Item1 == ">>")
-            {
-                dest.Item2.SetContents(dest.Item2.GetContents() + "\n" + string.Join(' ', contents));
-            }
-            
+            fileSystem.SendOutput("", false);
+
+        }
+        else
+        {
+            fileSystem.SendOutput("echo " + input, false);
         }
         
-        // TODO Correct outputs on error but continue
         fileSystem.SendOutput("", false);
     }
 }
