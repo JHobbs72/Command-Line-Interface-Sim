@@ -36,6 +36,11 @@ public class DirectoryNode : Node
     {
         Neighbours.Remove(node);
     }
+
+    public void AddNeighbour(Node node)
+    {
+        Neighbours.Add(node);
+    }
     
     // Search children of this node for a node named 'target', return the node if it exists else return null
     public Node SearchChildren(string target)

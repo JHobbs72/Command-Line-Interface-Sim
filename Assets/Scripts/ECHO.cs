@@ -129,16 +129,13 @@ public class ECHO : MonoBehaviour {
                 }
                 else
                 {
-                    Debug.Log("I:: " + arguments[i] +  " :: " + (i-1));
                     if (i >= 0)
                     {
                         content.Add(arguments[i]);
-                        Debug.Log("Adding: " + arguments[i]);
                     }
                     else
                     {
                         content.Add("\n");
-                        Debug.Log("Adding: new line");
                     }
                     
                 }
@@ -152,13 +149,11 @@ public class ECHO : MonoBehaviour {
                 {
                     // Overwrite
                     dest.Item2.SetContents(finalContent);
-                    Debug.Log("CONTENT: " + string.Join('-', content));
                 }
                 else
                 {
                     // Append
                     dest.Item2.SetContents(dest.Item2.GetContents() + "\n" + finalContent);
-                    Debug.Log("CONTENT2: " + dest.Item2.GetContents() + "\n" + finalContent);
                 }
             }
             

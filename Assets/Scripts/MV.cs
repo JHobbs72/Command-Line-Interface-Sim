@@ -16,20 +16,35 @@ public class MV : MonoBehaviour
     public GraphManager fileSystem;
     private List<string> _toOutput;
     private bool _vOption;
-    private const string Usage = "mv: not enough arguments" + "usage: mv [-v] source target \n" + "           mv [-v] source ... directory";
+    private const string Usage = "usage: mv [-v] source target \n" + "           mv [-v] source ... directory";
 
     public void mv(string input)
     {
         _toOutput = new List<string>();
         _vOption = false;
+
+        if (string.IsNullOrEmpty(input))
+        {
+            fileSystem.SendOutput(Usage);
+            return;
+        }
         
         Tuple<List<char>, List<string>, List<Tuple<string, string>>> command = fileSystem.ValidateOptions(input, new[] {'v'}, "mv");
 
         // Handles error on invalid option(s)
-        if (command.Item3 != null)
+        if (command.Item3.Count > 0)
         {
             fileSystem.SendOutput(command.Item3[0].Item2);
             return;
+        }
+
+        foreach (string str in command.Item2)
+        {
+            if (str.StartsWith('-'))
+            {
+                fileSystem.SendOutput("mv: " + str + ": illegal option");
+                return;
+            }
         }
 
         if (command.Item1.Contains('v'))
@@ -54,9 +69,10 @@ public class MV : MonoBehaviour
         if (dest == null) { return; }
 
         // SOURCES
-        Tuple<List<Node>, List<Tuple<string, string>>> sources = fileSystem.ValidateArgs(command.Item2, "mv");
+        Tuple<List<Node>, List<Tuple<string, string>>> sources = fileSystem.ValidateArgs(
+            new List<string> ( command.Item2.SkipLast(1) ), "mv");
 
-        if (sources.Item2 != null)
+        if (sources.Item2.Count > 0)
         {
             fileSystem.SendOutput(sources.Item2[0].Item2);
             return;
@@ -98,7 +114,7 @@ public class MV : MonoBehaviour
         if (dest.Item1 != null)
         {
             // if source = <file> and dest = <dir> --> MOVE
-            if (sources.Item1[0].GetType() == typeof(FileNode) && dest.Item1.GetType() == typeof(DirectoryNode))
+            if (sources.Item1[0].GetType() == typeof(FileNode) && dest.Item1[^1].GetType() == typeof(DirectoryNode))
             {
                 Move(new List<Node> { sources.Item1[0] }, (DirectoryNode)dest.Item1[^1]);
                 fileSystem.SendOutput(string.Join('\n', _toOutput));
@@ -106,7 +122,7 @@ public class MV : MonoBehaviour
             }
             
             // if source = <file> and dest = <file> --> OVERWRITE
-            if (sources.Item1[0].GetType() == typeof(FileNode) && dest.Item1.GetType() == typeof(FileNode))
+            if (sources.Item1[0].GetType() == typeof(FileNode) && dest.Item1[^1].GetType() == typeof(FileNode))
             {
                 Overwrite((FileNode)sources.Item1[0], (FileNode)dest.Item1[^1]);
                 fileSystem.SendOutput(string.Join('\n', _toOutput));
@@ -118,6 +134,13 @@ public class MV : MonoBehaviour
             {
                 Move(new List<Node> { sources.Item1[0] }, (DirectoryNode)dest.Item1[^1]);
                 fileSystem.SendOutput(string.Join('\n', _toOutput));
+                return;
+            }
+            
+            // if source = <dir> and dest = <file> --> Error
+            if (sources.Item1[0].GetType() == typeof(DirectoryNode) && dest.Item1[^1].GetType() == typeof(FileNode))
+            {
+                fileSystem.SendOutput("mv: " + dest.Item1[^1].name + ": is not a directory");
             }
         }
     }
@@ -207,6 +230,7 @@ public class MV : MonoBehaviour
                 _toOutput.Add(src.name + " --> " + dest.name);
             }
             src.GetParent().RemoveNeighbour(src);
+            dest.AddNeighbour(src);
             src.SetParent(dest);
         }
     }
