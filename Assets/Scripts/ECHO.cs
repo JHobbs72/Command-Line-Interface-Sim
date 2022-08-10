@@ -31,7 +31,7 @@ public class ECHO : MonoBehaviour {
             return;
         }
         
-        if (arguments.Contains(">"))
+        if (arguments.Contains(">") || arguments.Contains(">>"))
         {
             // WRITING
             if (arguments[^1] == ">" || arguments[^1] == ">>")
@@ -50,8 +50,29 @@ public class ECHO : MonoBehaviour {
                 {
                     string[] splitPath = arguments[i + 1].Split('/');
                     // TODO is single --> not a path
-                    
-                    // Check path (not including last node in path)
+
+                    if (splitPath.Length < 2)
+                    {
+                        Node node = fileSystem.GetCurrentNode().SearchChildren(splitPath[0]);
+                        if (node == null)
+                        {
+                            fileSystem.AddFileNode(fileSystem.GetCurrentNode(), splitPath[0]);
+                            node = fileSystem.GetCurrentNode().SearchChildren(splitPath[0]);
+                            dests.Add(new Tuple<string, FileNode>(arguments[i], (FileNode)node));
+                        } 
+                        else if (node.GetType() == typeof(FileNode))
+                        {
+                            dests.Add(new Tuple<string, FileNode>(arguments[i], (FileNode)node));
+                        }
+                        else
+                        {
+                            fileSystem.SendOutput("echo: " + arguments[i] + ": is a directory");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        // Check path (not including last node in path)
                     Tuple<List<Node>, string> path = fileSystem.CheckPath(fileSystem.GetCurrentNode(), splitPath.SkipLast(1).ToArray(), 0, new List<Node>());
                     
                     // Valid path (not including last node)
@@ -101,12 +122,25 @@ public class ECHO : MonoBehaviour {
                         fileSystem.SendOutput(path.Item2);
                         return;
                     }
+                    }
+                    
                     // Skip over dest node next to the operand '>' or '>>'
                     i++; 
                 }
                 else
                 {
-                    content.Add(arguments[i]);
+                    Debug.Log("I:: " + arguments[i] +  " :: " + (i-1));
+                    if (i >= 0)
+                    {
+                        content.Add(arguments[i]);
+                        Debug.Log("Adding: " + arguments[i]);
+                    }
+                    else
+                    {
+                        content.Add("\n");
+                        Debug.Log("Adding: new line");
+                    }
+                    
                 }
             }
 
@@ -118,11 +152,13 @@ public class ECHO : MonoBehaviour {
                 {
                     // Overwrite
                     dest.Item2.SetContents(finalContent);
+                    Debug.Log("CONTENT: " + string.Join('-', content));
                 }
                 else
                 {
                     // Append
                     dest.Item2.SetContents(dest.Item2.GetContents() + "\n" + finalContent);
+                    Debug.Log("CONTENT2: " + dest.Item2.GetContents() + "\n" + finalContent);
                 }
             }
             
@@ -131,9 +167,14 @@ public class ECHO : MonoBehaviour {
         }
         else
         {
-            fileSystem.SendOutput("echo " + input);
+            if (string.IsNullOrEmpty(input))
+            {
+                fileSystem.SendOutput(" ");
+            }
+            else
+            {
+                fileSystem.SendOutput(input);
+            }
         }
-        
-        fileSystem.SendOutput("");
     }
 }
