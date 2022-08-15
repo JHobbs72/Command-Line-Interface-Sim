@@ -7,352 +7,277 @@ public class CAT : MonoBehaviour
 {
     // Root command for 'cat' 
         // Display contents in file, write from one file to another
+        // Abstraction of real cat command
     
     public GraphManager fileSystem;
-    private bool _nOption = false;
-    private bool _eOption = false;
-    private bool _bOption = false;
-    private bool _sOption = false;
-    private string _usage = "usage: cat [-nEbs] [file ...]";
+    private bool _nOption;
+    private bool _eOption;
+    private string _usage = "usage: cat [-nE] [file ...]";
+    private List<string> _toOutput;
 
     public void cat(string input)
     {
+        _nOption = false;
+        _eOption = false;
+        _toOutput = new List<string>();
+        
         // If no command entered display usage
         if (string.IsNullOrEmpty(input)) { fileSystem.SendOutput(_usage); return; }
-        // Call function to separate options and arguments
-        Tuple<List<char>, List<string>, List<Tuple<string, string>>> command = fileSystem.ValidateOptions(input, new[] {'n', 'E', 'b', 's'}, "cat");
         
-        char[] options = command.Item1.ToArray();
-        List<string> arguments = command.Item2;
+        // Call function to separate options and arguments
+        Tuple<List<char>, List<string>, List<Tuple<string, string>>> command = fileSystem.ValidateOptions(input, new[] {'n', 'e'}, "cat");
+
+        // Display any errors caught when checking options
+        if (command.Item3.Count > 0)
+        {
+            fileSystem.SendOutput(command.Item3[0].Item2 + "\n" + _usage);
+            return;
+        }
+        
+        // If no arguments are given
+        if (command.Item2.Count == 0)
+        {
+            fileSystem.SendOutput(_usage);
+            return;
+        }
         
         // If any valid options are given, set the bool variables as such
-        if (options.Contains('E'))
+        if (command.Item1.Contains('E'))
         {
             _eOption = true;
         }
 
-        if (options.Contains('n'))
+        if (command.Item1.Contains('n'))
         {
             _nOption = true;
         }
-            
-        if (options.Contains('b'))
-        {
-            _bOption = true;
-        }
-
-        if (options.Contains('s'))
-        {
-            _sOption = true; 
-        }
-        
 
         // If command == "cat *" display contents of all files under current node
-        if (options.Length == 0 && arguments.Count == 1 && arguments[0] == "*")
+        if (command.Item2.Count == 1 && command.Item2[0] == "*")
         {
-            List<string> output = new List<string>();
+            List<Node> sources = new List<Node>();
+            
             foreach (Node node in fileSystem.GetCurrentNode().GetNeighbours())
             {
-                if (node.GetType() == typeof(DirectoryNode))
+                sources.Add(node);
+            }
+            
+            WriteToStdOut(sources);
+            return;
+        }
+
+        // Invalid commands '<<' and '<'
+        if (command.Item2.Contains("<<"))
+        {
+            fileSystem.SendOutput("cat: <<: invalid argument");
+            return;
+        }
+        
+        if (command.Item2.Contains("<"))
+        {
+            fileSystem.SendOutput("cat: <: invalid argument");
+            return;
+        }
+        
+        // '>' and '>>' cannot be the last argument
+        if (command.Item2[^1] == ">" || command.Item2[^1] == ">>")
+        {
+            fileSystem.SendOutput("zsh: parse error near end line");
+            return;
+        }
+        
+        // '>' and '>>' cannot be the first argument
+        if (command.Item2[0] == ">" || command.Item2[0] == ">>")
+        {
+            fileSystem.SendOutput("zsh: parse error near start line");
+            return;
+        }
+        
+        // If command contains either write operator
+        if (command.Item2.Contains(">") || command.Item2.Contains(">>"))
+        {
+            if (command.Item2.Count > 3)
+            {
+                fileSystem.SendOutput("cat: Too many arguments");
+                return;
+            }
+            if (command.Item2.Count < 3)
+            {
+                fileSystem.SendOutput("cat: Not enough arguments");
+                return;
+            }
+
+            List<string> arguments = new List<string> { command.Item2[0], command.Item2[2] };
+            
+
+            Tuple<List<Node>, List<Tuple<string, string>>> source = fileSystem.ValidateArgs(arguments.SkipLast(1).ToList(), "cat");
+            Tuple<List<Node>, List<Tuple<string, string>>> destination = fileSystem.ValidateArgs(arguments.Skip(1).ToList(), "cat");
+            
+            // Both source and destination nodes exist
+            if (source.Item2.Count == 0 && destination.Item2.Count == 0)
+            {
+                if (source.Item1[0].GetType() == typeof(DirectoryNode))
                 {
-                    output.Add("cat: " + node.name + ": is a directory");
+                    fileSystem.SendOutput("cat: " + source.Item1[0].name + ": is a directory");
+                    return;
                 }
-                else
+                
+                if (destination.Item1[0].GetType() == typeof(DirectoryNode))
                 {
-                    string contents = node.GetContents();
-                    if (contents != null)
+                    fileSystem.SendOutput("cat: " + destination.Item1[0].name + ": is a directory");
+                    return;
+                }
+                
+                WriteToFile((FileNode)source.Item1[0], command.Item2[1], (FileNode)destination.Item1[0]);
+            }
+            // One of the source and destination nodes doesn't exist
+            else
+            {
+                // Source doesn't exist -- error - stop
+                if (source.Item2.Count != 0)
+                {
+                    fileSystem.SendOutput(source.Item2[0].Item2);
+                    return;
+                }
+
+                // Source is a directory -- error - stop
+                if (source.Item1[0].GetType() == typeof(DirectoryNode))
+                {
+                    fileSystem.SendOutput("cat: " + source.Item1[0].name + ": is a directory");
+                    return;
+                }
+
+                // Destination doesn't exist
+                if (destination.Item2.Count != 0)
+                {
+                    List<string> newNodePath = arguments[1].Split('/').ToList();
+                    // If destination doesn't exist and is a path
+                    if (newNodePath.Count > 1)
                     {
-                        output.Add(contents);
+                        // Check path except last element (node to be created)
+                        Tuple<List<Node>, string> validPath = fileSystem.CheckPath(fileSystem.GetCurrentNode(), newNodePath.SkipLast(1).ToArray(), 0, new List<Node>());
+                        
+                        // Invalid path -- error before end
+                        if (validPath.Item2 != null)
+                        {
+                            fileSystem.SendOutput("cat: " + validPath.Item2);
+                            return;
+                        }
+                        
+                        // Invalid path -- last node is a FileNode
+                        if (validPath.Item1[^1].GetType() != typeof(DirectoryNode))
+                        {
+                            // TODO error message
+                            fileSystem.SendOutput("cat: Invalid path");
+                            return;
+                        }
+                        
+                        // Valid path -- create new FileNode to add on the end
+                        fileSystem.AddFileNode((DirectoryNode)validPath.Item1[^1], newNodePath[^1]);
+                        DirectoryNode lastValid = (DirectoryNode)validPath.Item1[^1];
+                        FileNode newNode = (FileNode)lastValid.SearchChildren(newNodePath[^1]);
+                        
+                        // Write from source to destination
+                        WriteToFile((FileNode)source.Item1[0], command.Item2[1], newNode);
+                    }
+                    // If destination doesn't exist and is a single node
+                    else
+                    {
+                        // Create the new FileNode
+                        fileSystem.AddFileNode(fileSystem.GetCurrentNode(), newNodePath[0]);
+                        FileNode newNode = (FileNode)fileSystem.GetCurrentNode().SearchChildren(newNodePath[0]);
+                        
+                        // Write from source to destination
+                        WriteToFile((FileNode)source.Item1[0], command.Item2[1], newNode);
                     }
                 }
             }
-            
-            fileSystem.SendOutput(string.Join('\n', output));
+
+            fileSystem.SendOutput("");
             return;
         }
 
-        // Invalid command
-        if (arguments.Contains("<<"))
-        {
-            fileSystem.SendOutput("Error -> invalid argument '<<'");
-            return;
-        }
+        // Display file(s) content
+        Tuple<List<Node>, List<Tuple<string, string>>> validArgs = fileSystem.ValidateArgs(command.Item2, "cat");
 
-        // TODO --> this and the next if correct? Needs testing thoroughly 
-        // If arguments contains '<' or DOESN'T contain any of '>>' '>' '<' then write contents of arguments to standard output
-        if (arguments.Contains("<") || !arguments.Contains(">>") || !arguments.Contains(">") || !arguments.Contains("<"))
+        foreach (Tuple<string, string> tuple in validArgs.Item2)
         {
-            WriteToStdOut(arguments.ToArray());
+            _toOutput.Add(tuple.Item2);
         }
-
-        // If arguments contains '>' or '>>' write contents to a file
-        if (arguments.Contains(">") || arguments.Contains(">>"))
-        {
-            WriteToFile(arguments.ToArray());
-        }
+        
+        WriteToStdOut(validArgs.Item1);
     }
 
     // Method called when contents of file(s) is to be written to standard output
         // arguments = the arguments submitted in the command
-    private void WriteToStdOut(string[] arguments)
+    private void WriteToStdOut(List<Node> sources)
     {
-        // Lists created to aid execution
-            // input = arguments array as a list
-            // content = The content of the requested Nodes to be written
-        List<string> input = arguments.ToList();
-        List<string> content = new List<string>();
-
-        // Always true on first pass
-        if (input.Contains("<"))
+        foreach (Node src in sources)
         {
-            // While the input still has a '<' in it, take the next element and search for a node with that name or path
-            while (input.Contains("<"))
+            if (src.GetType() == typeof(DirectoryNode))
             {
-                int op = input.IndexOf("<");
-
-                FileNode node = GetNode(input[op + 1], false);
-                if (node == null)
-                {
-                    // Error message in GetNode
-                    return;
-                }
-
-                // TODO don't add contents of this node?
-                    // e.g. cat file1.txt < file2.txt file3.txt doesn't print contents of file2.txt
-                // Add contents of the node to the list
-                string nodeContents = node.GetContents();
-                if (nodeContents != null)
-                {
-                    content.Add(nodeContents);
-                }
-
-                // Remove the operator and operand from the 'input' list i.e. "< file1"
-                    // Same index as indexes change after the first is removed
-                input.RemoveAt(op);
-                input.RemoveAt(op);
+                _toOutput.Add("cat: " + src.name + ": is a directory");
             }
-        }
-        else
-        {
-            // After all '<' have been removed i.e. all nodes that aren't having their contents written have been removed
-            foreach (string src in input)
+            else
             {
-                // Check all remaining nodes are valid and add contents to the list
-                FileNode node = GetNode(src, false);
-                if (node == null)
-                {
-                    return;
-                }
-
-                string nodeContents = node.GetContents();
-                if (nodeContents != null)
-                {
-                    content.Add(nodeContents);
-                }
+                string contents = src.GetContents();
+                _toOutput.Add(contents ?? "\n");
             }
         }
         
-        // Send contents list to be output
-        OutputWithOptions(content);
+        OutputWithOptions(_toOutput);
     }
 
     // Method called to write text to a file
         // arguments = the arguments from the command
-    private void WriteToFile(string[] arguments)
+    // Tuple: Source : Operator : Destination
+    private void WriteToFile(FileNode src, string op, FileNode dest)
     {
-        List<string> input = arguments.ToList();
-        // Create a list of Tuples to contain the files to be written to and the operator assigned to them in the command
-        List<Tuple<FileNode, string>> destinations = new List<Tuple<FileNode, string>>();
-        // TODO sources warning
-        List<FileNode> sources = new List<FileNode>();
-        string content = "";
-        
-        // Command cannot start with any of these operators
-        if (input[0] == ">" || input[0] == ">>" || input[^1] == ">" || input[^1] == ">>")
+        if (op == ">")
         {
-            // TODO error message
-            fileSystem.SendOutput("Error --> parse error");
-            return;
+            dest.SetContents(src.GetContents());
         }
-
-        // While input contains '>' or '>>'
-        while (input.Contains(">") || input.Contains(">>"))
-        {
-            // If input doesn't contain '>' search for '>>'
-            int op = input.IndexOf(">");
-            if (op < 0)
-            {
-                op = input.IndexOf(">>");
-            }
-
-            // Get node with the name of the element next to operator i.e. "> file1.txt" find node with name "file1.txt"
-                // Set createNewEndNode to true --> each element following an operator is a destination & can be created at run time
-            FileNode dest = GetNode(input[op + 1], true);
-            // If dest is null i.e. an invalid path -- error message in GetNode
-            if (dest == null)
-            {
-                return;
-            }
-            
-            // Create new tuple of the node that's been found and the operator then add to the list
-            destinations.Add(new Tuple<FileNode, string>(dest, input[op]));
-            // Remove operand and operator e.g: > file2.txt
-            input.RemoveAt(op);
-            // Indexes change when first removed so same index twice
-            input.RemoveAt(op);
+        else
+        { 
+            dest.SetContents(dest.GetContents() + "\n" + src.GetContents());
         }
-        
-        // Every element left in the input list is a source i.e. it's content will be written to a destination
-        foreach (string target in input)
-        {
-            // TODO check if input is empty?
-            // Find the node target
-            FileNode source = GetNode(target, false);
-            if (source == null)
-            {
-                // TODO doubling up error message?
-                fileSystem.SendOutput("Error --> No such file or directory");
-                return;
-            }
-            
-            sources.Add(source);
-            // Add the content of the file to the 'content' variable separated by a new line
-            if (content == "")
-            {
-                content = source.GetContents();
-            }
-            else
-            {
-                content = content + "\n" + source.GetContents();
-            }
-        }
-
-        // For each destination set new contents, append or overwrite
-        foreach (Tuple<FileNode, string> dest in destinations)
-        {
-            if (dest.Item2 == ">")
-            {
-                dest.Item1.SetContents(content);
-            }
-            else
-            {
-                dest.Item1.SetContents(dest.Item1.GetContents() + "\n" + content);
-            }
-        }
-        
-        fileSystem.SendOutput("");
     }
 
-    // Method to return a Node when given a string name or path
-    private FileNode GetNode(string input, bool createNewEndNode)
-    {
-        string[] path = input.Split('/');
-        // If it's a path
-        if (path.Length > 1)
-        {
-            // Call CheckPath
-            Tuple<List<Node>, string> toCheck = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>());
-            List<Node> nodePath = toCheck.Item1;
-            if (nodePath == null)
-            {
-                // If the path fails check again but without the last element
-                Tuple<List<Node>, string> toCheck2 = fileSystem.CheckPath(fileSystem.GetCurrentNode(), path.SkipLast(1).ToArray(), 0, new List<Node>());
-                List<Node> testPath = toCheck2.Item1;
-                if (testPath == null)
-                {
-                    // If path fails still --> invalid path
-                    // TODO error message
-                    fileSystem.SendOutput("Error - invalid path");
-                    return null;
-                }
-
-                // If the target node is a destination and doesn't exist in the path, create it
-                if (createNewEndNode)
-                {
-                    // If the second last element in the path (or last element in testPath) is a directory node, create a new file node under it
-                    if (testPath[^1].GetType() == typeof(DirectoryNode))
-                    {
-                        fileSystem.AddFileNode((DirectoryNode)testPath[^1], path[^1]);
-                        // return the new node
-                        return (FileNode)fileSystem.CheckPath(fileSystem.GetCurrentNode(), path, 0, new List<Node>()).Item1[^1];
-                    }
-                
-                    // If the last element in testPath is not a directory, cannot make a child of it
-                    // TODO error message
-                    fileSystem.SendOutput("Error --> invalid path");
-                    return null;
-                }
-                
-                // If the target node is a source and doesn't exist -> error
-                // TODO error message
-                fileSystem.SendOutput("Error --> invalid path");
-                return null;
-            }
-
-            // For a valid path, if the last node is a file node, return that node.
-            if (nodePath[^1].GetType() == typeof(FileNode))
-            {
-                return (FileNode)nodePath[^1];
-            }
-            
-            // If the last node's a directory it cannot be a source or destination under the cat command
-            // TODO error message
-            fileSystem.SendOutput("Error --> is Directory");
-            return null;
-        }
-        
-        // If it's a single node
-        Node target = fileSystem.GetCurrentNode().SearchChildren(path[0]);
-        if (target.GetType() == typeof(FileNode))
-        {
-            return (FileNode)target;
-        }
-        
-        // TODO error message? --> is a directory
-        
-        return null;
-    }
-    
     // Method to output content to standard output. Takes a list of strings and processes them before output in line
         // with the options specified in the command
     private void OutputWithOptions(List<string> output)
     {
         // n --> print all line numbers
         // E --> Display $ at the end of the file 
-        // b --> print line numbers of non empty lines
-        // s --> Suppress repeated empty output lines
         // none --> standard output
 
-        if (_sOption)
+        if (_nOption)
         {
-            for (int i = 0; i < output.Count; i++)
-            {
-                if (string.IsNullOrEmpty(output[i]) && string.IsNullOrEmpty(output[i + 1]))
-                {
-                    output.RemoveAt(i);
-                    i -= 1;
-                }
-            }
-        }
+            List<string> finalOutput = new List<string>();
 
-        if (_eOption)
-        {
-            int count = 1;
-            for (int i = 1; i <= output.Count; i++)
+            foreach (string str in output)
             {
-                if (string.IsNullOrEmpty(output[i]) && _bOption)
+                if (!str.Contains("directory"))
                 {
-                    // Skip
+                    List<string> lines = str.Split('\n').ToList();
+
+                    int count = 1;
+                    foreach (string line in lines)
+                    {
+                        finalOutput.Add(count + "   " + line); 
+                        count++;
+                    }
                 }
                 else
                 {
-                    output[i] = count + output[i];
-                    count++;
+                    finalOutput.Add(str); 
                 }
             }
+
+            output = finalOutput;
         }
 
-        if (_nOption)
+        if (_eOption)
         {
             output[^1] += "$";
         }

@@ -338,14 +338,14 @@ public class GraphManager : MonoBehaviour
 
                     if (path.Item1.Count > 0)
                     {
-                        errorMessages.Add(new Tuple<string, string>(toCheck[path.Item1.Count], "ls: " +
+                        errorMessages.Add(new Tuple<string, string>(toCheck[path.Item1.Count], rootCommand + ": " +
                             string.Join('/', names) + "/" + toCheck[path.Item1.Count] + ": " + path.Item2));
                     }
                     else
                     {
                         // Fails on first element in path
                         errorMessages.Add(
-                            new Tuple<string, string>(toCheck[0], "ls: " + toCheck[0] + ": " + path.Item2));
+                            new Tuple<string, string>(toCheck[0], rootCommand + ": " + toCheck[0] + ": " + path.Item2));
                     }
                 }
             }
