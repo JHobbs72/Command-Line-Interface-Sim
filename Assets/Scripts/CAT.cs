@@ -12,11 +12,15 @@ public class CAT : MonoBehaviour
     public GraphManager fileSystem;
     private bool _nOption;
     private bool _eOption;
-    private string _usage = "usage: cat [-nE] [file ...]";
+    private string _usage = "usage: cat [-ne] [file ...]";
     private List<string> _toOutput;
 
     public void cat(string input)
     {
+        // ---
+        // SECTION ONE
+        // ---
+        
         _nOption = false;
         _eOption = false;
         _toOutput = new List<string>();
@@ -42,7 +46,7 @@ public class CAT : MonoBehaviour
         }
         
         // If any valid options are given, set the bool variables as such
-        if (command.Item1.Contains('E'))
+        if (command.Item1.Contains('e'))
         {
             _eOption = true;
         }
@@ -66,7 +70,7 @@ public class CAT : MonoBehaviour
             return;
         }
 
-        // Invalid commands '<<' and '<'
+        // Invalid commands '<<' and '<' caught
         if (command.Item2.Contains("<<"))
         {
             fileSystem.SendOutput("cat: <<: invalid argument");
@@ -93,6 +97,10 @@ public class CAT : MonoBehaviour
             return;
         }
         
+        // ---
+        // SECTION TWO
+        // ---
+        
         // If command contains either write operator
         if (command.Item2.Contains(">") || command.Item2.Contains(">>"))
         {
@@ -108,7 +116,6 @@ public class CAT : MonoBehaviour
             }
 
             List<string> arguments = new List<string> { command.Item2[0], command.Item2[2] };
-            
 
             Tuple<List<Node>, List<Tuple<string, string>>> source = fileSystem.ValidateArgs(arguments.SkipLast(1).ToList(), "cat");
             Tuple<List<Node>, List<Tuple<string, string>>> destination = fileSystem.ValidateArgs(arguments.Skip(1).ToList(), "cat");
@@ -196,6 +203,10 @@ public class CAT : MonoBehaviour
             fileSystem.SendOutput("");
             return;
         }
+        
+        // --- 
+        // SECTION THREE
+        // ---
 
         // Display file(s) content
         Tuple<List<Node>, List<Tuple<string, string>>> validArgs = fileSystem.ValidateArgs(command.Item2, "cat");
