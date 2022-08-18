@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class LS : MonoBehaviour
@@ -24,6 +23,7 @@ public class LS : MonoBehaviour
         _toOutput = new List<string>();
         _multipleArgs = false;
 
+        // SECTION ONE
         if (string.IsNullOrEmpty(input))
         {
             ListNeighbours(fileSystem.GetCurrentNode(), false);
@@ -51,6 +51,7 @@ public class LS : MonoBehaviour
             }
         }
 
+        // SECTION TWO
         if (command.Item2 == null || command.Item2.Count == 0)
         {
             ListNeighbours(fileSystem.GetCurrentNode(), false);

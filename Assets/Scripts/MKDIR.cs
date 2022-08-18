@@ -24,6 +24,7 @@ public class MKDIR : MonoBehaviour
         _pOption = false;
         _vOption = false;
         
+        // SECTION ONE
         // If no arguments given
         if (string.IsNullOrEmpty(input))
         {
@@ -70,6 +71,7 @@ public class MKDIR : MonoBehaviour
             return;
         }
 
+        // SECTION TWO
         if (_pOption)
         {
             foreach (string arg in arguments)
@@ -112,9 +114,6 @@ public class MKDIR : MonoBehaviour
                 {
                     AddDir(fileSystem.GetCurrentNode(), path[0]);
                 }
-                
-                
-                
             }
         }
         

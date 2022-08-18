@@ -23,6 +23,7 @@ public class MV : MonoBehaviour
         _toOutput = new List<string>();
         _vOption = false;
 
+        // SECTION ONE
         if (string.IsNullOrEmpty(input))
         {
             fileSystem.SendOutput(Usage);
@@ -58,6 +59,8 @@ public class MV : MonoBehaviour
             fileSystem.SendOutput("mv: not enough arguments \n" + Usage);
             return;
         }
+        
+        // SECTION TWO
 
         // DESTINATION
         // Gets and checks the destination - deals with path and returns a tuple with one or both items null

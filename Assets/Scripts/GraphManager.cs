@@ -118,7 +118,6 @@ public class GraphManager : MonoBehaviour
         _currentCommand = command;
     }
     
-    // Normal output -- includes '>>' and new line
     public void SendOutput(string content)
     {
         // Call method in outputText.cs
