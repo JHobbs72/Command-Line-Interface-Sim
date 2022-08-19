@@ -12,6 +12,7 @@ public class Graph : ScriptableObject
     // Contains methods to manage the structure of the graph (file structure)
 
     private GraphManager _outputSource;
+    private GameObject _fileSystemObj;
 
     // On start find and assign graph manager
     public void Awake()
@@ -37,6 +38,9 @@ public class Graph : ScriptableObject
     // Create graph structure for file system
     public static Graph Create(string name)
     {
+        GameObject fileSystemObj = GameObject.Find("FileSystem");
+        GameObject graphh = new GameObject();
+
         Graph graph = CreateInstance<Graph>();
 
         string path = string.Format($"Assets/FileSystem/{name}.asset");
