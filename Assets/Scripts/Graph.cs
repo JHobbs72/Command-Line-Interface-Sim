@@ -38,13 +38,7 @@ public class Graph : ScriptableObject
     // Create graph structure for file system
     public static Graph Create(string name)
     {
-        GameObject fileSystemObj = GameObject.Find("FileSystem");
-        GameObject graphh = new GameObject();
-
         Graph graph = CreateInstance<Graph>();
-
-        string path = string.Format($"Assets/FileSystem/{name}.asset");
-        AssetDatabase.CreateAsset(graph, path);
 
         return graph;
     }
@@ -54,8 +48,6 @@ public class Graph : ScriptableObject
     public void AddRoot(DirectoryNode root)
     {
         Nodes.Add(root);
-        AssetDatabase.AddObjectToAsset(root, this);
-        AssetDatabase.SaveAssets();
     }
     // All other nodes
     public void AddNode(DirectoryNode parent, Node node)
@@ -63,8 +55,6 @@ public class Graph : ScriptableObject
         Nodes.Add(node);
         parent.Neighbours.Add(node);
         node.SetParent(parent);
-        AssetDatabase.AddObjectToAsset(node, this);
-        AssetDatabase.SaveAssets();
     }
 
     // Remove a node from the graph and assets -- Catch 'is a non-empty directory' error
@@ -78,8 +68,6 @@ public class Graph : ScriptableObject
         
         Nodes.Remove(target);
         parent.RemoveNeighbour(target);
-        AssetDatabase.DeleteAsset("Assets/FileSystem/FileSystemGraph.asset/" + target.name);
-        AssetDatabase.SaveAssets();
     }
 
     public DirectoryNode GetRootNode()
