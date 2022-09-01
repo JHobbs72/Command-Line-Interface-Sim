@@ -49,6 +49,7 @@ public class Graph : ScriptableObject
     {
         Nodes.Add(root);
     }
+    
     // All other nodes
     public void AddNode(DirectoryNode parent, Node node)
     {
@@ -57,7 +58,7 @@ public class Graph : ScriptableObject
         node.SetParent(parent);
     }
 
-    // Remove a node from the graph and assets -- Catch 'is a non-empty directory' error
+    // Remove a node from the graph and assets 
     public void RemoveNode(DirectoryNode parent, Node target)
     {
         if (target.GetType() == typeof(DirectoryNode) && target.GetNeighbours().Count > 0)
