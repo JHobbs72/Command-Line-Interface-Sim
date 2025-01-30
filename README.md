@@ -1,6 +1,6 @@
 # Command Line Interface Simulator
 
-## Author: Jacob Hobbs - 190161842
+## Author: Jacob Hobbs
 ## Organisation - Newcastle University
 ## Date - July 2022
 
